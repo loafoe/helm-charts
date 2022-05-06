@@ -3,7 +3,7 @@ entries:
   fluent-bit-out-hsdp:
   - apiVersion: v1
     appVersion: 1.9.3.2
-    created: "2022-05-06T16:45:21.876636+02:00"
+    created: "2022-05-06T16:56:56.076801+02:00"
     description: Fast and lightweight log processor and forwarder or Linux, OSX and
       BSD family operating systems.
     digest: 414e5c82cf4e1ad7e5ebff9041c0a96035f7e3725b9b87b4210cc8452410e9be
@@ -25,7 +25,7 @@ entries:
     version: 0.0.12
   - apiVersion: v1
     appVersion: 1.9.3.1
-    created: "2022-05-06T16:45:21.875655+02:00"
+    created: "2022-05-06T16:56:56.075975+02:00"
     description: Fast and lightweight log processor and forwarder or Linux, OSX and
       BSD family operating systems.
     digest: 8d6ece2a84ef82d3927732b902d31a6eab12b2853295873c1b90f787c223fa02
@@ -47,7 +47,7 @@ entries:
     version: 0.0.11
   - apiVersion: v1
     appVersion: 1.9.3.0
-    created: "2022-05-06T16:45:21.87398+02:00"
+    created: "2022-05-06T16:56:56.07514+02:00"
     description: Fast and lightweight log processor and forwarder or Linux, OSX and
       BSD family operating systems.
     digest: dd6afc93bbb1db8b4279222747161e937f7bd666945d57ab60a60fb029e850ac
@@ -69,7 +69,7 @@ entries:
     version: 0.0.10
   - apiVersion: v1
     appVersion: 1.9.2.2
-    created: "2022-05-06T16:45:21.878163+02:00"
+    created: "2022-05-06T16:56:56.078417+02:00"
     description: Fast and lightweight log processor and forwarder or Linux, OSX and
       BSD family operating systems.
     digest: 60ad6f438ee861a41dc681be718d90eae1a6c9dd5c100d34e18571a6ddb0502d
@@ -89,4 +89,15 @@ entries:
     urls:
     - https://loafoe.github.io/helm-charts/fluent-bit-out-hsdp-0.0.9.tgz
     version: 0.0.9
-generated: "2022-05-06T16:45:21.872587+02:00"
+  go-hello-world:
+  - apiVersion: v2
+    appVersion: 0.7.0
+    created: "2022-05-06T16:56:56.07875+02:00"
+    description: Example application
+    digest: 128eb92f5bc1834a9813cfb0c3fd935b503310b88f7dffb784329f9ed19f92de
+    name: go-hello-world
+    type: application
+    urls:
+    - https://loafoe.github.io/helm-charts/go-hello-world-0.1.0.tgz
+    version: 0.1.0
+generated: "2022-05-06T16:56:56.073769+02:00"
