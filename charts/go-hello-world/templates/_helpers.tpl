@@ -40,9 +40,6 @@ helm.sh/chart: {{ include "go-hello-world.chart" . }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
-{{- range $key, $val := .Values.podLabels }}
-{{ $key }}: {{ $val | quote }}
-{{- end }}
 {{- end }}
 
 {{/*
