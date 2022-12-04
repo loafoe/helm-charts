@@ -19,6 +19,9 @@ spec:
       {{- end }}
       labels:
         {{- include "go-hello-world.selectorLabels" . | nindent 8 }}
+        {{- range $key, $val := .Values.podLabels }}
+        {{ $key }}: {{ $val | quote }}
+        {{- end }}
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
