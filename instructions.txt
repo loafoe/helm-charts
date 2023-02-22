@@ -1,1 +1,3 @@
+helm dependency build charts/go-hello-world
+helm-docs -g charts/go-hello-world
 helm repo index --url https://loafoe.github.io/helm-charts/ .
