@@ -7,7 +7,7 @@ color: "colorless"
 replicaCount: 1
 
 image:
-  repository: loafoe/go-hello-world
+  repository: ghcr.io/loafoe/go-hello-world
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: ""
