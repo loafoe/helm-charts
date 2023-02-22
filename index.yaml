@@ -2,8 +2,18 @@ apiVersion: v1
 entries:
   go-hello-world:
   - apiVersion: v2
+    appVersion: v2.6.1
+    created: "2023-02-22T12:55:12.920114+01:00"
+    description: Simple example application
+    digest: 9fbe7e0085a65e5e86843d96007b6132560dc1f3ad36cf8a3336a696235db050
+    name: go-hello-world
+    type: application
+    urls:
+    - https://loafoe.github.io/helm-charts/go-hello-world-0.5.5.tgz
+    version: 0.5.5
+  - apiVersion: v2
     appVersion: v2.5.0
-    created: "2023-02-02T12:29:13.414429+01:00"
+    created: "2023-02-22T12:55:12.919348+01:00"
     description: Simple example application
     digest: 02b60adac318d8b49043385f4c97b47136a6c008dbc6fecc002df9e74710aa3a
     name: go-hello-world
@@ -13,7 +23,7 @@ entries:
     version: 0.5.4
   - apiVersion: v2
     appVersion: v2.4.3
-    created: "2023-02-02T12:29:13.413593+01:00"
+    created: "2023-02-22T12:55:12.91896+01:00"
     description: Simple example application
     digest: 349da3c743b633073a8b6a664d05558cab7e3681d00cdd62c1f7d8fda3b63620
     name: go-hello-world
@@ -23,7 +33,7 @@ entries:
     version: 0.5.3
   - apiVersion: v2
     appVersion: v2.4.1
-    created: "2023-02-02T12:29:13.409218+01:00"
+    created: "2023-02-22T12:55:12.918585+01:00"
     description: Simple example application
     digest: 2ecebbe11101a172650a198a6ae3c4a8baa552294064ad87050c5bc036d61803
     name: go-hello-world
@@ -33,7 +43,7 @@ entries:
     version: 0.5.2
   - apiVersion: v2
     appVersion: v2.3.0
-    created: "2023-02-02T12:29:13.404949+01:00"
+    created: "2023-02-22T12:55:12.918208+01:00"
     description: Simple example application
     digest: 1ea120b78436b6a051fc41c4747ae27796b84d9261c9df976555fa52838934d7
     name: go-hello-world
@@ -43,7 +53,7 @@ entries:
     version: 0.5.1
   - apiVersion: v2
     appVersion: v2.3.0
-    created: "2023-02-02T12:29:13.400712+01:00"
+    created: "2023-02-22T12:55:12.917821+01:00"
     description: Simple example application
     digest: 2621b5ae7c71cb145aba643f88c20a1520a5f219f006945f7ce4f7ea7e7b5b24
     name: go-hello-world
@@ -53,7 +63,7 @@ entries:
     version: 0.5.0
   - apiVersion: v2
     appVersion: v2.0.0
-    created: "2023-02-02T12:29:13.398037+01:00"
+    created: "2023-02-22T12:55:12.917404+01:00"
     description: Example application
     digest: 748311bf62250c37ca95d886892ab88e2eb1b542d5bffe7814172f22c7ab93ef
     name: go-hello-world
@@ -63,7 +73,7 @@ entries:
     version: 0.4.0
   - apiVersion: v2
     appVersion: v1.0.0
-    created: "2023-02-02T12:29:13.394319+01:00"
+    created: "2023-02-22T12:55:12.917018+01:00"
     description: Example application
     digest: 85339d0e016c86f107a9622777d2cee3495496affa0907113ebc06969255032d
     name: go-hello-world
@@ -71,4 +81,4 @@ entries:
     urls:
     - https://loafoe.github.io/helm-charts/go-hello-world-0.3.0.tgz
     version: 0.3.0
-generated: "2023-02-02T12:29:13.387621+01:00"
+generated: "2023-02-22T12:55:12.916248+01:00"
