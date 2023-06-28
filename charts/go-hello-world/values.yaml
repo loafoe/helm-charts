@@ -30,7 +30,7 @@ podLabels: {}
 podAnnotations: {}
 
 podSecurityContext:
-  runAsUser: 1000
+  runAsUser: 1099
 
 securityContext:
   allowPrivilegeEscalation: false
