@@ -30,16 +30,11 @@ podLabels: {}
 podAnnotations: {}
 
 podSecurityContext:
-  allowPrivilegeEscalation: false
   runAsUser: 1000
 
-securityContext: {}
-  # capabilities:
-  #   drop:
-  #   - ALL
-  # readOnlyRootFilesystem: true
-  # runAsNonRoot: true
-  # runAsUser: 1000
+securityContext:
+  allowPrivilegeEscalation: false
+  runAsNonRoot: true
 
 service:
   type: ClusterIP
