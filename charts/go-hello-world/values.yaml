@@ -29,10 +29,10 @@ podLabels: {}
 
 podAnnotations: {}
 
-podSecurityContext:
-  runAsUser: 64205
+podSecurityContext: {}
 
 securityContext:
+  runAsUser: 64205
   allowPrivilegeEscalation: false
   runAsNonRoot: true
 
