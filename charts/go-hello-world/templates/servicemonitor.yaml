@@ -1,0 +1,19 @@
+{{- if .Values.serviceMonitor.create -}}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "go-hello-world.fullname" . }}
+  labels:
+    {{- include "go-hello-world.labels" . | nindent 4 }}
+spec:
+  jobLabel: service-monitor
+  selector:
+    matchLabels:
+      service-monitor: {{ include "go-hello-world.fullname" . }}
+  namespaceSelector:
+    matchNames:
+      - {{ .Release.Namespace }}
+  endpoints:
+  - port: http-metrics
+    interval: 30s
+{{- end }}
