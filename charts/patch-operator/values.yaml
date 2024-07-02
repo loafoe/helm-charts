@@ -5,10 +5,10 @@
 replicaCount: 1
 
 image:
-  repository: loafoe.github.io/helm-charts
+  repository: quay.io/redhat-cop/patch-operator
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: v0.11.1-loafoe.1
+  tag: v0.11.1
 
 imagePullSecrets: []
 nameOverride: ""
