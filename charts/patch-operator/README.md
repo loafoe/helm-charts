@@ -1,6 +1,6 @@
 # patch-operator
 
-![Version: v0.11.2](https://img.shields.io/badge/Version-v0.11.2-informational?style=flat-square) ![AppVersion: v0.11.1](https://img.shields.io/badge/AppVersion-v0.11.1-informational?style=flat-square)
+![Version: v0.11.3](https://img.shields.io/badge/Version-v0.11.3-informational?style=flat-square) ![AppVersion: v0.11.1](https://img.shields.io/badge/AppVersion-v0.11.1-informational?style=flat-square)
 
 Helm chart that deploys patch-operator
 
@@ -19,7 +19,7 @@ Helm chart that deploys patch-operator
 | fullnameOverride | string | `""` |  |
 | image.pullPolicy | string | `"IfNotPresent"` |  |
 | image.repository | string | `"quay.io/redhat-cop/patch-operator"` |  |
-| image.tag | string | `"v0.11.1"` |  |
+| image.tag | string | `"v0.11.3"` |  |
 | imagePullSecrets | list | `[]` |  |
 | kube_rbac_proxy.image.pullPolicy | string | `"IfNotPresent"` |  |
 | kube_rbac_proxy.image.repository | string | `"quay.io/redhat-cop/kube-rbac-proxy"` |  |
