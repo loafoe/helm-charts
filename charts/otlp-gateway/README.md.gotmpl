@@ -1,0 +1,30 @@
+# otlp-gateway
+
+{{ template "chart.versionBadge" . }}{{ template "chart.typeBadge" . }}{{ template "chart.appVersionBadge" . }}
+
+OTLP gateway is a reference implementation which creates a single otlphttp endpoint that proxies Loki, Tempo and Mimir OTLP endpoints
+It supports authentication and authorization using both static and JWT tokens and tokens through the [caddy-token](https://github.com/loafoe/caddy-token) plugin.
+
+## Usage
+
+Create the values following the documentation in the next section.
+Deploy the Helm chart as an Argo CD application in the cluster. Example command using ArgoCD CLI below
+
+```
+argocd app create otlp-gateway-main \
+    --repo https://github.com/philips-internal/ien-argocd-apps \
+    --path observability/otlp-gateway \
+    --revision feature/otlp-proxy \
+    --dest-namespace starlift-observability \
+    --dest-server https://kubernetes.default.svc \
+    --values-literal-file values.yaml \
+    --sync-policy auto \
+     -N starlift-observability
+
+```
+
+{{ template "chart.requirementsSection" . }}
+
+{{ template "chart.valuesSection" . }}
+
+{{ template "helm-docs.versionFooter" . }}

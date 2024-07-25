@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: otlp-gateway
+spec:
+  replicas: {{ .Values.replicas }}
+  selector:
+    matchLabels:
+      app: otlp-gateway
+  template:
+    metadata:
+      labels:
+        app: otlp-gateway
+        app.kubernetes.io/component: otlp-gateway
+        app.kubernetes.io/instance: otlp-gateway
+        app.kubernetes.io/name: otlp-gateway
+    spec:
+      containers:
+      - name: caddy
+        image: {{ .Values.image.repository }}:{{ default .Chart.AppVersion .Values.image.tag }}
+        command:
+          - caddy
+          - run
+          - -c
+          - /etc/caddy/Caddyfile
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: caddy-config-volume
+          mountPath: /etc/caddy/Caddyfile
+          subPath: Caddyfile
+        {{- if .Values.authn.static_tokens.enabled }}
+        - name: caddy-static-tokens
+          mountPath: /var/lib/caddy
+        {{- end }}
+      {{- include "otlp-gateway.watch-container" . | nindent 6 }}
+      volumes:
+      - name: caddy-config-volume
+        configMap:
+          name: caddy-config
+      {{- if .Values.authn.static_tokens.enabled }}
+      - name: caddy-static-tokens
+        secret:
+          secretName: {{ .Values.authn.static_tokens.secret }}
+      {{- end }}

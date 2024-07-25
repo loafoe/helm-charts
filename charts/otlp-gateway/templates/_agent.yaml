@@ -1,0 +1,26 @@
+{{- define "otlp-gateway.watch-container" -}}
+{{- if .Values.configReloader.enabled -}}
+- name: config-reloader
+  image: {{ .Values.configReloader.image.registry }}/{{ .Values.configReloader.image.repository }}{{ include "config-reloader.imageId" . }}
+  {{- if .Values.configReloader.customArgs }}
+  args:
+    {{- toYaml .Values.configReloader.customArgs | nindent 4 }}
+  {{- else }}
+  args:
+    - --volume-dir=/etc/caddy
+    - --webhook-url=http://localhost:2019/load
+  {{- end }}
+  volumeMounts:
+    - name: caddy-config-volume
+      mountPath: /etc/caddy/Caddyfile
+      subPath: Caddyfile
+  {{- with .Values.configReloader.resources }}
+  resources:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  {{- with .Values.configReloader.securityContext }}
+  securityContext:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+{{- end }}
+{{- end -}}
