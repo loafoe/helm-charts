@@ -1,0 +1,46 @@
+authn:
+  oidc:
+    enabled: true
+    issuer: https://dex.us-east-1-foundation-next.bf38001f5e8aa1eb.hsp.philips.com
+  static_tokens:
+    enabled: false
+    secret: otlp-gateway-static-tokens
+
+image:
+  repository: ghcr.io/loafoe/caddy-token
+
+ingress:
+  enabled: true
+  host: otlp-gateway
+
+log:
+  level: error
+
+replicas: 3
+
+argoProject: starlift-observability
+
+targetRevision: main
+
+# Options for the extra controller used for config reloading.
+configReloader:
+  # -- Enables automatically reloading when the Alloy config changes.
+  enabled: true
+  image:
+    # -- Config reloader image registry (defaults to docker.io)
+    registry: "ghcr.io"
+    # -- Repository to get config reloader image from.
+    repository: jimmidyson/configmap-reload
+    # -- Tag of image to use for config reloading.
+    tag: v0.12.0
+    # -- SHA256 digest of image to use for config reloading (either in format "sha256:XYZ" or "XYZ"). When set, will override `configReloader.image.tag`
+    digest: ""
+  # -- Override the args passed to the container.
+  customArgs: []
+  # -- Resource requests and limits to apply to the config reloader container.
+  resources:
+    requests:
+      cpu: "1m"
+      memory: "5Mi"
+  # -- Security context to apply to the Grafana configReloader container.
+  securityContext: {}
