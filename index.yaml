@@ -3,7 +3,7 @@ entries:
   go-hello-world:
   - apiVersion: v2
     appVersion: v2.8.0
-    created: "2024-07-30T21:24:59.332039+02:00"
+    created: "2024-11-01T11:38:20.041532+01:00"
     description: Simple example application
     digest: 6fa87bd88a2dc54b7fd7b91f63062760de6c3e450f2864b64cd0aeff72aded85
     name: go-hello-world
@@ -13,7 +13,7 @@ entries:
     version: 0.11.1
   - apiVersion: v2
     appVersion: v2.8.0
-    created: "2024-07-30T21:24:59.330458+02:00"
+    created: "2024-11-01T11:38:20.040426+01:00"
     description: Simple example application
     digest: 1c45f0505150c0e2364297e74b961493211c9002ea7cfadd86e3969a6b1db929
     name: go-hello-world
@@ -23,7 +23,7 @@ entries:
     version: 0.11.0
   - apiVersion: v2
     appVersion: v2.8.0
-    created: "2024-07-30T21:24:59.329027+02:00"
+    created: "2024-11-01T11:38:20.039252+01:00"
     description: Simple example application
     digest: f1e3eeaf8bf607444696be5d94853deb8c36fe0fa042b1d7467122ebbe370aaa
     name: go-hello-world
@@ -33,7 +33,7 @@ entries:
     version: 0.10.4
   - apiVersion: v2
     appVersion: v2.7.0
-    created: "2024-07-30T21:24:59.324609+02:00"
+    created: "2024-11-01T11:38:20.038006+01:00"
     description: Simple example application
     digest: 8723e87190f1dbf01369b781bd48f771ad98cfc05b6d4bf73f6d85a5abd07aa4
     name: go-hello-world
@@ -43,7 +43,7 @@ entries:
     version: 0.10.3
   - apiVersion: v2
     appVersion: v2.7.0
-    created: "2024-07-30T21:24:59.323306+02:00"
+    created: "2024-11-01T11:38:20.036691+01:00"
     description: Simple example application
     digest: 4d90104a25c133fb6dc5def09870c40f20a8f1196a61681e8ca2bae4c7e7142d
     name: go-hello-world
@@ -53,7 +53,7 @@ entries:
     version: 0.10.2
   - apiVersion: v2
     appVersion: v2.7.0
-    created: "2024-07-30T21:24:59.321384+02:00"
+    created: "2024-11-01T11:38:20.035337+01:00"
     description: Simple example application
     digest: 32a2bca7a2e7a38303ffe9bc01de03581efa091491b1ef83f50dca674d3fda7d
     name: go-hello-world
@@ -63,7 +63,7 @@ entries:
     version: 0.10.1
   - apiVersion: v2
     appVersion: v2.7.0
-    created: "2024-07-30T21:24:59.318789+02:00"
+    created: "2024-11-01T11:38:20.033621+01:00"
     description: Simple example application
     digest: 5c5b3c48f42bb8c562de893000b61124f5c91c6cad2911c034c30922aa34c7a9
     name: go-hello-world
@@ -73,7 +73,7 @@ entries:
     version: 0.10.0
   - apiVersion: v2
     appVersion: v2.7.0
-    created: "2024-07-30T21:24:59.347697+02:00"
+    created: "2024-11-01T11:38:20.057298+01:00"
     description: Simple example application
     digest: ab675847353fac008c288320a7577ececc9879ef2f0e4553b5f2821bc5331f82
     name: go-hello-world
@@ -83,7 +83,7 @@ entries:
     version: 0.8.0
   - apiVersion: v2
     appVersion: v2.6.5
-    created: "2024-07-30T21:24:59.346554+02:00"
+    created: "2024-11-01T11:38:20.056008+01:00"
     description: Simple example application
     digest: 220584ce62456a5d0a254b46ef8d33a2a237954fce6d18f790390a135b5ef4a9
     name: go-hello-world
@@ -93,7 +93,7 @@ entries:
     version: 0.7.0
   - apiVersion: v2
     appVersion: v2.6.3
-    created: "2024-07-30T21:24:59.345404+02:00"
+    created: "2024-11-01T11:38:20.054862+01:00"
     description: Simple example application
     digest: ede6ce277075564fa9434c633db565df44886d0832640456201fc60b7f02aceb
     name: go-hello-world
@@ -103,7 +103,7 @@ entries:
     version: 0.6.1
   - apiVersion: v2
     appVersion: v2.6.2
-    created: "2024-07-30T21:24:59.344293+02:00"
+    created: "2024-11-01T11:38:20.053811+01:00"
     description: Simple example application
     digest: 39fab88d7d2749efc071cd80ed589d33715f491e8ea2e879476b654ce36e2fd5
     name: go-hello-world
@@ -113,7 +113,7 @@ entries:
     version: 0.6.0
   - apiVersion: v2
     appVersion: v2.6.1
-    created: "2024-07-30T21:24:59.343136+02:00"
+    created: "2024-11-01T11:38:20.052662+01:00"
     description: Simple example application
     digest: 1ff47dde7dbed2b0369edb5b4a2e86d02a301eaaf5dd2336d0ae9d340119da30
     name: go-hello-world
@@ -123,7 +123,7 @@ entries:
     version: 0.5.6
   - apiVersion: v2
     appVersion: v2.6.1
-    created: "2024-07-30T21:24:59.341998+02:00"
+    created: "2024-11-01T11:38:20.051528+01:00"
     description: Simple example application
     digest: 9fbe7e0085a65e5e86843d96007b6132560dc1f3ad36cf8a3336a696235db050
     name: go-hello-world
@@ -133,7 +133,7 @@ entries:
     version: 0.5.5
   - apiVersion: v2
     appVersion: v2.5.0
-    created: "2024-07-30T21:24:59.340849+02:00"
+    created: "2024-11-01T11:38:20.050221+01:00"
     description: Simple example application
     digest: 02b60adac318d8b49043385f4c97b47136a6c008dbc6fecc002df9e74710aa3a
     name: go-hello-world
@@ -143,7 +143,7 @@ entries:
     version: 0.5.4
   - apiVersion: v2
     appVersion: v2.4.3
-    created: "2024-07-30T21:24:59.339721+02:00"
+    created: "2024-11-01T11:38:20.048778+01:00"
     description: Simple example application
     digest: 349da3c743b633073a8b6a664d05558cab7e3681d00cdd62c1f7d8fda3b63620
     name: go-hello-world
@@ -153,7 +153,7 @@ entries:
     version: 0.5.3
   - apiVersion: v2
     appVersion: v2.4.1
-    created: "2024-07-30T21:24:59.338416+02:00"
+    created: "2024-11-01T11:38:20.047565+01:00"
     description: Simple example application
     digest: 2ecebbe11101a172650a198a6ae3c4a8baa552294064ad87050c5bc036d61803
     name: go-hello-world
@@ -163,7 +163,7 @@ entries:
     version: 0.5.2
   - apiVersion: v2
     appVersion: v2.3.0
-    created: "2024-07-30T21:24:59.337187+02:00"
+    created: "2024-11-01T11:38:20.046051+01:00"
     description: Simple example application
     digest: 1ea120b78436b6a051fc41c4747ae27796b84d9261c9df976555fa52838934d7
     name: go-hello-world
@@ -173,7 +173,7 @@ entries:
     version: 0.5.1
   - apiVersion: v2
     appVersion: v2.3.0
-    created: "2024-07-30T21:24:59.335979+02:00"
+    created: "2024-11-01T11:38:20.044921+01:00"
     description: Simple example application
     digest: 2621b5ae7c71cb145aba643f88c20a1520a5f219f006945f7ce4f7ea7e7b5b24
     name: go-hello-world
@@ -183,7 +183,7 @@ entries:
     version: 0.5.0
   - apiVersion: v2
     appVersion: v2.0.0
-    created: "2024-07-30T21:24:59.334713+02:00"
+    created: "2024-11-01T11:38:20.043759+01:00"
     description: Example application
     digest: 748311bf62250c37ca95d886892ab88e2eb1b542d5bffe7814172f22c7ab93ef
     name: go-hello-world
@@ -193,7 +193,7 @@ entries:
     version: 0.4.0
   - apiVersion: v2
     appVersion: v1.0.0
-    created: "2024-07-30T21:24:59.333325+02:00"
+    created: "2024-11-01T11:38:20.042633+01:00"
     description: Example application
     digest: 85339d0e016c86f107a9622777d2cee3495496affa0907113ebc06969255032d
     name: go-hello-world
@@ -204,7 +204,7 @@ entries:
   lessor:
   - apiVersion: v2
     appVersion: v0.0.12
-    created: "2024-07-30T21:24:59.350281+02:00"
+    created: "2024-11-01T11:38:20.059575+01:00"
     description: Caddy plugin to support Loki multi-tenant setups
     digest: 78cd1092a8531a096e0e134fe9bbaf16206b286b3970a8d45cf43e0c59016d31
     name: lessor
@@ -214,7 +214,7 @@ entries:
     version: 0.0.12
   - apiVersion: v2
     appVersion: v0.0.10
-    created: "2024-07-30T21:24:59.34893+02:00"
+    created: "2024-11-01T11:38:20.058418+01:00"
     description: Caddy plugin to support Loki multi-tenant setups
     digest: e0bdde90ff2643dea27d6714920f939a9db7b2412afa00d51d7967471b8ffdc7
     name: lessor
@@ -225,7 +225,7 @@ entries:
   otlp-gateway:
   - apiVersion: v1
     appVersion: v0.3.0
-    created: "2024-07-30T21:24:59.353065+02:00"
+    created: "2024-11-01T11:38:20.06239+01:00"
     description: Helm chart that deploys otlp-gateway
     digest: ff08e883724c031b7785844d747af46561d89a7c8110a531ee87a34177ab604c
     keywords:
@@ -240,7 +240,7 @@ entries:
     version: v0.0.2
   - apiVersion: v1
     appVersion: v0.3.0
-    created: "2024-07-30T21:24:59.351739+02:00"
+    created: "2024-11-01T11:38:20.060977+01:00"
     description: Helm chart that deploys otlp-gateway
     digest: 3a3378e358ff83f022dafd2f706287f16770415e5f94ca448d152171ffaf9b5e
     keywords:
@@ -256,7 +256,7 @@ entries:
   patch-operator:
   - apiVersion: v1
     appVersion: v0.11.1
-    created: "2024-07-30T21:24:59.354404+02:00"
+    created: "2024-11-01T11:38:20.063783+01:00"
     description: Helm chart that deploys patch-operator
     digest: 8bf2138bf0cd1bd638959911d9f3f64475f09b92a87e5938d4466a76ac1b4628
     keywords:
@@ -274,7 +274,7 @@ entries:
   solgate:
   - apiVersion: v2
     appVersion: v0.0.12
-    created: "2024-07-30T21:24:59.355545+02:00"
+    created: "2024-11-01T11:38:20.064867+01:00"
     description: Caddy plugin to manage (path based) access to services
     digest: 2840fd826cd7de3e657f2cd3f76260f133f5a9ab600eca603e845f95d2fe37e7
     name: solgate
@@ -282,4 +282,48 @@ entries:
     urls:
     - https://loafoe.github.io/helm-charts/solgate-0.0.12.tgz
     version: 0.0.12
-generated: "2024-07-30T21:24:59.314943+02:00"
+  tempo-distributed:
+  - apiVersion: v2
+    appVersion: 2.6.0
+    created: "2024-11-01T11:38:20.069979+01:00"
+    dependencies:
+    - alias: minio
+      condition: minio.enabled
+      name: minio
+      repository: https://charts.min.io/
+      version: 4.0.12
+    - alias: grafana-agent-operator
+      condition: metaMonitoring.grafanaAgent.installOperator
+      name: grafana-agent-operator
+      repository: https://grafana.github.io/helm-charts
+      version: 0.4.0
+    - alias: rollout_operator
+      condition: rollout_operator.enabled
+      name: rollout-operator
+      repository: https://grafana.github.io/helm-charts
+      version: 0.16.0
+    description: Grafana Tempo in MicroService mode
+    digest: 2b9f005079767637e8fb94829e2f0bdf9c89821016df151f98bfaf5fc11bc57b
+    home: https://grafana.com/docs/tempo/latest/
+    icon: https://raw.githubusercontent.com/grafana/tempo/master/docs/tempo/website/logo_and_name.png
+    maintainers:
+    - email: number101010@gmail.com
+      name: joe-elliott
+    - email: 9215868@gmail.com
+      name: swartz-k
+    - name: annanay25
+    - name: mdisibio
+    - name: mapno
+    - name: BitProcessor
+    - name: faustodavid
+    - name: zalegrala
+    - email: sheikhabubaker761@gmail.com
+      name: Sheikh-Abubaker
+    name: tempo-distributed
+    sources:
+    - https://github.com/grafana/tempo
+    type: application
+    urls:
+    - https://loafoe.github.io/helm-charts/tempo-distributed-1.20.1.tgz
+    version: 1.20.1
+generated: "2024-11-01T11:38:20.031298+01:00"
