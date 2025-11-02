@@ -1,6 +1,6 @@
 # go-hello-world
 
-![Version: 0.12.0](https://img.shields.io/badge/Version-0.12.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v2.13.0](https://img.shields.io/badge/AppVersion-v2.13.0-informational?style=flat-square)
+![Version: 0.13.0](https://img.shields.io/badge/Version-0.13.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v2.13.0](https://img.shields.io/badge/AppVersion-v2.13.0-informational?style=flat-square)
 
 Simple example application
 
@@ -17,7 +17,20 @@ Simple example application
 | autoscaling.minReplicas | int | `1` |  |
 | autoscaling.targetCPUUtilizationPercentage | int | `80` |  |
 | color | string | `"colorless"` |  |
+| environmentConfig.clusterFqdn | string | `"local"` |  |
 | fullnameOverride | string | `""` |  |
+| gateway.annotations | object | `{}` |  |
+| gateway.create | bool | `true` |  |
+| gateway.enabled | bool | `false` |  |
+| gateway.gatewayClassName | string | `""` |  |
+| gateway.httpRoute.annotations | object | `{}` |  |
+| gateway.httpRoute.hostnames[0] | string | `"{{ include \"go-hello-world.fullname\" . }}.{{ .Values.environmentConfig.clusterFqdn }}"` |  |
+| gateway.httpRoute.rules[0].matches[0].path.type | string | `"PathPrefix"` |  |
+| gateway.httpRoute.rules[0].matches[0].path.value | string | `"/"` |  |
+| gateway.listeners[0].name | string | `"http"` |  |
+| gateway.listeners[0].port | int | `80` |  |
+| gateway.listeners[0].protocol | string | `"HTTP"` |  |
+| gateway.name | string | `""` |  |
 | image.pullPolicy | string | `"IfNotPresent"` |  |
 | image.repository | string | `"ghcr.io/loafoe/go-hello-world"` |  |
 | image.tag | string | `""` |  |
