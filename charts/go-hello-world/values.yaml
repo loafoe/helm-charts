@@ -64,42 +64,24 @@ ingress:
   #    hosts:
   #      - chart-example.local
 
-gateway:
+httpRoute:
   enabled: false
-  # Gateway class to use (defaults to cilium if not specified)
-  gatewayClassName: ""
-  # Create a new Gateway resource or use an existing one
-  create: true
-  # Name of the Gateway (only used if create is true)
-  name: ""
-  # Annotations for the Gateway resource
+  # Name of the existing Gateway to attach to (required if enabled)
+  gatewayName: ""
+  # Namespace of the Gateway (optional, defaults to the same namespace as the HTTPRoute)
+  gatewayNamespace: ""
+  # Annotations for the HTTPRoute resource
   annotations: {}
-  # Listeners configuration (only used if create is true)
-  listeners:
-    - name: http
-      protocol: HTTP
-      port: 80
-      # hostname: "*.example.com"  # Optional: restrict to specific hostname pattern
-  # HTTPRoute configuration
-  httpRoute:
-    # Annotations for the HTTPRoute resource
-    annotations: {}
-    # Hostnames for the HTTPRoute (will be prefixed with the service name and suffixed with clusterFqdn)
-    hostnames:
-      - "{{ include \"go-hello-world.fullname\" . }}.{{ .Values.environmentConfig.clusterFqdn }}"
-    # Rules for routing
-    rules:
-      - matches:
-          - path:
-              type: PathPrefix
-              value: /
-        # backendRefs are automatically configured to point to the service
-    # TLS configuration (optional)
-    # tls:
-    #   - hostname: go-hello-world.local
-    #     certificateRefs:
-    #       - name: example-tls-secret
-    #         kind: Secret
+  # Hostnames for the HTTPRoute
+  hostnames:
+    - "{{ include \"go-hello-world.fullname\" . }}.{{ .Values.environmentConfig.clusterFqdn }}"
+  # Rules for routing
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      # backendRefs are automatically configured to point to the service
 
 resources:
   limits:
