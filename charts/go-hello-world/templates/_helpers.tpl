@@ -60,3 +60,27 @@ Create the name of the service account to use
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
 {{- end }}
+
+{{/*
+Generate the full HTTPS URL for the app
+Uses the first hostname from httpRoute.hostnames or ingress.hosts, or falls back to fullname.clusterFqdn
+*/}}
+{{- define "go-hello-world.url" -}}
+{{- if .Values.httpRoute.enabled -}}
+{{- if .Values.httpRoute.hostnames -}}
+{{- $hostname := first .Values.httpRoute.hostnames -}}
+{{- printf "https://%s" (tpl $hostname .) -}}
+{{- else -}}
+{{- printf "https://%s.%s" (include "go-hello-world.fullname" .) .Values.environmentConfig.clusterFqdn -}}
+{{- end -}}
+{{- else if .Values.ingress.enabled -}}
+{{- if .Values.ingress.hosts -}}
+{{- $host := first .Values.ingress.hosts -}}
+{{- printf "https://%s" $host.host -}}
+{{- else -}}
+{{- printf "https://%s.%s" (include "go-hello-world.fullname" .) .Values.environmentConfig.clusterFqdn -}}
+{{- end -}}
+{{- else -}}
+{{- printf "https://%s.%s" (include "go-hello-world.fullname" .) .Values.environmentConfig.clusterFqdn -}}
+{{- end -}}
+{{- end }}

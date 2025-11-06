@@ -7,8 +7,9 @@ metadata:
   name: {{ $fullName }}
   labels:
     {{- include "go-hello-world.labels" . | nindent 4 }}
-  {{- with .Values.httpRoute.annotations }}
   annotations:
+    link.argocd.argoproj.io/external-link: {{ include "go-hello-world.url" . | quote }}
+  {{- with .Values.httpRoute.annotations }}
     {{- toYaml . | nindent 4 }}
   {{- end }}
 spec:
