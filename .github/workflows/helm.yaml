@@ -1,9 +1,13 @@
-name: Helm Publish
+name: Helm Publish (OCI)
 
 on:
   push:
     branches:
       - main
+    paths:
+      - 'charts/**'
+      - '.github/workflows/helm.yaml'
+      - '.github/actions/action-helm-chart-repo/**'
   workflow_dispatch:
 
 jobs:
@@ -14,13 +18,13 @@ jobs:
       packages: write
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v4
 
       - name: Install Helm
         uses: azure/setup-helm@v4
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-      
+          version: v3.14.0
+
       - name: Build and Push the Helm Charts to GitHub Container Registry
         uses: ./.github/actions/action-helm-chart-repo
         with:
