@@ -1,1 +1,9 @@
 .idea/
+
+# Helm packaging artifacts (managed by CI/CD)
+*.tgz
+dist/
+
+# Chart dependencies
+charts/*/charts/
+charts/*/*.lock
