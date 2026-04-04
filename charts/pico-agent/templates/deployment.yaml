@@ -48,17 +48,33 @@ spec:
               value: {{ .Values.observability.logLevel | quote }}
             - name: LOG_FORMAT
               value: {{ .Values.observability.logFormat | quote }}
+            {{- if not .Values.spire.enabled }}
             - name: WEBHOOK_SECRET
               valueFrom:
                 secretKeyRef:
                   name: {{ include "pico-agent.secretName" . }}
                   key: secret
+            {{- end }}
             {{- if .Values.observability.otelEndpoint }}
             - name: OTEL_EXPORTER_OTLP_ENDPOINT
               value: {{ .Values.observability.otelEndpoint | quote }}
             {{- end }}
             - name: OTEL_SERVICE_NAME
               value: {{ .Values.observability.otelServiceName | quote }}
+            {{- if .Values.spire.enabled }}
+            - name: SPIRE_ENABLED
+              value: "true"
+            - name: SPIRE_AGENT_SOCKET
+              value: {{ .Values.spire.agentSocket | quote }}
+            {{- if .Values.spire.trustDomain }}
+            - name: SPIRE_TRUST_DOMAIN
+              value: {{ .Values.spire.trustDomain | quote }}
+            {{- end }}
+            {{- if .Values.spire.allowedSPIFFEIDs }}
+            - name: SPIRE_ALLOWED_SPIFFE_IDS
+              value: {{ .Values.spire.allowedSPIFFEIDs | join "," | quote }}
+            {{- end }}
+            {{- end }}
           livenessProbe:
             httpGet:
               path: /healthz
@@ -77,6 +93,19 @@ spec:
             failureThreshold: 2
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
+          {{- if .Values.spire.enabled }}
+          volumeMounts:
+            - name: spire-agent-socket
+              mountPath: /run/spire/agent/sockets
+              readOnly: true
+          {{- end }}
+      {{- if .Values.spire.enabled }}
+      volumes:
+        - name: spire-agent-socket
+          hostPath:
+            path: /run/spire/agent/sockets
+            type: Directory
+      {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
