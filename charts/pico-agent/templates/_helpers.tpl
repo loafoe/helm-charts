@@ -85,7 +85,7 @@ Determine if we need to create the secret
 Determine if we need the init job to generate the secret
 */}}
 {{- define "pico-agent.needsInitJob" -}}
-{{- if and (not .Values.webhook.existingSecret) (not .Values.webhook.secret) }}
+{{- if and (not .Values.webhook.existingSecret) (not .Values.webhook.secret) (not .Values.spire.enabled) }}
 {{- true }}
 {{- else }}
 {{- false }}
