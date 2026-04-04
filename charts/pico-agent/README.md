@@ -112,12 +112,38 @@ Configure your Grafana Alertmanager contact point:
    }
    ```
 
+4. Or wait for completion (synchronous):
+   ```json
+   {
+     "type": "pv_resize",
+     "payload": {
+       "namespace": "default",
+       "pvc_name": "my-pvc",
+       "new_size": "20Gi",
+       "wait": true,
+       "timeout": "5m"
+     }
+   }
+   ```
+
+   Response with details:
+   ```json
+   {
+     "success": true,
+     "message": "PVC default/my-pvc resized from 10Gi to 20Gi",
+     "details": {
+       "duration": "45.2s",
+       "final_size": "20Gi"
+     }
+   }
+   ```
+
 ## Image Verification
 
 The pico-agent images are signed with cosign. Verify before deployment:
 
 ```bash
-cosign verify ghcr.io/loafoe/pico-agent:v0.1.0 \
+cosign verify ghcr.io/loafoe/pico-agent:v0.2.0 \
   --certificate-identity-regexp="https://github.com/loafoe/pico-agent/*" \
   --certificate-oidc-issuer="https://token.actions.githubusercontent.com"
 ```
