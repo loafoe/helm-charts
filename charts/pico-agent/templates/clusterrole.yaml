@@ -1,0 +1,21 @@
+{{- if .Values.rbac.create -}}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: {{ include "pico-agent.fullname" . }}
+  labels:
+    {{- include "pico-agent.labels" . | nindent 4 }}
+rules:
+  # PVC operations for resize
+  - apiGroups: [""]
+    resources: ["persistentvolumeclaims"]
+    verbs: ["get", "list", "watch", "patch", "update"]
+  # PV read access for status checking
+  - apiGroups: [""]
+    resources: ["persistentvolumes"]
+    verbs: ["get", "list", "watch"]
+  # StorageClass read access to check allowVolumeExpansion
+  - apiGroups: ["storage.k8s.io"]
+    resources: ["storageclasses"]
+    verbs: ["get", "list", "watch"]
+{{- end }}

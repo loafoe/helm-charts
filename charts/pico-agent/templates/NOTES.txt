@@ -1,0 +1,40 @@
+Thank you for installing {{ .Chart.Name }}!
+
+Your release is named: {{ .Release.Name }}
+
+To get the webhook endpoint URL (from within the cluster):
+  http://{{ include "pico-agent.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.service.port }}/task
+
+{{- if eq (include "pico-agent.needsInitJob" .) "true" }}
+
+A webhook secret was auto-generated. To retrieve it:
+  kubectl get secret {{ include "pico-agent.secretName" . }} -n {{ .Release.Namespace }} -o jsonpath='{.data.secret}' | base64 -d
+{{- else if .Values.webhook.existingSecret }}
+
+Using existing secret: {{ .Values.webhook.existingSecret }}
+{{- else }}
+
+Using provided webhook secret from values.
+{{- end }}
+
+To configure Grafana Alertmanager to send webhooks:
+1. Get the webhook secret (see above)
+2. Configure your contact point with:
+   - URL: http://{{ include "pico-agent.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.service.port }}/task
+   - HTTP Method: POST
+   - Include the X-Grafana-Alertmanager-Signature header
+
+Example payload for PV resize:
+{
+  "type": "pv_resize",
+  "payload": {
+    "namespace": "default",
+    "pvc_name": "my-pvc",
+    "new_size": "20Gi"
+  }
+}
+
+To verify the installation:
+  kubectl get pods -n {{ .Release.Namespace }} -l "app.kubernetes.io/name={{ include "pico-agent.name" . }},app.kubernetes.io/instance={{ .Release.Name }}"
+
+For more information, visit: https://github.com/loafoe/pico-agent
