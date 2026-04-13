@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "pico-mcp.fullname" . }}-config
+  labels:
+    {{- include "pico-mcp.labels" . | nindent 4 }}
+data:
+  config.yaml: |
+    spire:
+      agent_socket: {{ .Values.spire.agentSocket | quote }}
+      enabled: {{ .Values.spire.enabled }}
+    agents:
+      {{- range .Values.agents }}
+      - id: {{ .id | quote }}
+        url: {{ .url | quote }}
+        jwt_audience: {{ .jwt_audience | quote }}
+      {{- end }}

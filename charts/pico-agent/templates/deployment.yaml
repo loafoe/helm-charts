@@ -66,13 +66,24 @@ spec:
               value: "true"
             - name: SPIRE_AGENT_SOCKET
               value: {{ .Values.spire.agentSocket | quote }}
-            {{- if .Values.spire.trustDomain }}
+            {{- if .Values.spire.trustDomains }}
+            - name: SPIRE_TRUST_DOMAINS
+              value: {{ .Values.spire.trustDomains | join "," | quote }}
+            {{- else if .Values.spire.trustDomain }}
             - name: SPIRE_TRUST_DOMAIN
               value: {{ .Values.spire.trustDomain | quote }}
             {{- end }}
             {{- if .Values.spire.allowedSPIFFEIDs }}
             - name: SPIRE_ALLOWED_SPIFFE_IDS
               value: {{ .Values.spire.allowedSPIFFEIDs | join "," | quote }}
+            {{- end }}
+            {{- if .Values.spire.jwt.enabled }}
+            - name: SPIRE_JWT_ENABLED
+              value: "true"
+            {{- if .Values.spire.jwt.audiences }}
+            - name: SPIRE_JWT_AUDIENCES
+              value: {{ .Values.spire.jwt.audiences | join "," | quote }}
+            {{- end }}
             {{- end }}
             {{- end }}
           livenessProbe:

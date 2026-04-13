@@ -5,6 +5,7 @@ A Helm chart for deploying [pico-agent](https://github.com/loafoe/pico-agent) - 
 ## Features
 
 - Automatic webhook secret generation (or use existing secret)
+- SPIRE/SPIFFE mTLS authentication with multi-trust-domain federation support
 - RBAC configuration for PVC resize operations
 - Prometheus ServiceMonitor support
 - OpenTelemetry tracing support
@@ -44,6 +45,13 @@ helm install pico-agent loafoe/pico-agent -n pico-agent --create-namespace \
 | `observability.logFormat` | Log format (json/text) | `json` |
 | `observability.otelEndpoint` | OpenTelemetry endpoint | `""` |
 | `serviceMonitor.enabled` | Enable Prometheus ServiceMonitor | `false` |
+| `spire.enabled` | Enable SPIRE authentication | `false` |
+| `spire.agentSocket` | SPIRE agent socket path | `unix:///run/spire/agent/sockets/spire-agent.sock` |
+| `spire.trustDomains` | List of SPIFFE trust domains (supports federation) | `[]` |
+| `spire.trustDomain` | Single trust domain (legacy, use trustDomains) | `""` |
+| `spire.allowedSPIFFEIDs` | List of allowed SPIFFE IDs | `[]` |
+| `spire.jwt.enabled` | Enable JWT-SVID authentication | `false` |
+| `spire.jwt.audiences` | Expected JWT audiences | `[]` |
 | `resources.limits.cpu` | CPU limit | `100m` |
 | `resources.limits.memory` | Memory limit | `128Mi` |
 | `resources.requests.cpu` | CPU request | `10m` |
@@ -85,6 +93,61 @@ kubectl create secret generic my-webhook-secret -n pico-agent --from-literal=sec
 helm install pico-agent loafoe/pico-agent -n pico-agent \
   --set webhook.existingSecret=my-webhook-secret
 ```
+
+## SPIRE/SPIFFE Authentication
+
+As an alternative to webhook signature verification, pico-agent supports SPIRE authentication with multi-trust-domain federation. Two modes are available:
+
+- **X.509 mTLS**: Client presents X.509 SVID certificate during TLS handshake
+- **JWT-SVID**: Client sends JWT token in `Authorization: Bearer <token>` header
+
+### X.509 mTLS (Single Trust Domain)
+
+```bash
+helm install pico-agent loafoe/pico-agent -n pico-agent --create-namespace \
+  --set spire.enabled=true \
+  --set 'spire.trustDomains[0]=example.org' \
+  --set 'spire.allowedSPIFFEIDs[0]=spiffe://example.org/ai-agent'
+```
+
+### X.509 mTLS (Federated Trust Domains)
+
+For cross-organization SPIFFE federation:
+
+```bash
+helm install pico-agent loafoe/pico-agent -n pico-agent --create-namespace \
+  --set spire.enabled=true \
+  --set 'spire.trustDomains[0]=example.org' \
+  --set 'spire.trustDomains[1]=partner.com' \
+  --set 'spire.allowedSPIFFEIDs[0]=spiffe://example.org/ai-agent' \
+  --set 'spire.allowedSPIFFEIDs[1]=spiffe://partner.com/service'
+```
+
+### JWT-SVID Authentication
+
+JWT-SVID is useful when mTLS is not feasible (e.g., through load balancers or API gateways):
+
+```bash
+helm install pico-agent loafoe/pico-agent -n pico-agent --create-namespace \
+  --set spire.enabled=true \
+  --set 'spire.trustDomains[0]=example.org' \
+  --set spire.jwt.enabled=true \
+  --set 'spire.jwt.audiences[0]=pico-agent' \
+  --set 'spire.allowedSPIFFEIDs[0]=spiffe://example.org/ai-agent'
+```
+
+Clients authenticate by including the JWT-SVID in requests:
+
+```bash
+curl -X POST http://pico-agent:8080/task \
+  -H "Authorization: Bearer <jwt-svid-token>" \
+  -H "Content-Type: application/json" \
+  -d '{"type":"pv_resize","payload":{...}}'
+```
+
+### Combined Authentication
+
+You can enable both X.509 mTLS and JWT-SVID. The server accepts either method. When SPIRE is enabled, webhook signature verification remains available as a fallback.
 
 ## Usage with Grafana Alertmanager
 
@@ -143,7 +206,7 @@ Configure your Grafana Alertmanager contact point:
 The pico-agent images are signed with cosign. Verify before deployment:
 
 ```bash
-cosign verify ghcr.io/loafoe/pico-agent:v0.2.0 \
+cosign verify ghcr.io/loafoe/pico-agent:v0.4.0 \
   --certificate-identity-regexp="https://github.com/loafoe/pico-agent/*" \
   --certificate-oidc-issuer="https://token.actions.githubusercontent.com"
 ```
