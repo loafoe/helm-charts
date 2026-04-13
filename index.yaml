@@ -313,6 +313,29 @@ entries:
     version: v0.11.3
   pico-agent:
   - apiVersion: v2
+    appVersion: v0.4.0
+    created: "2026-04-13T09:29:09.934977534Z"
+    description: A lightweight Kubernetes helper service for webhook-triggered cluster
+      operations
+    digest: b1039f03e85bf1850d546f0822f2dd29db9d59bdb0b3b52dcd55097eb25d1918
+    home: https://github.com/loafoe/pico-agent
+    keywords:
+    - kubernetes
+    - pvc
+    - resize
+    - webhook
+    - alertmanager
+    maintainers:
+    - email: andy.lo-a-foe@philips.com
+      name: Andy Lo-A-Foe
+    name: pico-agent
+    sources:
+    - https://github.com/loafoe/pico-agent
+    type: application
+    urls:
+    - https://github.com/loafoe/helm-charts/releases/download/pico-agent-0.4.0/pico-agent-0.4.0.tgz
+    version: 0.4.0
+  - apiVersion: v2
     appVersion: v0.3.0
     created: "2026-04-04T17:35:17.026812465Z"
     description: A lightweight Kubernetes helper service for webhook-triggered cluster
@@ -381,6 +404,26 @@ entries:
     urls:
     - https://github.com/loafoe/helm-charts/releases/download/pico-agent-0.1.0/pico-agent-0.1.0.tgz
     version: 0.1.0
+  pico-mcp:
+  - apiVersion: v2
+    appVersion: v0.1.0
+    created: "2026-04-13T09:29:10.167506967Z"
+    description: MCP server for managing multiple pico-agent instances
+    digest: f50d3cffda36e2432db74044cd5c83b149def9cfbb38da0903b0e2da7e3fbf77
+    home: https://github.com/loafoe/pico-mcp
+    keywords:
+    - kubernetes
+    - mcp
+    - spiffe
+    - ai
+    maintainers:
+    - email: andy.lo-a-foe@philips.com
+      name: Andy Lo-A-Foe
+    name: pico-mcp
+    type: application
+    urls:
+    - https://github.com/loafoe/helm-charts/releases/download/pico-mcp-0.1.0/pico-mcp-0.1.0.tgz
+    version: 0.1.0
   solgate:
   - apiVersion: v2
     appVersion: v0.0.12
@@ -436,4 +479,4 @@ entries:
     urls:
     - https://loafoe.github.io/helm-charts/tempo-distributed-1.20.1.tgz
     version: 1.20.1
-generated: "2026-04-04T17:35:17.026910828Z"
+generated: "2026-04-13T09:29:10.167580955Z"
