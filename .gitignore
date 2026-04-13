@@ -7,3 +7,6 @@ dist/
 # Chart dependencies
 charts/*/charts/
 charts/*/*.lock
+
+# AI
+.claude/

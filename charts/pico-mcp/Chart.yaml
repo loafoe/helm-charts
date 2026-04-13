@@ -1,0 +1,15 @@
+apiVersion: v2
+name: pico-mcp
+description: MCP server for managing multiple pico-agent instances
+type: application
+version: 0.1.0
+appVersion: "v0.1.0"
+keywords:
+  - kubernetes
+  - mcp
+  - spiffe
+  - ai
+home: https://github.com/loafoe/pico-mcp
+maintainers:
+  - name: Andy Lo-A-Foe
+    email: andy.lo-a-foe@philips.com

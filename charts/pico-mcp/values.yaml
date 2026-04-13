@@ -1,0 +1,73 @@
+# Default values for pico-mcp
+
+replicaCount: 1
+
+image:
+  repository: ghcr.io/user/pico-mcp
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion
+  tag: ""
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+# SPIRE/SPIFFE configuration
+spire:
+  # Enable SPIRE connection (required for JWT-SVID identity)
+  enabled: true
+  # SPIRE agent socket path
+  agentSocket: "unix:///run/spire/agent/sockets/spire-agent.sock"
+
+# Remote pico-agents to manage
+agents:
+  - id: "cluster-alpha"
+    url: "http://pico-agent.alpha.svc.cluster.local:8080"
+    jwt_audience: "pico-agent-alpha"
+  - id: "cluster-beta"
+    url: "http://pico-agent.beta.svc.cluster.local:8080"
+    jwt_audience: "pico-agent-beta"
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use
+  name: ""
+
+podAnnotations: {}
+
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 65532
+  runAsGroup: 65532
+  fsGroup: 65532
+  seccompProfile:
+    type: RuntimeDefault
+
+securityContext:
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: true
+  capabilities:
+    drop:
+      - ALL
+
+service:
+  type: ClusterIP
+  port: 8080
+
+resources:
+  limits:
+    cpu: 100m
+    memory: 128Mi
+  requests:
+    cpu: 10m
+    memory: 32Mi
+
+nodeSelector:
+  kubernetes.io/os: linux
+
+tolerations: []
+
+affinity: {}
