@@ -26,6 +26,9 @@ webhook:
 spire:
   # Enable SPIRE authentication (required for both mTLS and JWT modes)
   enabled: false
+  # SPIRE controller manager className (must match your SPIRE installation)
+  # Common values: "spire-release-spire", "spire-system-spire"
+  className: "spire-release-spire"
   # SPIRE agent socket path (env var passed to the application)
   agentSocket: "unix:///spiffe-workload-api/spire-agent.sock"
   # Mount path for the SPIRE socket inside the container
