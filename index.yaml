@@ -313,6 +313,29 @@ entries:
     version: v0.11.3
   pico-agent:
   - apiVersion: v2
+    appVersion: v0.7.0
+    created: "2026-04-14T16:44:58.232315393Z"
+    description: A lightweight Kubernetes helper service for webhook-triggered cluster
+      operations
+    digest: fbb9bdcb270fe2bf08bb96cd1df439f859a5b7481dac3b0a97a5424697fd49e7
+    home: https://github.com/loafoe/pico-agent
+    keywords:
+    - kubernetes
+    - pvc
+    - resize
+    - webhook
+    - alertmanager
+    maintainers:
+    - email: andy.lo-a-foe@philips.com
+      name: Andy Lo-A-Foe
+    name: pico-agent
+    sources:
+    - https://github.com/loafoe/pico-agent
+    type: application
+    urls:
+    - https://github.com/loafoe/helm-charts/releases/download/pico-agent-0.8.0/pico-agent-0.8.0.tgz
+    version: 0.8.0
+  - apiVersion: v2
     appVersion: v0.6.0
     created: "2026-04-14T16:38:44.509452159Z"
     description: A lightweight Kubernetes helper service for webhook-triggered cluster
@@ -563,4 +586,4 @@ entries:
     urls:
     - https://loafoe.github.io/helm-charts/tempo-distributed-1.20.1.tgz
     version: 1.20.1
-generated: "2026-04-14T16:38:44.509534353Z"
+generated: "2026-04-14T16:44:58.232404948Z"
