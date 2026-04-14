@@ -32,6 +32,10 @@ server:
   transport: "sse"
   # Port for SSE server
   port: 8080
+  # Base URL for SSE server (required for external access)
+  # This URL is sent to clients so they know where to POST messages
+  # Example: "https://pico-mcp.example.com"
+  baseURL: ""
 
 # Remote pico-agents to manage
 agents:
