@@ -88,16 +88,16 @@ spec:
             {{- end }}
           livenessProbe:
             httpGet:
-              path: /healthz
-              port: http
+              path: {{ if .Values.spire.enabled }}/metrics{{ else }}/healthz{{ end }}
+              port: {{ if .Values.spire.enabled }}metrics{{ else }}http{{ end }}
             initialDelaySeconds: 5
             periodSeconds: 10
             timeoutSeconds: 3
             failureThreshold: 3
           readinessProbe:
             httpGet:
-              path: /readyz
-              port: http
+              path: {{ if .Values.spire.enabled }}/metrics{{ else }}/readyz{{ end }}
+              port: {{ if .Values.spire.enabled }}metrics{{ else }}http{{ end }}
             initialDelaySeconds: 3
             periodSeconds: 5
             timeoutSeconds: 2
@@ -107,15 +107,21 @@ spec:
           {{- if .Values.spire.enabled }}
           volumeMounts:
             - name: spire-agent-socket
-              mountPath: /run/spire/agent/sockets
+              mountPath: {{ .Values.spire.socketMountPath | default "/spiffe-workload-api" }}
               readOnly: true
           {{- end }}
       {{- if .Values.spire.enabled }}
       volumes:
         - name: spire-agent-socket
+          {{- if .Values.spire.csi.enabled }}
+          csi:
+            driver: csi.spiffe.io
+            readOnly: true
+          {{- else }}
           hostPath:
-            path: /run/spire/agent/sockets
+            path: {{ .Values.spire.hostSocketPath | default "/run/spire/agent-sockets" }}
             type: Directory
+          {{- end }}
       {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
