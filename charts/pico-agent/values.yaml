@@ -120,6 +120,21 @@ tolerations: []
 
 affinity: {}
 
+# HTTPRoute configuration for Gateway API
+httpRoute:
+  # Enable HTTPRoute for external access
+  enabled: false
+  # Hostname for the route
+  hostname: ""
+  # Gateway reference
+  gatewayRef:
+    name: platform
+    namespace: kube-system
+    # Use http listener when TLS is terminated at the load balancer
+    sectionName: http-0
+  # Optional annotations
+  annotations: {}
+
 # Init job configuration for secret generation
 initJob:
   # Image for the init job (uses kubectl)
