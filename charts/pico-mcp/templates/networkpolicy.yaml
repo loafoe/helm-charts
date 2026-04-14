@@ -1,0 +1,53 @@
+{{- if .Values.networkPolicy.enabled }}
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: {{ include "pico-mcp.fullname" . }}
+  labels:
+    {{- include "pico-mcp.labels" . | nindent 4 }}
+spec:
+  endpointSelector:
+    matchLabels:
+      {{- include "pico-mcp.selectorLabels" . | nindent 6 }}
+  ingress:
+    # Allow from Cilium envoy in kube-system (gateway proxy)
+    - fromEndpoints:
+        - matchLabels:
+            k8s-app: cilium-envoy
+            io.kubernetes.pod.namespace: kube-system
+      toPorts:
+        - ports:
+            - port: "{{ .Values.service.port }}"
+              protocol: TCP
+    # Allow from within same namespace (for probes, debugging)
+    - fromEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+      toPorts:
+        - ports:
+            - port: "{{ .Values.service.port }}"
+              protocol: TCP
+  egress:
+    # Allow DNS
+    - toEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: kube-system
+      toPorts:
+        - ports:
+            - port: "53"
+              protocol: UDP
+            - port: "53"
+              protocol: TCP
+    # Allow to SPIRE agent socket (host network)
+    {{- if .Values.spire.enabled }}
+    - toEntities:
+        - host
+    {{- end }}
+    # Allow HTTPS to external pico-agents
+    - toEntities:
+        - world
+      toPorts:
+        - ports:
+            - port: "443"
+              protocol: TCP
+{{- end }}

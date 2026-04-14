@@ -38,6 +38,20 @@ spec:
             - name: http
               containerPort: {{ .Values.service.port }}
               protocol: TCP
+          {{- if eq .Values.server.transport "sse" }}
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 3
+            periodSeconds: 5
+          {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
@@ -46,7 +60,7 @@ spec:
               readOnly: true
             {{- if .Values.spire.enabled }}
             - name: spire-agent-socket
-              mountPath: {{ .Values.spire.agentSocket | replace "unix://" "" | dir }}
+              mountPath: {{ .Values.spire.socketMountPath | default "/spiffe-workload-api" }}
               readOnly: true
             {{- end }}
       volumes:
@@ -55,9 +69,15 @@ spec:
             name: {{ include "pico-mcp.fullname" . }}-config
         {{- if .Values.spire.enabled }}
         - name: spire-agent-socket
+          {{- if .Values.spire.csi.enabled }}
+          csi:
+            driver: csi.spiffe.io
+            readOnly: true
+          {{- else }}
           hostPath:
-            path: {{ .Values.spire.agentSocket | replace "unix://" "" | dir }}
+            path: {{ .Values.spire.hostSocketPath | default "/run/spire/agent-sockets" }}
             type: DirectoryOrCreate
+          {{- end }}
         {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:

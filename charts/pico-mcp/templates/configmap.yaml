@@ -6,9 +6,22 @@ metadata:
     {{- include "pico-mcp.labels" . | nindent 4 }}
 data:
   config.yaml: |
+    server:
+      transport: {{ .Values.server.transport | quote }}
+      port: {{ .Values.server.port }}
     spire:
       agent_socket: {{ .Values.spire.agentSocket | quote }}
       enabled: {{ .Values.spire.enabled }}
+    ip_allowlist:
+      enabled: {{ .Values.ipAllowlist.enabled }}
+      {{- if .Values.ipAllowlist.cidrs }}
+      cidrs:
+        {{- range .Values.ipAllowlist.cidrs }}
+        - {{ . | quote }}
+        {{- end }}
+      {{- else }}
+      cidrs: []
+      {{- end }}
     agents:
       {{- range .Values.agents }}
       - id: {{ .id | quote }}
