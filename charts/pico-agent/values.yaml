@@ -44,7 +44,10 @@ spire:
   # List of allowed SPIFFE IDs (empty = allow all from configured trust domains)
   # Example: ["spiffe://example.org/ai-agent", "spiffe://partner.com/service"]
   allowedSPIFFEIDs: []
-  # JWT-SVID authentication (alternative to mTLS, via Authorization header)
+  # Enable X.509 mTLS (requires direct pod-to-pod communication)
+  # When false, only JWT-SVID authentication is used (works behind gateways)
+  mtlsEnabled: false
+  # JWT-SVID authentication (works behind TLS-terminating gateways)
   jwt:
     # Enable JWT-SVID validation
     enabled: false

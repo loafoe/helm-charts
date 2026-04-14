@@ -77,6 +77,10 @@ spec:
             - name: SPIRE_ALLOWED_SPIFFE_IDS
               value: {{ .Values.spire.allowedSPIFFEIDs | join "," | quote }}
             {{- end }}
+            {{- if .Values.spire.mtlsEnabled }}
+            - name: SPIRE_MTLS_ENABLED
+              value: "true"
+            {{- end }}
             {{- if .Values.spire.jwt.enabled }}
             - name: SPIRE_JWT_ENABLED
               value: "true"
