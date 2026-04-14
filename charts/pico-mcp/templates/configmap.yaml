@@ -9,6 +9,9 @@ data:
     server:
       transport: {{ .Values.server.transport | quote }}
       port: {{ .Values.server.port }}
+      {{- if .Values.server.baseURL }}
+      base_url: {{ .Values.server.baseURL | quote }}
+      {{- end }}
     spire:
       agent_socket: {{ .Values.spire.agentSocket | quote }}
       enabled: {{ .Values.spire.enabled }}

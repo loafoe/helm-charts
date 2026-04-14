@@ -2,8 +2,8 @@ apiVersion: v2
 name: pico-mcp
 description: MCP server for managing multiple pico-agent instances
 type: application
-version: 0.4.0
-appVersion: "v0.3.0"
+version: 0.5.0
+appVersion: "v0.6.0"
 keywords:
   - kubernetes
   - mcp
