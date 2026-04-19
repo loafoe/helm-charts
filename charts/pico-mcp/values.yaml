@@ -150,3 +150,9 @@ alerts:
     thresholdPercent: 80
     # Cooldown between repeated alerts for same PV
     cooldown: "1h"
+
+# API configuration (see api section above for usage)
+# api:
+#   oauth2:
+#     allowedGroups: []  # Empty = all authenticated users allowed
+#     # Example: allowedGroups: ["pico-admins", "platform-team"]
