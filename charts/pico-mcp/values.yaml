@@ -120,3 +120,33 @@ ipAllowlist:
   #   - "10.0.0.0/8"
   #   - "192.168.1.0/24"
   #   - "203.0.113.42/32"
+
+# Picoclaw WebSocket client configuration
+picoclaw:
+  # Enable picoclaw integration for streaming chat
+  enabled: false
+  # WebSocket URL for picoclaw pico channel (without token query param)
+  # Example: "ws://picoclaw.picoclaw.svc.cluster.local:1337/pico/ws"
+  url: ""
+  # Secret containing the picoclaw token
+  # The secret should have a key named "token"
+  tokenSecret:
+    name: ""
+    key: "token"
+
+# Feature flags for optional functionality
+features:
+  # Enable get_resource tool for fetching arbitrary Kubernetes resources
+  getResource: false
+
+# Alerting configuration
+alerts:
+  pvUsage:
+    # Enable PV usage monitoring and alerting
+    enabled: false
+    # Polling interval (Go duration format)
+    interval: "5m"
+    # Alert threshold percentage (0-100)
+    thresholdPercent: 80
+    # Cooldown between repeated alerts for same PV
+    cooldown: "1h"
