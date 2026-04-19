@@ -32,6 +32,12 @@ data:
         issuer: {{ .Values.api.oauth2.issuer | quote }}
         audience: {{ .Values.api.oauth2.audience | quote }}
         jwks_url: {{ .Values.api.oauth2.jwksURL | quote }}
+        {{- if .Values.api.oauth2.allowedGroups }}
+        allowed_groups:
+          {{- range .Values.api.oauth2.allowedGroups }}
+          - {{ . | quote }}
+          {{- end }}
+        {{- end }}
       {{- end }}
     {{- end }}
     ip_allowlist:
