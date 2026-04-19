@@ -34,6 +34,14 @@ spec:
           args:
             - "--config"
             - "/etc/pico-mcp/config.yaml"
+          {{- if and .Values.picoclaw.enabled .Values.picoclaw.tokenSecret.name }}
+          env:
+            - name: PICOCLAW_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.picoclaw.tokenSecret.name }}
+                  key: {{ .Values.picoclaw.tokenSecret.key | default "token" }}
+          {{- end }}
           ports:
             - name: http
               containerPort: {{ .Values.service.port }}

@@ -15,6 +15,25 @@ data:
     spire:
       agent_socket: {{ .Values.spire.agentSocket | quote }}
       enabled: {{ .Values.spire.enabled }}
+    {{- if .Values.api }}
+    api:
+      port: {{ .Values.api.port | default .Values.server.port }}
+      client_id: {{ .Values.api.clientId | quote }}
+      client_secret: {{ .Values.api.clientSecret | quote }}
+      {{- if .Values.api.corsOrigins }}
+      cors_origins:
+        {{- range .Values.api.corsOrigins }}
+        - {{ . | quote }}
+        {{- end }}
+      {{- end }}
+      {{- if .Values.api.oauth2 }}
+      oauth2:
+        enabled: {{ .Values.api.oauth2.enabled }}
+        issuer: {{ .Values.api.oauth2.issuer | quote }}
+        audience: {{ .Values.api.oauth2.audience | quote }}
+        jwks_url: {{ .Values.api.oauth2.jwksURL | quote }}
+      {{- end }}
+    {{- end }}
     ip_allowlist:
       enabled: {{ .Values.ipAllowlist.enabled }}
       {{- if .Values.ipAllowlist.cidrs }}
@@ -31,3 +50,25 @@ data:
         url: {{ .url | quote }}
         jwt_audience: {{ .jwt_audience | quote }}
       {{- end }}
+    {{- if .Values.picoclaw.enabled }}
+    picoclaw:
+      url: {{ .Values.picoclaw.url | quote }}
+    {{- end }}
+    {{- if .Values.features }}
+    features:
+      get_resource: {{ .Values.features.getResource | default false }}
+    {{- end }}
+    {{- if .Values.alerts }}
+    alerts:
+      pv_usage:
+        enabled: {{ .Values.alerts.pvUsage.enabled | default false }}
+        {{- if .Values.alerts.pvUsage.interval }}
+        interval: {{ .Values.alerts.pvUsage.interval | quote }}
+        {{- end }}
+        {{- if .Values.alerts.pvUsage.thresholdPercent }}
+        threshold_percent: {{ .Values.alerts.pvUsage.thresholdPercent }}
+        {{- end }}
+        {{- if .Values.alerts.pvUsage.cooldown }}
+        cooldown: {{ .Values.alerts.pvUsage.cooldown | quote }}
+        {{- end }}
+    {{- end }}
