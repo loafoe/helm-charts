@@ -78,6 +78,13 @@ rbac:
   #     verbs: ["get", "list", "watch"]
   additionalRules: []
 
+# Feature flags for optional functionality
+features:
+  # Enable get_resource task for fetching arbitrary Kubernetes resources
+  # When enabled, also grants wildcard read RBAC permissions
+  # Note: Secret access is blocked in code for security
+  getResource: false
+
 podAnnotations: {}
 
 podSecurityContext:
