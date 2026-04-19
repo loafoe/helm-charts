@@ -88,6 +88,10 @@ spec:
             {{- end }}
             {{- end }}
             {{- end }}
+            {{- if .Values.features.getResource }}
+            - name: GET_RESOURCE_ENABLED
+              value: "true"
+            {{- end }}
           livenessProbe:
             httpGet:
               path: {{ if .Values.spire.enabled }}/metrics{{ else }}/healthz{{ end }}
