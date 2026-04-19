@@ -70,6 +70,13 @@ serviceAccount:
 rbac:
   # Create ClusterRole and ClusterRoleBinding
   create: true
+  # Additional RBAC rules to add to the ClusterRole
+  # Example:
+  # additionalRules:
+  #   - apiGroups: ["custom.example.com"]
+  #     resources: ["myresources"]
+  #     verbs: ["get", "list", "watch"]
+  additionalRules: []
 
 podAnnotations: {}
 
