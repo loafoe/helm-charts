@@ -153,6 +153,17 @@ alerts:
     # Enable auto-remediation (resize PVCs via picoclaw skill)
     autoRemediate: false
 
+# OpenTelemetry configuration
+otel:
+  # Enable OpenTelemetry instrumentation
+  enabled: false
+  # OTLP exporter endpoint (e.g., "tempo.monitoring:4317")
+  endpoint: ""
+  # Export protocol: "grpc" or "http"
+  protocol: "grpc"
+  # Capture prompt/completion content (may contain PII)
+  captureContent: false
+
 # API configuration (see api section above for usage)
 # api:
 #   oauth2:

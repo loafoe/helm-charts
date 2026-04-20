@@ -75,6 +75,20 @@ spec:
                   key: sslmode
                   optional: true
           {{- end }}
+          {{- if .Values.otel.enabled }}
+            - name: OTEL_ENABLED
+              value: "true"
+            - name: OTEL_SERVICE_NAME
+              value: {{ include "pico-mcp.fullname" . | quote }}
+            {{- if .Values.otel.endpoint }}
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              value: {{ .Values.otel.endpoint | quote }}
+            {{- end }}
+            - name: OTEL_EXPORTER_OTLP_PROTOCOL
+              value: {{ .Values.otel.protocol | quote }}
+            - name: OTEL_GENAI_CAPTURE_CONTENT
+              value: {{ .Values.otel.captureContent | quote }}
+          {{- end }}
           ports:
             - name: http
               containerPort: {{ .Values.service.port }}
