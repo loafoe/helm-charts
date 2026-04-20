@@ -1,7 +1,7 @@
 # Values for pico-mcp on dip-ce-k3s-eu cluster
 
 image:
-  tag: "v0.24.7"
+  tag: "v0.24.8"
   pullPolicy: Always
 
 replicaCount: 1
@@ -98,6 +98,7 @@ alerts:
     interval: "5m"
     thresholdPercent: 80
     cooldown: "1h"
+    autoRemediate: true
 
 # Database for persistent state
 database:
