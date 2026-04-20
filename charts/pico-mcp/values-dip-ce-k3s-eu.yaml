@@ -1,7 +1,8 @@
 # Values for pico-mcp on dip-ce-k3s-eu cluster
 
 image:
-  tag: "v0.24.1"
+  tag: "v0.24.4"
+  pullPolicy: Always
 
 replicaCount: 1
 
