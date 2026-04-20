@@ -34,13 +34,42 @@ spec:
           args:
             - "--config"
             - "/etc/pico-mcp/config.yaml"
-          {{- if and .Values.picoclaw.enabled .Values.picoclaw.tokenSecret.name }}
           env:
+          {{- if and .Values.picoclaw.enabled .Values.picoclaw.tokenSecret.name }}
             - name: PICOCLAW_TOKEN
               valueFrom:
                 secretKeyRef:
                   name: {{ .Values.picoclaw.tokenSecret.name }}
                   key: {{ .Values.picoclaw.tokenSecret.key | default "token" }}
+          {{- end }}
+          {{- if .Values.database.enabled }}
+            - name: DATABASE_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "pico-mcp.fullname" . }}-postgres-connection
+                  key: host
+            - name: DATABASE_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "pico-mcp.fullname" . }}-postgres-connection
+                  key: port
+            - name: DATABASE_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "pico-mcp.fullname" . }}-postgres-connection
+                  key: database
+            - name: DATABASE_USER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "pico-mcp.fullname" . }}-postgres-connection
+                  key: username
+            - name: DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "pico-mcp.fullname" . }}-postgres-connection
+                  key: password
+            - name: DATABASE_URL
+              value: "postgres://$(DATABASE_USER):$(DATABASE_PASSWORD)@$(DATABASE_HOST):$(DATABASE_PORT)/$(DATABASE_NAME)?sslmode=require"
           {{- end }}
           ports:
             - name: http

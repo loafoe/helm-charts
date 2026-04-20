@@ -156,3 +156,33 @@ alerts:
 #   oauth2:
 #     allowedGroups: []  # Empty = all authenticated users allowed
 #     # Example: allowedGroups: ["pico-admins", "platform-team"]
+
+# Database configuration (dip.io Postgres CRD)
+database:
+  # Enable PostgreSQL database for persistent state (chat history, alerts)
+  enabled: false
+  # Use CNPG (CloudNativePG) provider instead of RDS
+  cnpg: true
+  # Database identifier (defaults to release fullname)
+  identifier: ""
+  # Database size: small, medium, large
+  size: "small"
+  # PostgreSQL version
+  engineVersion: "16"
+  # Database name
+  databaseName: "picomcp"
+  # Master username
+  username: "picomcp"
+  # Restore from snapshot
+  restoreFromSnapshot: false
+  snapshotId: ""
+  # CNPG snapshot configuration
+  snapshots:
+    enabled: false
+    snapshotClassName: ""
+    storageClassName: ""
+  # CNPG volume snapshot restore
+  restoreFromVolumeSnapshot:
+    enabled: false
+    storageClassName: ""
+    sourceIdentifier: ""

@@ -1,0 +1,41 @@
+{{- if .Values.database.enabled }}
+apiVersion: dip.io/v1alpha1
+kind: Postgres
+metadata:
+  name: {{ include "pico-mcp.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "pico-mcp.labels" . | nindent 4 }}
+  annotations:
+    "argocd.argoproj.io/sync-wave": "-1"
+spec:
+{{- if .Values.database.cnpg }}
+  crossplane:
+    compositionSelector:
+      matchLabels:
+        provider: cnpg
+{{- end }}
+
+  parameters:
+    identifier: {{ .Values.database.identifier | default (include "pico-mcp.fullname" .) }}
+    size: {{ .Values.database.size | default "small" }}
+    engineVersion: {{ .Values.database.engineVersion | default "16" | quote }}
+    databaseName: {{ .Values.database.databaseName | default "picomcp" }}
+    masterUsername: {{ .Values.database.username | default "picomcp" }}
+  {{- if and .Values.database.cnpg .Values.database.snapshots.enabled }}
+    enableSnapshots: true
+    snapshotClassName: {{ .Values.database.snapshots.snapshotClassName | quote }}
+    storageClassName: {{ .Values.database.snapshots.storageClassName | quote }}
+  {{- end }}
+  {{- if and .Values.database.cnpg .Values.database.restoreFromVolumeSnapshot.enabled }}
+    storageClassName: {{ .Values.database.restoreFromVolumeSnapshot.storageClassName | quote }}
+    restore:
+      method: volumeSnapshot
+      sourceIdentifier: {{ .Values.database.restoreFromVolumeSnapshot.sourceIdentifier | quote }}
+  {{- else if .Values.database.restoreFromSnapshot }}
+    restore:
+      snapshotIdentifier: {{ .Values.database.snapshotId }}
+  {{- end }}
+  writeConnectionSecretToRef:
+    name: {{ include "pico-mcp.fullname" . }}-postgres-connection
+{{- end }}
