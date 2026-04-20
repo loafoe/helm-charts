@@ -1,7 +1,7 @@
 # Values for pico-agent on dip-ce-k3s-eu cluster
 
 image:
-  tag: "v0.12.0"
+  tag: "v0.15.0"
 
 replicaCount: 1
 
