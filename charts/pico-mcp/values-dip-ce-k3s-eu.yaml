@@ -104,6 +104,6 @@ database:
   cnpg: true
   identifier: "pico-mcp"
   size: "small"
-  engineVersion: "16"
+  engineVersion: "18.1"
   databaseName: "picomcp"
   username: "picomcp"
