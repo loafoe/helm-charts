@@ -68,8 +68,12 @@ spec:
                 secretKeyRef:
                   name: {{ include "pico-mcp.fullname" . }}-postgres-connection
                   key: password
-            - name: DATABASE_URL
-              value: "postgres://$(DATABASE_USER):$(DATABASE_PASSWORD)@$(DATABASE_HOST):$(DATABASE_PORT)/$(DATABASE_NAME)?sslmode=require"
+            - name: DATABASE_SSLMODE
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "pico-mcp.fullname" . }}-postgres-connection
+                  key: sslmode
+                  optional: true
           {{- end }}
           ports:
             - name: http
