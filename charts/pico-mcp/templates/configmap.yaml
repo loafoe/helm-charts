@@ -77,4 +77,5 @@ data:
         {{- if .Values.alerts.pvUsage.cooldown }}
         cooldown: {{ .Values.alerts.pvUsage.cooldown | quote }}
         {{- end }}
+        auto_remediate: {{ .Values.alerts.pvUsage.autoRemediate | default false }}
     {{- end }}
