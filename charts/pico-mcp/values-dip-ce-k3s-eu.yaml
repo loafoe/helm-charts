@@ -1,0 +1,99 @@
+# Values for pico-mcp on dip-ce-k3s-eu cluster
+
+image:
+  tag: "v0.22.0"
+
+replicaCount: 1
+
+# SPIRE enabled with CSI
+spire:
+  enabled: true
+  csi:
+    enabled: true
+
+# Server configuration
+server:
+  transport: "sse"
+  port: 8080
+  baseURL: "https://pico-mcp.dip-ce-k3s-eu.hsp.philips.com"
+
+# API with OIDC auth
+api:
+  clientId: "pico-mcp-ui"
+  clientSecret: "57fee2b72af58c510f81c822acec99d80e71e08fbc05335f89af20aec03412c6"
+  corsOrigins:
+    - "https://pico-mcp.dip-ce-k3s-eu.hsp.philips.com"
+    - "http://localhost:3000"
+  oauth2:
+    enabled: true
+    issuer: "https://issuer.obs-us-east-ct.hsp.philips.com"
+    audience: "pico-mcp-ui"
+    jwksURL: "https://issuer.obs-us-east-ct.hsp.philips.com/keys"
+    allowedGroups:
+      - "philips-internal:dip-centcom-admins"
+      - "urn:iamr:67481a52-f105-498a-98b7-d74a5ddf026a:dip-centcom-admins"
+
+# IP allowlist
+ipAllowlist:
+  enabled: true
+  cidrs:
+    - "77.165.91.167/32"
+    - "62.250.255.185/32"
+    - "10.42.0.0/16"
+
+# Picoclaw integration
+picoclaw:
+  enabled: true
+  url: "ws://picoclaw.picoclaw.svc.cluster.local:1337/pico/ws"
+  tokenSecret:
+    name: "pico-mcp-picoclaw-token"
+    key: "token"
+
+# pico-agents
+agents:
+  # Local agent on dip-ce-k3s-eu (SPIFFE JWT auth)
+  - id: "dip-ce-k3s-eu"
+    url: "http://pico-agent.pico-agent.svc.cluster.local:8080"
+    jwt_audience: "pico-agent-dip-ce-k3s-eu"
+  # Remote agents (require SPIFFE JWT auth)
+  - id: "ops-sandbox"
+    url: "https://pico-agent.b5a4-euw1.7d494ae.hsp.philips.com"
+    jwt_audience: "pico-agent-ops-sandbox"
+  - id: "obs-us-east-ct"
+    url: "https://pico-agent.obs-us-east-ct.hsp.philips.com"
+    jwt_audience: "pico-agent-obs-us-east-ct"
+  - id: "ri-obs-dev"
+    url: "https://pico-agent.003d-use1.cd87eda.hsp.philips.com"
+    jwt_audience: "pico-agent-ri-obs-dev"
+  - id: "ri-obs-ct"
+    url: "https://pico-agent.0e9a-use1.cd87eda.hsp.philips.com"
+    jwt_audience: "pico-agent-ri-obs-ct"
+
+# Service account
+serviceAccount:
+  name: "pico-mcp"
+
+# HTTPRoute for Gateway API
+httpRoute:
+  enabled: true
+  hostname: "pico-mcp.dip-ce-k3s-eu.hsp.philips.com"
+  gatewayRef:
+    name: platform
+    namespace: kube-system
+    sectionName: https
+
+# Network policy disabled
+networkPolicy:
+  enabled: false
+
+# Feature flags
+features:
+  getResource: false
+
+# PV usage alerting
+alerts:
+  pvUsage:
+    enabled: true
+    interval: "5m"
+    thresholdPercent: 80
+    cooldown: "1h"
