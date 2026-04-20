@@ -150,6 +150,8 @@ alerts:
     thresholdPercent: 80
     # Cooldown between repeated alerts for same PV
     cooldown: "1h"
+    # Enable auto-remediation (resize PVCs via picoclaw skill)
+    autoRemediate: false
 
 # API configuration (see api section above for usage)
 # api:
