@@ -168,7 +168,7 @@ database:
   # Database size: small, medium, large
   size: "small"
   # PostgreSQL version
-  engineVersion: "16"
+  engineVersion: "18.1"
   # Database name
   databaseName: "picomcp"
   # Master username
