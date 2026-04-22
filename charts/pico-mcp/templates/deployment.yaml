@@ -113,6 +113,11 @@ spec:
             - name: config
               mountPath: /etc/pico-mcp
               readOnly: true
+            {{- if and .Values.ui .Values.ui.logo .Values.ui.logo.enabled }}
+            - name: logo
+              mountPath: /etc/pico-mcp/logo
+              readOnly: true
+            {{- end }}
             {{- if .Values.spire.enabled }}
             - name: spire-agent-socket
               mountPath: {{ .Values.spire.socketMountPath | default "/spiffe-workload-api" }}
@@ -122,6 +127,11 @@ spec:
         - name: config
           configMap:
             name: {{ include "pico-mcp.fullname" . }}-config
+        {{- if and .Values.ui .Values.ui.logo .Values.ui.logo.enabled }}
+        - name: logo
+          configMap:
+            name: {{ include "pico-mcp.fullname" . }}-logo
+        {{- end }}
         {{- if .Values.spire.enabled }}
         - name: spire-agent-socket
           {{- if .Values.spire.csi.enabled }}
