@@ -170,6 +170,17 @@ otel:
 #     allowedGroups: []  # Empty = all authenticated users allowed
 #     # Example: allowedGroups: ["pico-admins", "platform-team"]
 
+# UI configuration
+ui:
+  # Custom logo configuration
+  # By default, the embedded Kubernetes logo is used
+  logo:
+    # Enable custom logo (creates ConfigMap with logo content)
+    enabled: false
+    # SVG content for the custom logo (inline in values)
+    # content: |
+    #   <svg viewBox="0 0 100 100">...</svg>
+
 # Database configuration (dip.io Postgres CRD)
 database:
   # Enable PostgreSQL database for persistent state (chat history, alerts)
