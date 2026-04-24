@@ -59,9 +59,7 @@ data:
     {{- if .Values.picoclaw.enabled }}
     picoclaw:
       url: {{ .Values.picoclaw.url | quote }}
-      {{- if .Values.picoclaw.separateMessages }}
-      separate_messages: {{ .Values.picoclaw.separateMessages }}
-      {{- end }}
+      separate_messages: {{ .Values.picoclaw.separateMessages | default false }}
     {{- end }}
     {{- if .Values.features }}
     features:
