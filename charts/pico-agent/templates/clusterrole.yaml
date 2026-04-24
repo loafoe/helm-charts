@@ -38,6 +38,10 @@ rules:
   - apiGroups: [""]
     resources: ["pods/log"]
     verbs: ["get"]
+  # Metrics API access for pod_resource_usage task
+  - apiGroups: ["metrics.k8s.io"]
+    resources: ["pods"]
+    verbs: ["get", "list"]
   # Event read access for cluster_health task
   - apiGroups: [""]
     resources: ["events"]
