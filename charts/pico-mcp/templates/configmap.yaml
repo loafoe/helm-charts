@@ -59,10 +59,6 @@ data:
     {{- if .Values.picoclaw.enabled }}
     picoclaw:
       url: {{ .Values.picoclaw.url | quote }}
-    agents:
-      defaults:
-        tool_feedback:
-          separate_messages: {{ .Values.picoclaw.separateMessages | default false }}
     {{- end }}
     {{- if .Values.features }}
     features:
