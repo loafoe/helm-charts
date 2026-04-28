@@ -1,7 +1,7 @@
 # Values for pico-mcp on dip-ce-k3s-eu cluster
 
 image:
-  tag: "v0.26.5"
+  tag: "v0.26.59"
   pullPolicy: Always
 
 replicaCount: 1
@@ -33,6 +33,11 @@ api:
     allowedGroups:
       - "philips-internal:dip-centcom-admins"
       - "urn:iamr:67481a52-f105-498a-98b7-d74a5ddf026a:dip-centcom-admins"
+
+# Admin groups for agent visibility
+adminGroups:
+  - "philips-internal:dip-centcom-admins"
+  - "urn:iamr:67481a52-f105-498a-98b7-d74a5ddf026a:dip-centcom-admins"
 
 # IP allowlist
 ipAllowlist:
@@ -99,13 +104,3 @@ alerts:
     thresholdPercent: 80
     cooldown: "1h"
     autoRemediate: true
-
-# Database for persistent state
-database:
-  enabled: true
-  cnpg: true
-  identifier: "pico-mcp"
-  size: "small"
-  engineVersion: "18.1"
-  databaseName: "picomcp"
-  username: "picomcp"
