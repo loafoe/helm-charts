@@ -50,11 +50,23 @@ data:
       {{- else }}
       cidrs: []
       {{- end }}
+    {{- if .Values.adminGroups }}
+    adminGroups:
+      {{- range .Values.adminGroups }}
+      - {{ . | quote }}
+      {{- end }}
+    {{- end }}
     agents:
       {{- range .Values.agents }}
       - id: {{ .id | quote }}
         url: {{ .url | quote }}
         jwt_audience: {{ .jwt_audience | quote }}
+        {{- if .groups }}
+        groups:
+          {{- range .groups }}
+          - {{ . | quote }}
+          {{- end }}
+        {{- end }}
       {{- end }}
     {{- if .Values.picoclaw.enabled }}
     picoclaw:
