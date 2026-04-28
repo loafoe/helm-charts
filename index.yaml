@@ -313,6 +313,29 @@ entries:
     version: v0.11.3
   pico-agent:
   - apiVersion: v2
+    appVersion: v0.21.0
+    created: "2026-04-28T15:09:49.691881994Z"
+    description: A lightweight Kubernetes helper service for webhook-triggered cluster
+      operations
+    digest: 12f8ccb05544a80bad75a3f40102a2f0851009671e01d6aa7e7c2e6bc1c08c13
+    home: https://github.com/loafoe/pico-agent
+    keywords:
+    - kubernetes
+    - pvc
+    - resize
+    - webhook
+    - alertmanager
+    maintainers:
+    - email: andy.lo-a-foe@philips.com
+      name: Andy Lo-A-Foe
+    name: pico-agent
+    sources:
+    - https://github.com/loafoe/pico-agent
+    type: application
+    urls:
+    - https://github.com/loafoe/helm-charts/releases/download/pico-agent-0.15.0/pico-agent-0.15.0.tgz
+    version: 0.15.0
+  - apiVersion: v2
     appVersion: v0.20.0
     created: "2026-04-28T14:48:30.053988865Z"
     description: A lightweight Kubernetes helper service for webhook-triggered cluster
@@ -612,6 +635,25 @@ entries:
     - https://github.com/loafoe/helm-charts/releases/download/pico-agent-0.1.0/pico-agent-0.1.0.tgz
     version: 0.1.0
   pico-mcp:
+  - apiVersion: v2
+    appVersion: v0.31.0
+    created: "2026-04-28T15:09:49.95235934Z"
+    description: MCP server for managing multiple pico-agent instances
+    digest: fce9f49c329ae90bd0dc24681aeed02c7e6b5090a628606241bfda16270f6764
+    home: https://github.com/loafoe/pico-mcp
+    keywords:
+    - kubernetes
+    - mcp
+    - spiffe
+    - ai
+    maintainers:
+    - email: andy.lo-a-foe@philips.com
+      name: Andy Lo-A-Foe
+    name: pico-mcp
+    type: application
+    urls:
+    - https://github.com/loafoe/helm-charts/releases/download/pico-mcp-0.14.0/pico-mcp-0.14.0.tgz
+    version: 0.14.0
   - apiVersion: v2
     appVersion: v0.30.0
     created: "2026-04-28T14:48:30.251171125Z"
@@ -952,4 +994,4 @@ entries:
     urls:
     - https://loafoe.github.io/helm-charts/tempo-distributed-1.20.1.tgz
     version: 1.20.1
-generated: "2026-04-28T14:48:30.251487716Z"
+generated: "2026-04-28T15:09:49.952625307Z"
