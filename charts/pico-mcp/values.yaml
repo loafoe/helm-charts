@@ -134,6 +134,12 @@ picoclaw:
     name: ""
     key: "token"
 
+# Leader election for horizontal scaling
+leaderElection:
+  # Enable leader election (required for safe scaling with picoclaw/alerts)
+  # When enabled, only the leader replica runs picoclaw and alert monitors
+  enabled: false
+
 # Feature flags for optional functionality
 features:
   # Enable get_resource tool for fetching arbitrary Kubernetes resources
