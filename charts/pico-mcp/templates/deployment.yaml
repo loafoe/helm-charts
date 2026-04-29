@@ -36,6 +36,16 @@ spec:
             - "--config"
             - "/etc/pico-mcp/config.yaml"
           env:
+          {{- if .Values.leaderElection.enabled }}
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+          {{- end }}
           {{- if and .Values.picoclaw.enabled .Values.picoclaw.tokenSecret.name }}
             - name: PICOCLAW_TOKEN
               valueFrom:
