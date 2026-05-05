@@ -50,6 +50,26 @@ rules:
   - apiGroups: ["apps"]
     resources: ["deployments", "replicasets", "daemonsets", "statefulsets"]
     verbs: ["get", "list", "watch"]
+  # Service read access for list_services task
+  - apiGroups: [""]
+    resources: ["services", "endpoints"]
+    verbs: ["get", "list", "watch"]
+  # Ingress read access for list_ingresses task
+  - apiGroups: ["networking.k8s.io"]
+    resources: ["ingresses", "ingressclasses"]
+    verbs: ["get", "list", "watch"]
+  # Gateway API read access for list_gateways and list_routes tasks
+  # (optional, graceful degradation if CRDs not installed)
+  - apiGroups: ["gateway.networking.k8s.io"]
+    resources:
+      - gateways
+      - gatewayclasses
+      - httproutes
+      - tlsroutes
+      - grpcroutes
+      - tcproutes
+      - udproutes
+    verbs: ["get", "list", "watch"]
 {{- if .Values.features.getResource }}
   # Generic resource read access for get_resource task (CRDs like Crossplane, cert-manager, etc.)
   # Note: Secret access is explicitly blocked in pico-agent code for security
