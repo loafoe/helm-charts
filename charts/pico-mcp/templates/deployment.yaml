@@ -53,6 +53,18 @@ spec:
                   name: {{ .Values.picoclaw.tokenSecret.name }}
                   key: {{ .Values.picoclaw.tokenSecret.key | default "token" }}
           {{- end }}
+          {{- if or .Values.api.clientSecretRef .Values.api.clientSecretValue }}
+            - name: OAUTH2_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  {{- if .Values.api.clientSecretRef }}
+                  name: {{ .Values.api.clientSecretRef.name }}
+                  key: {{ .Values.api.clientSecretRef.key | default "client-secret" }}
+                  {{- else }}
+                  name: {{ include "pico-mcp.fullname" . }}-oauth2
+                  key: client-secret
+                  {{- end }}
+          {{- end }}
           {{- if .Values.database.enabled }}
             - name: DATABASE_HOST
               valueFrom:
