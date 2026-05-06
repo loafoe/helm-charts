@@ -53,6 +53,13 @@ spec:
                   name: {{ .Values.picoclaw.tokenSecret.name }}
                   key: {{ .Values.picoclaw.tokenSecret.key | default "token" }}
           {{- end }}
+          {{- if and .Values.serviceIdentity.enabled .Values.serviceIdentity.privateKeySecret.name }}
+            - name: SERVICE_IDENTITY_PRIVATE_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.serviceIdentity.privateKeySecret.name }}
+                  key: {{ .Values.serviceIdentity.privateKeySecret.key | default "private-key" }}
+          {{- end }}
           {{- if or .Values.api.clientSecretRef .Values.api.clientSecretValue }}
             - name: OAUTH2_CLIENT_SECRET
               valueFrom:
