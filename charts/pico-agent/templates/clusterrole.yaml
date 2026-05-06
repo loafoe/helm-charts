@@ -58,6 +58,14 @@ rules:
   - apiGroups: ["networking.k8s.io"]
     resources: ["ingresses", "ingressclasses"]
     verbs: ["get", "list", "watch"]
+  # NetworkPolicies for list_network_policies task
+  - apiGroups: ["networking.k8s.io"]
+    resources: ["networkpolicies"]
+    verbs: ["get", "list", "watch"]
+  # EndpointSlices for list_endpoints task
+  - apiGroups: ["discovery.k8s.io"]
+    resources: ["endpointslices"]
+    verbs: ["get", "list", "watch"]
   # Gateway API read access for list_gateways and list_routes tasks
   # (optional, graceful degradation if CRDs not installed)
   - apiGroups: ["gateway.networking.k8s.io"]
