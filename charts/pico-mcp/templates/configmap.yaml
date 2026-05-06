@@ -19,7 +19,6 @@ data:
     api:
       port: {{ .Values.api.port | default .Values.server.port }}
       client_id: {{ .Values.api.clientId | quote }}
-      client_secret: {{ .Values.api.clientSecret | quote }}
       {{- if .Values.api.corsOrigins }}
       cors_origins:
         {{- range .Values.api.corsOrigins }}
