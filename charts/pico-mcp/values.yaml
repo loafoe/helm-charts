@@ -134,6 +134,24 @@ picoclaw:
     name: ""
     key: "token"
 
+# Service identity for system-to-system authentication (e.g., remediation)
+# Uses HSP IAM service credentials + OIDC token exchange
+serviceIdentity:
+  # Enable service identity authentication
+  enabled: false
+  # HSP IAM URL
+  iamURL: ""
+  # Service ID registered in IAM
+  serviceId: ""
+  # Secret containing the RSA private key (PEM format)
+  privateKeySecret:
+    name: ""
+    key: "private-key"
+  # OIDC issuer for token exchange (same as api.oauth2.issuer typically)
+  oidcIssuer: ""
+  # Audience for the exchanged token (same as api.oauth2.audience typically)
+  audience: ""
+
 # Leader election for horizontal scaling
 leaderElection:
   # Enable leader election (required for safe scaling with picoclaw/alerts)

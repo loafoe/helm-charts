@@ -71,6 +71,14 @@ data:
     picoclaw:
       url: {{ .Values.picoclaw.url | quote }}
     {{- end }}
+    {{- if .Values.serviceIdentity.enabled }}
+    service_identity:
+      enabled: true
+      iam_url: {{ .Values.serviceIdentity.iamURL | quote }}
+      service_id: {{ .Values.serviceIdentity.serviceId | quote }}
+      oidc_issuer: {{ .Values.serviceIdentity.oidcIssuer | quote }}
+      audience: {{ .Values.serviceIdentity.audience | quote }}
+    {{- end }}
     {{- if .Values.features }}
     features:
       get_resource: {{ .Values.features.getResource | default false }}
