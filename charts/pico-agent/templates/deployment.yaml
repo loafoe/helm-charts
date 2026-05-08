@@ -104,6 +104,14 @@ spec:
             - name: POD_EVICT_ENABLED
               value: "true"
             {{- end }}
+            {{- if .Values.features.podResize }}
+            - name: POD_RESIZE_ENABLED
+              value: "true"
+            - name: POD_RESIZE_PERCENTAGE_CAP
+              value: {{ .Values.features.podResizePercentageCap | quote }}
+            - name: POD_RESIZE_ABSOLUTE_CAP
+              value: {{ .Values.features.podResizeAbsoluteCap | quote }}
+            {{- end }}
           livenessProbe:
             httpGet:
               path: {{ if .Values.spire.enabled }}/metrics{{ else }}/healthz{{ end }}

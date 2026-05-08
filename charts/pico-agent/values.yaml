@@ -93,6 +93,12 @@ features:
   # Enable pod_evict task for evicting/deleting pods
   # When enabled, grants eviction create, pod delete, and read on PDBs
   podEvict: false
+  # Enable pod_resize task for in-place pod memory resize (KEP-1287)
+  # Requires Kubernetes 1.27+ with InPlacePodVerticalScaling feature gate
+  podResize: false
+  # Pod resize safety limits
+  podResizePercentageCap: 50
+  podResizeAbsoluteCap: "4Gi"
 
 podAnnotations: {}
 

@@ -119,6 +119,16 @@ rules:
     resources: ["poddisruptionbudgets"]
     verbs: ["get", "list"]
 {{- end }}
+{{- if .Values.features.podResize }}
+  # Pod patch for pod_resize task (in-place memory resize)
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["patch"]
+  # Node read for capacity check
+  - apiGroups: [""]
+    resources: ["nodes"]
+    verbs: ["get", "list"]
+{{- end }}
 {{- with .Values.rbac.additionalRules }}
 {{ toYaml . | indent 2 }}
 {{- end }}
