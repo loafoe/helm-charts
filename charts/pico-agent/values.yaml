@@ -84,6 +84,15 @@ features:
   # When enabled, also grants wildcard read RBAC permissions
   # Note: Secret access is blocked in code for security
   getResource: false
+  # Enable workload_restart task for rolling restarts of deployments/statefulsets/daemonsets
+  # When enabled, grants patch permission on apps workloads and read on PDBs
+  workloadRestart: false
+  # Enable workload_scale task for scaling deployments/statefulsets
+  # When enabled, grants scale subresource access and read on HPAs
+  workloadScale: false
+  # Enable pod_evict task for evicting/deleting pods
+  # When enabled, grants eviction create, pod delete, and read on PDBs
+  podEvict: false
 
 podAnnotations: {}
 
