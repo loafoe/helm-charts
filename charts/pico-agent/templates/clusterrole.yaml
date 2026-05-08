@@ -85,6 +85,40 @@ rules:
     resources: ["*"]
     verbs: ["get", "list", "watch"]
 {{- end }}
+{{- if .Values.features.workloadRestart }}
+  # Workload patch access for workload_restart task (rolling restart)
+  - apiGroups: ["apps"]
+    resources: ["deployments", "statefulsets", "daemonsets"]
+    verbs: ["patch"]
+  # PDB read access for restart safety checks
+  - apiGroups: ["policy"]
+    resources: ["poddisruptionbudgets"]
+    verbs: ["get", "list"]
+{{- end }}
+{{- if .Values.features.workloadScale }}
+  # Scale subresource access for workload_scale task
+  - apiGroups: ["apps"]
+    resources: ["deployments/scale", "statefulsets/scale"]
+    verbs: ["get", "patch", "update"]
+  # HPA read access for scale warnings
+  - apiGroups: ["autoscaling"]
+    resources: ["horizontalpodautoscalers"]
+    verbs: ["get", "list"]
+{{- end }}
+{{- if .Values.features.podEvict }}
+  # Pod eviction for pod_evict task
+  - apiGroups: [""]
+    resources: ["pods/eviction"]
+    verbs: ["create"]
+  # Pod delete for force eviction
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["delete"]
+  # PDB read access for eviction safety checks
+  - apiGroups: ["policy"]
+    resources: ["poddisruptionbudgets"]
+    verbs: ["get", "list"]
+{{- end }}
 {{- with .Values.rbac.additionalRules }}
 {{ toYaml . | indent 2 }}
 {{- end }}
