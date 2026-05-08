@@ -92,6 +92,18 @@ spec:
             - name: GET_RESOURCE_ENABLED
               value: "true"
             {{- end }}
+            {{- if .Values.features.workloadRestart }}
+            - name: WORKLOAD_RESTART_ENABLED
+              value: "true"
+            {{- end }}
+            {{- if .Values.features.workloadScale }}
+            - name: WORKLOAD_SCALE_ENABLED
+              value: "true"
+            {{- end }}
+            {{- if .Values.features.podEvict }}
+            - name: POD_EVICT_ENABLED
+              value: "true"
+            {{- end }}
           livenessProbe:
             httpGet:
               path: {{ if .Values.spire.enabled }}/metrics{{ else }}/healthz{{ end }}
