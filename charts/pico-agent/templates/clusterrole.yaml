@@ -120,10 +120,10 @@ rules:
     verbs: ["get", "list"]
 {{- end }}
 {{- if .Values.features.podResize }}
-  # Pod patch for pod_resize task (in-place memory resize)
+  # Pod resize subresource for pod_resize task (KEP-1287 in-place memory resize)
   - apiGroups: [""]
-    resources: ["pods"]
-    verbs: ["patch"]
+    resources: ["pods/resize"]
+    verbs: ["get", "patch", "update"]
   # Node read for capacity check
   - apiGroups: [""]
     resources: ["nodes"]
