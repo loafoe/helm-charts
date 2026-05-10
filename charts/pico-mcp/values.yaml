@@ -163,6 +163,13 @@ features:
   # Enable get_resource tool for fetching arbitrary Kubernetes resources
   getResource: false
 
+# Cron service for scheduled tasks
+cron:
+  # Enable cron service (requires picoclaw.enabled and database.enabled)
+  enabled: false
+  # Default channel for cron job messages
+  defaultChannel: "cron:system"
+
 # Alerting configuration
 alerts:
   pvUsage:

@@ -74,10 +74,11 @@ data:
     {{- if .Values.serviceIdentity.enabled }}
     service_identity:
       enabled: true
-      iam_url: {{ .Values.serviceIdentity.iamURL | quote }}
-      service_id: {{ .Values.serviceIdentity.serviceId | quote }}
+      region: {{ .Values.serviceIdentity.region | quote }}
+      environment: {{ .Values.serviceIdentity.environment | quote }}
+      oauth2_client_id: {{ .Values.serviceIdentity.oauth2ClientId | quote }}
       oidc_issuer: {{ .Values.serviceIdentity.oidcIssuer | quote }}
-      audience: {{ .Values.serviceIdentity.audience | quote }}
+      connector_id: {{ .Values.serviceIdentity.connectorId | default "iam-preview" | quote }}
     {{- end }}
     {{- if .Values.features }}
     features:
@@ -101,6 +102,11 @@ data:
     {{- if and .Values.ui .Values.ui.logo .Values.ui.logo.enabled }}
     ui:
       logo_path: "/etc/pico-mcp/logo/logo.svg"
+    {{- end }}
+    {{- if and .Values.cron .Values.cron.enabled }}
+    cron:
+      enabled: true
+      default_channel: {{ .Values.cron.defaultChannel | default "cron:system" | quote }}
     {{- end }}
 ---
 {{- if and .Values.ui .Values.ui.logo .Values.ui.logo.enabled .Values.ui.logo.content }}
