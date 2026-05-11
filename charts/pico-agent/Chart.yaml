@@ -2,14 +2,14 @@ apiVersion: v2
 name: pico-agent
 description: A lightweight Kubernetes helper service for webhook-triggered cluster operations
 type: application
-version: 0.20.2
-appVersion: "v0.31.1"
+version: 0.21.0
+appVersion: "v0.32.0"
 keywords:
   - kubernetes
   - pvc
   - resize
-  - webhook
-  - alertmanager
+  - spire
+  - spiffe
 home: https://github.com/loafoe/pico-agent
 sources:
   - https://github.com/loafoe/pico-agent
