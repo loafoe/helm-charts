@@ -2,27 +2,25 @@ Thank you for installing {{ .Chart.Name }}!
 
 Your release is named: {{ .Release.Name }}
 
-To get the webhook endpoint URL (from within the cluster):
+Endpoint URL (from within the cluster):
   http://{{ include "pico-agent.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.service.port }}/task
 
-{{- if eq (include "pico-agent.needsInitJob" .) "true" }}
-
-A webhook secret was auto-generated. To retrieve it:
-  kubectl get secret {{ include "pico-agent.secretName" . }} -n {{ .Release.Namespace }} -o jsonpath='{.data.secret}' | base64 -d
-{{- else if .Values.webhook.existingSecret }}
-
-Using existing secret: {{ .Values.webhook.existingSecret }}
+Authentication:
+  This deployment uses SPIFFE/SPIRE for workload identity authentication.
+{{- if .Values.spire.mtlsEnabled }}
+  Mode: mTLS (X.509 SVID)
+{{- else if .Values.spire.jwt.enabled }}
+  Mode: JWT-SVID
+  Audiences: {{ .Values.spire.jwt.audiences | join ", " }}
 {{- else }}
-
-Using provided webhook secret from values.
+  Mode: SPIRE enabled (configure mTLS or JWT as needed)
 {{- end }}
-
-To configure Grafana Alertmanager to send webhooks:
-1. Get the webhook secret (see above)
-2. Configure your contact point with:
-   - URL: http://{{ include "pico-agent.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.service.port }}/task
-   - HTTP Method: POST
-   - Include the X-Grafana-Alertmanager-Signature header
+{{- if .Values.spire.trustDomains }}
+  Trust domains: {{ .Values.spire.trustDomains | join ", " }}
+{{- end }}
+{{- if .Values.spire.allowedSPIFFEIDs }}
+  Allowed SPIFFE IDs: {{ .Values.spire.allowedSPIFFEIDs | join ", " }}
+{{- end }}
 
 Example payload for PV resize:
 {
