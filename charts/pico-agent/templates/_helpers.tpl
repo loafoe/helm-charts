@@ -58,36 +58,3 @@ Create the name of the service account to use
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
 {{- end }}
-
-{{/*
-Create the name of the secret to use
-*/}}
-{{- define "pico-agent.secretName" -}}
-{{- if .Values.webhook.existingSecret }}
-{{- .Values.webhook.existingSecret }}
-{{- else }}
-{{- include "pico-agent.fullname" . }}-webhook
-{{- end }}
-{{- end }}
-
-{{/*
-Determine if we need to create the secret
-*/}}
-{{- define "pico-agent.createSecret" -}}
-{{- if and (not .Values.webhook.existingSecret) .Values.webhook.secret }}
-{{- true }}
-{{- else }}
-{{- false }}
-{{- end }}
-{{- end }}
-
-{{/*
-Determine if we need the init job to generate the secret
-*/}}
-{{- define "pico-agent.needsInitJob" -}}
-{{- if and (not .Values.webhook.existingSecret) (not .Values.webhook.secret) (not .Values.spire.enabled) }}
-{{- true }}
-{{- else }}
-{{- false }}
-{{- end }}
-{{- end }}
