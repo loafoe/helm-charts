@@ -30,6 +30,12 @@ data:
         enabled: {{ .Values.api.oauth2.enabled }}
         issuer: {{ .Values.api.oauth2.issuer | quote }}
         audience: {{ .Values.api.oauth2.audience | quote }}
+        {{- if .Values.api.oauth2.additionalAudiences }}
+        additional_audiences:
+          {{- range .Values.api.oauth2.additionalAudiences }}
+          - {{ . | quote }}
+          {{- end }}
+        {{- end }}
         jwks_url: {{ .Values.api.oauth2.jwksURL | quote }}
         {{- if .Values.api.oauth2.allowedGroups }}
         allowed_groups:
@@ -79,6 +85,7 @@ data:
       oauth2_client_id: {{ .Values.serviceIdentity.oauth2ClientId | quote }}
       oidc_issuer: {{ .Values.serviceIdentity.oidcIssuer | quote }}
       connector_id: {{ .Values.serviceIdentity.connectorId | default "iam-preview" | quote }}
+      audience: {{ .Values.serviceIdentity.audience | default .Values.api.oauth2.audience | quote }}
     {{- end }}
     {{- if .Values.features }}
     features:

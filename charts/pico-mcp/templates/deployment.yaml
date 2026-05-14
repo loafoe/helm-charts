@@ -53,12 +53,22 @@ spec:
                   name: {{ .Values.picoclaw.tokenSecret.name }}
                   key: {{ .Values.picoclaw.tokenSecret.key | default "token" }}
           {{- end }}
-          {{- if and .Values.serviceIdentity.enabled .Values.serviceIdentity.privateKeySecret.name }}
-            - name: SERVICE_IDENTITY_PRIVATE_KEY
+          {{- if .Values.serviceIdentity.enabled }}
+            - name: SERVICE_IDENTITY_USERNAME
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.serviceIdentity.privateKeySecret.name }}
-                  key: {{ .Values.serviceIdentity.privateKeySecret.key | default "private-key" }}
+                  name: {{ .Values.serviceIdentity.credentialsSecret.name }}
+                  key: {{ .Values.serviceIdentity.credentialsSecret.usernameKey | default "username" }}
+            - name: SERVICE_IDENTITY_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.serviceIdentity.credentialsSecret.name }}
+                  key: {{ .Values.serviceIdentity.credentialsSecret.passwordKey | default "password" }}
+            - name: SERVICE_IDENTITY_OAUTH2_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.serviceIdentity.credentialsSecret.name }}
+                  key: {{ .Values.serviceIdentity.credentialsSecret.oauth2SecretKey | default "oauth2-secret" }}
           {{- end }}
           {{- if or .Values.api.clientSecretRef .Values.api.clientSecretValue }}
             - name: OAUTH2_CLIENT_SECRET
@@ -115,9 +125,33 @@ spec:
               value: {{ .Values.otel.endpoint | quote }}
             {{- end }}
             - name: OTEL_EXPORTER_OTLP_PROTOCOL
-              value: {{ .Values.otel.protocol | quote }}
+              value: {{ .Values.otel.protocol | default "grpc" | quote }}
             - name: OTEL_GENAI_CAPTURE_CONTENT
               value: {{ .Values.otel.captureContent | quote }}
+            {{- if .Values.otel.tracesPath }}
+            - name: OTEL_EXPORTER_OTLP_TRACES_PATH
+              value: {{ .Values.otel.tracesPath | quote }}
+            {{- end }}
+            {{- if .Values.otel.metricsPath }}
+            - name: OTEL_EXPORTER_OTLP_METRICS_PATH
+              value: {{ .Values.otel.metricsPath | quote }}
+            {{- end }}
+            {{- if .Values.otel.insecure }}
+            - name: OTEL_EXPORTER_OTLP_INSECURE
+              value: "true"
+            {{- end }}
+            {{- if .Values.otel.authSecretRef }}
+            - name: OTEL_EXPORTER_OTLP_AUTH_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.otel.authSecretRef.name }}
+                  key: {{ .Values.otel.authSecretRef.usernameKey | default "username" }}
+            - name: OTEL_EXPORTER_OTLP_AUTH_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.otel.authSecretRef.name }}
+                  key: {{ .Values.otel.authSecretRef.passwordKey | default "password" }}
+            {{- end }}
           {{- end }}
           ports:
             - name: http

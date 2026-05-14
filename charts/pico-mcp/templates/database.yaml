@@ -27,7 +27,25 @@ spec:
     snapshotClassName: {{ .Values.database.snapshots.snapshotClassName | quote }}
     storageClassName: {{ .Values.database.snapshots.storageClassName | quote }}
   {{- end }}
-  {{- if and .Values.database.cnpg .Values.database.restoreFromVolumeSnapshot.enabled }}
+  {{- if and .Values.database.cnpg (and .Values.database.barmanBackup .Values.database.barmanBackup.enabled) }}
+    barmanBackup:
+      enabled: true
+      {{- if .Values.database.barmanBackup.bucketName }}
+      bucketName: {{ .Values.database.barmanBackup.bucketName | quote }}
+      {{- end }}
+      {{- if .Values.database.barmanBackup.bucketPrefix }}
+      bucketPrefix: {{ .Values.database.barmanBackup.bucketPrefix | quote }}
+      {{- end }}
+      retentionDays: {{ .Values.database.barmanBackup.retentionDays | default 7 }}
+      compression: {{ .Values.database.barmanBackup.compression | default "gzip" | quote }}
+  {{- end }}
+  {{- if and .Values.database.cnpg .Values.database.restoreFromBarman .Values.database.restoreFromBarman.enabled }}
+    restore:
+      method: barmanObjectStore
+      {{- if .Values.database.restoreFromBarman.targetTime }}
+      targetTime: {{ .Values.database.restoreFromBarman.targetTime | quote }}
+      {{- end }}
+  {{- else if and .Values.database.cnpg .Values.database.restoreFromVolumeSnapshot.enabled }}
     storageClassName: {{ .Values.database.restoreFromVolumeSnapshot.storageClassName | quote }}
     restore:
       method: volumeSnapshot

@@ -241,3 +241,20 @@ database:
     enabled: false
     storageClassName: ""
     sourceIdentifier: ""
+  # CNPG Barman backup to S3 (continuous WAL archiving)
+  barmanBackup:
+    enabled: false
+    # S3 bucket name (defaults to ${resourcePrefix}-barman from environment config)
+    bucketName: ""
+    # Bucket prefix (defaults to ${namespace}/${clusterName})
+    bucketPrefix: ""
+    # Retention period in days
+    retentionDays: 7
+    # Compression algorithm: gzip, bzip2, snappy, none
+    compression: "gzip"
+  # CNPG restore from Barman S3 backup (point-in-time recovery)
+  restoreFromBarman:
+    enabled: false
+    # Optional: point-in-time recovery target (ISO 8601 format)
+    # If omitted, recovers to latest available WAL
+    targetTime: ""
