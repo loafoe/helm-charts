@@ -89,6 +89,9 @@ features:
   # Pod resize safety limits
   podResizePercentageCap: 50
   podResizeAbsoluteCap: "4Gi"
+  # Enable nodeclaim_delete task for Karpenter node management
+  # When enabled, grants get/delete on karpenter.sh nodeclaims
+  nodeclaimDelete: false
 
 podAnnotations: {}
 

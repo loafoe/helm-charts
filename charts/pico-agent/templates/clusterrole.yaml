@@ -129,6 +129,12 @@ rules:
     resources: ["nodes"]
     verbs: ["get", "list"]
 {{- end }}
+{{- if .Values.features.nodeclaimDelete }}
+  # NodeClaim access for nodeclaim_delete task (Karpenter node management)
+  - apiGroups: ["karpenter.sh"]
+    resources: ["nodeclaims"]
+    verbs: ["get", "delete"]
+{{- end }}
 {{- with .Values.rbac.additionalRules }}
 {{ toYaml . | indent 2 }}
 {{- end }}

@@ -105,6 +105,10 @@ spec:
             - name: POD_RESIZE_ABSOLUTE_CAP
               value: {{ .Values.features.podResizeAbsoluteCap | quote }}
             {{- end }}
+            {{- if .Values.features.nodeclaimDelete }}
+            - name: NODECLAIM_DELETE_ENABLED
+              value: "true"
+            {{- end }}
           livenessProbe:
             httpGet:
               path: {{ if .Values.spire.enabled }}/metrics{{ else }}/healthz{{ end }}

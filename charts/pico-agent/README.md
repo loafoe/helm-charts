@@ -1,216 +1,90 @@
-# pico-agent Helm Chart
+# pico-agent
 
-A Helm chart for deploying [pico-agent](https://github.com/loafoe/pico-agent) - a lightweight Kubernetes helper service for webhook-triggered cluster operations.
+![Version: 0.22.0](https://img.shields.io/badge/Version-0.22.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.33.0](https://img.shields.io/badge/AppVersion-v0.33.0-informational?style=flat-square)
 
-## Features
+A lightweight Kubernetes helper service for webhook-triggered cluster operations
 
-- Automatic webhook secret generation (or use existing secret)
-- SPIRE/SPIFFE mTLS authentication with multi-trust-domain federation support
-- RBAC configuration for PVC resize operations
-- Prometheus ServiceMonitor support
-- OpenTelemetry tracing support
-- Security-hardened deployment
+**Homepage:** <https://github.com/loafoe/pico-agent>
 
-## Installation
+## Maintainers
 
-```bash
-# Add the helm repository
-helm repo add loafoe https://loafoe.github.io/helm-charts
-helm repo update
+| Name | Email | Url |
+| ---- | ------ | --- |
+| Andy Lo-A-Foe | <andy.lo-a-foe@philips.com> |  |
 
-# Install with auto-generated secret
-helm install pico-agent loafoe/pico-agent -n pico-agent --create-namespace
+## Source Code
 
-# Or install with a specific secret
-helm install pico-agent loafoe/pico-agent -n pico-agent --create-namespace \
-  --set webhook.secret=your-secure-secret-here
-```
+* <https://github.com/loafoe/pico-agent>
 
-## Configuration
+## Values
 
-| Parameter | Description | Default |
-|-----------|-------------|---------|
-| `replicaCount` | Number of replicas | `1` |
-| `image.repository` | Image repository | `ghcr.io/loafoe/pico-agent` |
-| `image.tag` | Image tag | `""` (uses appVersion) |
-| `image.pullPolicy` | Image pull policy | `IfNotPresent` |
-| `webhook.secret` | Webhook secret (if empty, auto-generated) | `""` |
-| `webhook.existingSecret` | Name of existing secret | `""` |
-| `serviceAccount.create` | Create service account | `true` |
-| `rbac.create` | Create RBAC resources | `true` |
-| `service.type` | Service type | `ClusterIP` |
-| `service.port` | Service port | `8080` |
-| `service.metricsPort` | Metrics port | `9090` |
-| `observability.logLevel` | Log level | `info` |
-| `observability.logFormat` | Log format (json/text) | `json` |
-| `observability.otelEndpoint` | OpenTelemetry endpoint | `""` |
-| `serviceMonitor.enabled` | Enable Prometheus ServiceMonitor | `false` |
-| `spire.enabled` | Enable SPIRE authentication | `false` |
-| `spire.agentSocket` | SPIRE agent socket path | `unix:///run/spire/agent/sockets/spire-agent.sock` |
-| `spire.trustDomains` | List of SPIFFE trust domains (supports federation) | `[]` |
-| `spire.trustDomain` | Single trust domain (legacy, use trustDomains) | `""` |
-| `spire.allowedSPIFFEIDs` | List of allowed SPIFFE IDs | `[]` |
-| `spire.jwt.enabled` | Enable JWT-SVID authentication | `false` |
-| `spire.jwt.audiences` | Expected JWT audiences | `[]` |
-| `resources.limits.cpu` | CPU limit | `100m` |
-| `resources.limits.memory` | Memory limit | `128Mi` |
-| `resources.requests.cpu` | CPU request | `10m` |
-| `resources.requests.memory` | Memory request | `32Mi` |
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| affinity | object | `{}` |  |
+| features.getResource | bool | `false` |  |
+| features.nodeclaimDelete | bool | `false` |  |
+| features.podEvict | bool | `false` |  |
+| features.podResize | bool | `false` |  |
+| features.podResizeAbsoluteCap | string | `"4Gi"` |  |
+| features.podResizePercentageCap | int | `50` |  |
+| features.workloadRestart | bool | `false` |  |
+| features.workloadScale | bool | `false` |  |
+| fullnameOverride | string | `""` |  |
+| httpRoute.annotations | object | `{}` |  |
+| httpRoute.enabled | bool | `false` |  |
+| httpRoute.gatewayRef.name | string | `"platform"` |  |
+| httpRoute.gatewayRef.namespace | string | `"kube-system"` |  |
+| httpRoute.gatewayRef.sectionName | string | `"http-0"` |  |
+| httpRoute.hostname | string | `""` |  |
+| image.pullPolicy | string | `"IfNotPresent"` |  |
+| image.repository | string | `"ghcr.io/loafoe/pico-agent"` |  |
+| image.tag | string | `""` |  |
+| imagePullSecrets | list | `[]` |  |
+| nameOverride | string | `""` |  |
+| nodeSelector."kubernetes.io/os" | string | `"linux"` |  |
+| observability.logFormat | string | `"json"` |  |
+| observability.logLevel | string | `"info"` |  |
+| observability.otelEndpoint | string | `""` |  |
+| observability.otelServiceName | string | `"pico-agent"` |  |
+| podAnnotations | object | `{}` |  |
+| podSecurityContext.fsGroup | int | `65532` |  |
+| podSecurityContext.runAsGroup | int | `65532` |  |
+| podSecurityContext.runAsNonRoot | bool | `true` |  |
+| podSecurityContext.runAsUser | int | `65532` |  |
+| podSecurityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
+| rbac.additionalRules | list | `[]` |  |
+| rbac.create | bool | `true` |  |
+| replicaCount | int | `1` |  |
+| resources.limits.cpu | string | `"100m"` |  |
+| resources.limits.memory | string | `"128Mi"` |  |
+| resources.requests.cpu | string | `"10m"` |  |
+| resources.requests.memory | string | `"32Mi"` |  |
+| securityContext.allowPrivilegeEscalation | bool | `false` |  |
+| securityContext.capabilities.drop[0] | string | `"ALL"` |  |
+| securityContext.readOnlyRootFilesystem | bool | `true` |  |
+| service.metricsPort | int | `9090` |  |
+| service.port | int | `8080` |  |
+| service.type | string | `"ClusterIP"` |  |
+| serviceAccount.annotations | object | `{}` |  |
+| serviceAccount.create | bool | `true` |  |
+| serviceAccount.name | string | `""` |  |
+| serviceMonitor.enabled | bool | `false` |  |
+| serviceMonitor.interval | string | `"30s"` |  |
+| serviceMonitor.labels | object | `{}` |  |
+| serviceMonitor.scrapeTimeout | string | `"10s"` |  |
+| spire.agentSocket | string | `"unix:///spiffe-workload-api/spire-agent.sock"` |  |
+| spire.allowedSPIFFEIDs | list | `[]` |  |
+| spire.className | string | `"spire-release-spire"` |  |
+| spire.csi.enabled | bool | `true` |  |
+| spire.enabled | bool | `true` |  |
+| spire.hostSocketPath | string | `"/run/spire/agent-sockets"` |  |
+| spire.jwt.audiences | list | `[]` |  |
+| spire.jwt.enabled | bool | `false` |  |
+| spire.mtlsEnabled | bool | `false` |  |
+| spire.socketMountPath | string | `"/spiffe-workload-api"` |  |
+| spire.trustDomain | string | `""` |  |
+| spire.trustDomains | list | `[]` |  |
+| tolerations | list | `[]` |  |
 
-## Webhook Secret Management
-
-The chart supports three modes for webhook secret management:
-
-### 1. Auto-generated (default)
-
-If neither `webhook.secret` nor `webhook.existingSecret` is provided, the chart creates a Kubernetes Job that generates a random secret.
-
-```bash
-helm install pico-agent loafoe/pico-agent -n pico-agent --create-namespace
-
-# Retrieve the generated secret
-kubectl get secret pico-agent-webhook -n pico-agent -o jsonpath='{.data.secret}' | base64 -d
-```
-
-### 2. Explicit secret
-
-Provide the secret directly in values:
-
-```bash
-helm install pico-agent loafoe/pico-agent -n pico-agent --create-namespace \
-  --set webhook.secret=my-super-secret-value
-```
-
-### 3. Existing secret
-
-Reference a pre-existing Kubernetes secret:
-
-```bash
-# Create secret first
-kubectl create secret generic my-webhook-secret -n pico-agent --from-literal=secret=my-value
-
-# Install chart
-helm install pico-agent loafoe/pico-agent -n pico-agent \
-  --set webhook.existingSecret=my-webhook-secret
-```
-
-## SPIRE/SPIFFE Authentication
-
-As an alternative to webhook signature verification, pico-agent supports SPIRE authentication with multi-trust-domain federation. Two modes are available:
-
-- **X.509 mTLS**: Client presents X.509 SVID certificate during TLS handshake
-- **JWT-SVID**: Client sends JWT token in `Authorization: Bearer <token>` header
-
-### X.509 mTLS (Single Trust Domain)
-
-```bash
-helm install pico-agent loafoe/pico-agent -n pico-agent --create-namespace \
-  --set spire.enabled=true \
-  --set 'spire.trustDomains[0]=example.org' \
-  --set 'spire.allowedSPIFFEIDs[0]=spiffe://example.org/ai-agent'
-```
-
-### X.509 mTLS (Federated Trust Domains)
-
-For cross-organization SPIFFE federation:
-
-```bash
-helm install pico-agent loafoe/pico-agent -n pico-agent --create-namespace \
-  --set spire.enabled=true \
-  --set 'spire.trustDomains[0]=example.org' \
-  --set 'spire.trustDomains[1]=partner.com' \
-  --set 'spire.allowedSPIFFEIDs[0]=spiffe://example.org/ai-agent' \
-  --set 'spire.allowedSPIFFEIDs[1]=spiffe://partner.com/service'
-```
-
-### JWT-SVID Authentication
-
-JWT-SVID is useful when mTLS is not feasible (e.g., through load balancers or API gateways):
-
-```bash
-helm install pico-agent loafoe/pico-agent -n pico-agent --create-namespace \
-  --set spire.enabled=true \
-  --set 'spire.trustDomains[0]=example.org' \
-  --set spire.jwt.enabled=true \
-  --set 'spire.jwt.audiences[0]=pico-agent' \
-  --set 'spire.allowedSPIFFEIDs[0]=spiffe://example.org/ai-agent'
-```
-
-Clients authenticate by including the JWT-SVID in requests:
-
-```bash
-curl -X POST http://pico-agent:8080/task \
-  -H "Authorization: Bearer <jwt-svid-token>" \
-  -H "Content-Type: application/json" \
-  -d '{"type":"pv_resize","payload":{...}}'
-```
-
-### Combined Authentication
-
-You can enable both X.509 mTLS and JWT-SVID. The server accepts either method. When SPIRE is enabled, webhook signature verification remains available as a fallback.
-
-## Usage with Grafana Alertmanager
-
-Configure your Grafana Alertmanager contact point:
-
-1. Get the webhook secret:
-   ```bash
-   kubectl get secret pico-agent-webhook -n pico-agent -o jsonpath='{.data.secret}' | base64 -d
-   ```
-
-2. Create a webhook contact point in Grafana with:
-   - **URL**: `http://pico-agent.pico-agent.svc.cluster.local:8080/task`
-   - **HTTP Method**: POST
-   - **Authorization Header**: Configure HMAC signing with the secret
-
-3. Send a PV resize payload:
-   ```json
-   {
-     "type": "pv_resize",
-     "payload": {
-       "namespace": "default",
-       "pvc_name": "my-pvc",
-       "new_size": "20Gi"
-     }
-   }
-   ```
-
-4. Or wait for completion (synchronous):
-   ```json
-   {
-     "type": "pv_resize",
-     "payload": {
-       "namespace": "default",
-       "pvc_name": "my-pvc",
-       "new_size": "20Gi",
-       "wait": true,
-       "timeout": "5m"
-     }
-   }
-   ```
-
-   Response with details:
-   ```json
-   {
-     "success": true,
-     "message": "PVC default/my-pvc resized from 10Gi to 20Gi",
-     "details": {
-       "duration": "45.2s",
-       "final_size": "20Gi"
-     }
-   }
-   ```
-
-## Image Verification
-
-The pico-agent images are signed with cosign. Verify before deployment:
-
-```bash
-cosign verify ghcr.io/loafoe/pico-agent:v0.4.0 \
-  --certificate-identity-regexp="https://github.com/loafoe/pico-agent/*" \
-  --certificate-oidc-issuer="https://token.actions.githubusercontent.com"
-```
-
-## License
-
-MIT License - Copyright (c) 2026 Andy Lo-A-Foe
+----------------------------------------------
+Autogenerated from chart metadata using [helm-docs v1.14.2](https://github.com/norwoodj/helm-docs/releases/v1.14.2)
