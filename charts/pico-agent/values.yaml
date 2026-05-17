@@ -92,6 +92,9 @@ features:
   # Enable nodeclaim_delete task for Karpenter node management
   # When enabled, grants get/delete on karpenter.sh nodeclaims
   nodeclaimDelete: false
+  # Enable Argo CD application introspection
+  # When enabled, grants get/list/watch on argoproj.io applications
+  argocd: false
 
 podAnnotations: {}
 

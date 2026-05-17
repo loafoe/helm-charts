@@ -109,6 +109,10 @@ spec:
             - name: NODECLAIM_DELETE_ENABLED
               value: "true"
             {{- end }}
+            {{- if .Values.features.argocd }}
+            - name: FEATURES_ARGOCD
+              value: "true"
+            {{- end }}
           livenessProbe:
             httpGet:
               path: {{ if .Values.spire.enabled }}/metrics{{ else }}/healthz{{ end }}

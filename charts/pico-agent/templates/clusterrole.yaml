@@ -140,6 +140,12 @@ rules:
     resources: ["nodeclaims"]
     verbs: ["delete"]
 {{- end }}
+{{- if .Values.features.argocd }}
+  # Argo CD application read access for argocd introspection
+  - apiGroups: ["argoproj.io"]
+    resources: ["applications"]
+    verbs: ["get", "list", "watch"]
+{{- end }}
 {{- with .Values.rbac.additionalRules }}
 {{ toYaml . | indent 2 }}
 {{- end }}
