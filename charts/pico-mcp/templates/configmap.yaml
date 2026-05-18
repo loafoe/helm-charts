@@ -115,6 +115,10 @@ data:
       enabled: true
       default_channel: {{ .Values.cron.defaultChannel | default "cron:system" | quote }}
     {{- end }}
+    {{- if .Values.leaderElection.enabled }}
+    leaderElection:
+      enabled: true
+    {{- end }}
 ---
 {{- if and .Values.ui .Values.ui.logo .Values.ui.logo.enabled .Values.ui.logo.content }}
 apiVersion: v1
