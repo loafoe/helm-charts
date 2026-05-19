@@ -78,10 +78,10 @@ rules:
       - tcproutes
       - udproutes
     verbs: ["get", "list", "watch"]
-  # NodeClaim read access for list_nodeclaims task (Karpenter)
+  # NodeClaim and NodePool read access for Karpenter tasks
   # (optional, graceful degradation if CRDs not installed)
   - apiGroups: ["karpenter.sh"]
-    resources: ["nodeclaims"]
+    resources: ["nodeclaims", "nodepools"]
     verbs: ["get", "list", "watch"]
   # HPA read access for list_workloads include_hpas option
   - apiGroups: ["autoscaling"]
