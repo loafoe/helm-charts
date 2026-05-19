@@ -1,0 +1,16 @@
+apiVersion: v2
+name: go-ocpp-server
+description: OCPP 1.6-J Central System for EV chargers
+type: application
+version: 0.1.0
+appVersion: "v0.1.0"
+keywords:
+  - ocpp
+  - ev
+  - charger
+  - wallbox
+  - websocket
+home: https://github.com/loafoe/go-occp-server
+maintainers:
+  - name: Andy Lo-A-Foe
+    email: andy.lo-a-foe@philips.com

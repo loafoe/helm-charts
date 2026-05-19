@@ -1,0 +1,78 @@
+replicaCount: 1
+
+image:
+  repository: ghcr.io/loafoe/go-ocpp-server
+  pullPolicy: IfNotPresent
+  tag: ""
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+# Server configuration
+server:
+  # Port for OCPP WebSocket connections (chargers connect here)
+  ocppPort: 8080
+  # Port for HTTP API (internal management)
+  apiPort: 8081
+
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
+
+podAnnotations: {}
+
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 65532
+  runAsGroup: 65532
+  fsGroup: 65532
+  seccompProfile:
+    type: RuntimeDefault
+
+securityContext:
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: true
+  capabilities:
+    drop:
+      - ALL
+
+# Service for OCPP WebSocket (public facing, for chargers)
+service:
+  type: ClusterIP
+  port: 8080
+
+# Internal API service (not exposed externally)
+apiService:
+  type: ClusterIP
+  port: 8081
+
+resources:
+  limits:
+    cpu: 100m
+    memory: 128Mi
+  requests:
+    cpu: 10m
+    memory: 32Mi
+
+nodeSelector:
+  kubernetes.io/os: linux
+
+tolerations: []
+
+affinity: {}
+
+# HTTPRoute for OCPP WebSocket endpoint (Gateway API)
+httpRoute:
+  enabled: false
+  hostname: ""
+  gatewayRef:
+    name: platform
+    namespace: kube-system
+    sectionName: https
+  annotations: {}
+
+# Network policy (Cilium)
+networkPolicy:
+  enabled: false
