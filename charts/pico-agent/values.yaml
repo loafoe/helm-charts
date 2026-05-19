@@ -148,6 +148,20 @@ tolerations: []
 
 affinity: {}
 
+# Vertical Pod Autoscaler
+vpa:
+  enabled: false
+  updateMode: InPlaceOrRecreate
+  # Enable in-place resize (requires K8s 1.27+ with InPlacePodVerticalScaling feature gate)
+  inPlaceResize: false
+  minReplicas: 1
+  minAllowed:
+    cpu: 5m
+    memory: 16Mi
+  maxAllowed:
+    cpu: 500m
+    memory: 512Mi
+
 # HTTPRoute configuration for Gateway API
 httpRoute:
   # Enable HTTPRoute for external access
