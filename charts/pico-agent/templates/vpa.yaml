@@ -12,7 +12,7 @@ spec:
     name: {{ include "pico-agent.fullname" . }}
   updatePolicy:
     minReplicas: {{ .Values.vpa.minReplicas }}
-    updateMode: {{ .Values.vpa.updateMode }}
+    updateMode: {{ .Values.vpa.updateMode | quote }}
   resourcePolicy:
     containerPolicies:
       - containerName: '*'

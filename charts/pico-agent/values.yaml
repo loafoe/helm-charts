@@ -160,7 +160,7 @@ vpa:
     memory: 16Mi
   maxAllowed:
     cpu: 500m
-    memory: 512Mi
+    memory: 1Gi
 
 # HTTPRoute configuration for Gateway API
 httpRoute:
