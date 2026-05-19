@@ -16,6 +16,31 @@ server:
   # Port for HTTP API (internal management)
   apiPort: 8081
 
+# Authentication configuration
+auth:
+  # Enable charge point authentication
+  enabled: false
+  # Use existing secret (must have key "credentials.json")
+  existingSecret: ""
+  # Or provide credentials directly (creates a secret)
+  # Format: {"chargePointId": "password", ...}
+  credentials: {}
+  # Example:
+  # credentials:
+  #   wallbox1: "secretpassword123"
+  #   wallbox2: "anotherpassword456"
+
+# Credential provisioning job
+provisioning:
+  # Enable provisioning job to generate credentials
+  enabled: false
+  # Number of charge point credentials to generate
+  count: 1
+  # Prefix for charge point IDs (e.g., "wallbox" -> wallbox-1, wallbox-2, ...)
+  idPrefix: "charger"
+  # Password length
+  passwordLength: 32
+
 serviceAccount:
   create: true
   annotations: {}
@@ -73,6 +98,6 @@ httpRoute:
     sectionName: https
   annotations: {}
 
-# Network policy (Cilium)
+# Network policy
 networkPolicy:
   enabled: false

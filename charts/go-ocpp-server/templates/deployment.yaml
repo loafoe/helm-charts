@@ -34,6 +34,9 @@ spec:
           args:
             - "--ocpp-port={{ .Values.server.ocppPort }}"
             - "--api-port={{ .Values.server.apiPort }}"
+            {{- if .Values.auth.enabled }}
+            - "--credentials-file=/etc/ocpp/credentials.json"
+            {{- end }}
           ports:
             - name: ocpp
               containerPort: {{ .Values.server.ocppPort }}
@@ -53,6 +56,22 @@ spec:
             periodSeconds: 5
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
+          {{- if .Values.auth.enabled }}
+          volumeMounts:
+            - name: credentials
+              mountPath: /etc/ocpp
+              readOnly: true
+          {{- end }}
+      {{- if .Values.auth.enabled }}
+      volumes:
+        - name: credentials
+          secret:
+            {{- if .Values.auth.existingSecret }}
+            secretName: {{ .Values.auth.existingSecret }}
+            {{- else }}
+            secretName: {{ include "go-ocpp-server.fullname" . }}-credentials
+            {{- end }}
+      {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

@@ -1,0 +1,128 @@
+{{- if .Values.provisioning.enabled }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "go-ocpp-server.fullname" . }}-provision
+  labels:
+    {{- include "go-ocpp-server.labels" . | nindent 4 }}
+  annotations:
+    helm.sh/hook: pre-install,pre-upgrade
+    helm.sh/hook-weight: "-5"
+    helm.sh/hook-delete-policy: before-hook-creation
+spec:
+  ttlSecondsAfterFinished: 300
+  template:
+    metadata:
+      labels:
+        {{- include "go-ocpp-server.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: provisioning
+    spec:
+      restartPolicy: OnFailure
+      serviceAccountName: {{ include "go-ocpp-server.fullname" . }}-provisioner
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65532
+        runAsGroup: 65532
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: provision
+          image: bitnami/kubectl:latest
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+          command:
+            - /bin/bash
+            - -c
+            - |
+              set -e
+
+              SECRET_NAME="{{ include "go-ocpp-server.fullname" . }}-credentials"
+              NAMESPACE="{{ .Release.Namespace }}"
+
+              # Check if secret already exists
+              if kubectl get secret "$SECRET_NAME" -n "$NAMESPACE" >/dev/null 2>&1; then
+                echo "Secret $SECRET_NAME already exists, skipping generation"
+                exit 0
+              fi
+
+              echo "Generating credentials for {{ .Values.provisioning.count }} charge point(s)..."
+
+              # Generate credentials JSON
+              CREDS="{"
+              for i in $(seq 1 {{ .Values.provisioning.count }}); do
+                ID="{{ .Values.provisioning.idPrefix }}-$i"
+                # Generate random password
+                PASSWORD=$(head -c {{ .Values.provisioning.passwordLength }} /dev/urandom | base64 | tr -dc 'a-zA-Z0-9' | head -c {{ .Values.provisioning.passwordLength }})
+                if [ $i -gt 1 ]; then
+                  CREDS="$CREDS,"
+                fi
+                CREDS="$CREDS\"$ID\":\"$PASSWORD\""
+                echo "Generated credentials for: $ID"
+              done
+              CREDS="$CREDS}"
+
+              # Create secret
+              kubectl create secret generic "$SECRET_NAME" \
+                --namespace "$NAMESPACE" \
+                --from-literal=credentials.json="$CREDS"
+
+              echo "Secret $SECRET_NAME created successfully"
+              echo ""
+              echo "To view the generated credentials:"
+              echo "  kubectl get secret $SECRET_NAME -n $NAMESPACE -o jsonpath='{.data.credentials\.json}' | base64 -d | jq"
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: tmp
+          emptyDir: {}
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ include "go-ocpp-server.fullname" . }}-provisioner
+  labels:
+    {{- include "go-ocpp-server.labels" . | nindent 4 }}
+  annotations:
+    helm.sh/hook: pre-install,pre-upgrade
+    helm.sh/hook-weight: "-10"
+    helm.sh/hook-delete-policy: before-hook-creation,hook-succeeded
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: {{ include "go-ocpp-server.fullname" . }}-provisioner
+  labels:
+    {{- include "go-ocpp-server.labels" . | nindent 4 }}
+  annotations:
+    helm.sh/hook: pre-install,pre-upgrade
+    helm.sh/hook-weight: "-10"
+    helm.sh/hook-delete-policy: before-hook-creation,hook-succeeded
+rules:
+  - apiGroups: [""]
+    resources: ["secrets"]
+    verbs: ["get", "create"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{ include "go-ocpp-server.fullname" . }}-provisioner
+  labels:
+    {{- include "go-ocpp-server.labels" . | nindent 4 }}
+  annotations:
+    helm.sh/hook: pre-install,pre-upgrade
+    helm.sh/hook-weight: "-10"
+    helm.sh/hook-delete-policy: before-hook-creation,hook-succeeded
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: {{ include "go-ocpp-server.fullname" . }}-provisioner
+subjects:
+  - kind: ServiceAccount
+    name: {{ include "go-ocpp-server.fullname" . }}-provisioner
+    namespace: {{ .Release.Namespace }}
+{{- end }}
