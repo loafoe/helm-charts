@@ -95,6 +95,10 @@ features:
   # Enable Argo CD application introspection
   # When enabled, grants get/list/watch on argoproj.io applications
   argocd: false
+  # Enable http_request task for making HTTP requests to cluster-internal services
+  # Useful for admin endpoints, ring management, config reloads, debugging
+  # Only allows requests to cluster-internal addresses (pods, services)
+  httpRequest: false
 
 podAnnotations: {}
 

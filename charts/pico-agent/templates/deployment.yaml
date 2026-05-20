@@ -113,6 +113,10 @@ spec:
             - name: FEATURES_ARGOCD
               value: "true"
             {{- end }}
+            {{- if .Values.features.httpRequest }}
+            - name: HTTP_REQUEST_ENABLED
+              value: "true"
+            {{- end }}
           livenessProbe:
             httpGet:
               path: {{ if .Values.spire.enabled }}/metrics{{ else }}/healthz{{ end }}
