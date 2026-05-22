@@ -117,6 +117,14 @@ spec:
             - name: HTTP_REQUEST_ENABLED
               value: "true"
             {{- end }}
+            {{- if .Values.features.pvResize }}
+            - name: PV_RESIZE_ENABLED
+              value: "true"
+            {{- end }}
+            {{- if .Values.features.autoRemediate }}
+            - name: AUTO_REMEDIATE_ENABLED
+              value: "true"
+            {{- end }}
           livenessProbe:
             httpGet:
               path: {{ if .Values.spire.enabled }}/metrics{{ else }}/healthz{{ end }}
