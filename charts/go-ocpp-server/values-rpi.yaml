@@ -1,0 +1,24 @@
+auth:
+  enabled: true
+
+provisioning:
+  enabled: true
+  count: 1
+  idPrefix: "wallbox"
+  passwordLength: 10
+
+httpRoute:
+  enabled: true
+  hostname: "ocpp.rpi.loafoe.com"
+  gatewayRef:
+    name: gateway
+    namespace: default
+    sectionName: https
+
+resources:
+  limits:
+    cpu: 200m
+    memory: 128Mi
+  requests:
+    cpu: 10m
+    memory: 32Mi

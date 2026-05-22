@@ -99,6 +99,9 @@ features:
   # Useful for admin endpoints, ring management, config reloads, debugging
   # Only allows requests to cluster-internal addresses (pods, services)
   httpRequest: false
+  # Enable pv_resize task for resizing persistent volumes
+  # When enabled, grants patch permission on PVCs
+  pvResize: false
 
 podAnnotations: {}
 

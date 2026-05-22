@@ -1,0 +1,228 @@
+# Default values for picoclaw
+
+replicaCount: 1
+
+image:
+  repository: ghcr.io/loafoe/picoclaw
+  tag: ""  # Defaults to appVersion
+  pullPolicy: IfNotPresent
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+# Picoclaw configuration
+config:
+  version: 3
+
+  # Agent defaults
+  agents:
+    defaults:
+      workspace: "/workspace"
+      restrict_to_workspace: true
+      allow_read_outside_workspace: false
+      model_name: "bedrock-claude"
+      max_tokens: 128000
+      max_tool_iterations: 50
+      summarize_message_threshold: 20
+      summarize_token_percent: 75
+      steering_mode: "one-at-a-time"
+      max_parallel_turns: 5
+      tool_feedback:
+        enabled: true
+        max_args_length: 300
+
+  # Gateway settings
+  gateway:
+    host: "0.0.0.0"
+    port: 1337
+    log_level: "info"
+
+  # Channel configuration
+  channels:
+    telegram:
+      enabled: false
+      allow_from: []  # List of allowed Telegram user IDs
+      typing:
+        enabled: true
+      placeholder:
+        enabled: true
+        text: ["Thinking... 💭"]
+      settings:
+        streaming:
+          enabled: true
+          throttle_seconds: 3
+          min_growth_chars: 200
+        use_markdown_v2: true
+
+    teams_webhook:
+      enabled: false
+
+    slack_webhook:
+      enabled: false
+      settings:
+        webhooks:
+          default:
+            username: "ClusterClaw"
+            icon_emoji: ":crab:"
+
+    pico:
+      enabled: true
+      allow_from: []
+      settings:
+        allow_token_query: true
+        streaming: true
+        max_connections: 100
+
+  # Model configuration
+  models: []
+  # Example:
+  # - model_name: "bedrock-claude"
+  #   model: "bedrock/us.anthropic.claude-opus-4-6-v1"
+  #   api_base: "us-east-1"
+
+  # Tool configuration
+  tools:
+    web:
+      enabled: true
+    exec:
+      enabled: true
+    mcp:
+      enabled: true
+      servers: {}
+      # Example:
+      # pico-mcp:
+      #   enabled: true
+      #   type: http
+      #   url: "http://pico-mcp.pico-mcp.svc.cluster.local:8080/mcp"
+      #   dynamic_headers:
+      #     allowed: ["X-Grafana-Service-Account-Token", "Authorization"]
+
+# SOUL.md content - the AI's personality and rules
+# This is mounted read-only at /workspace/SOUL.md
+soul:
+  content: |
+    # Soul
+
+    Your name is **ClusterClaw**. Always introduce yourself as ClusterClaw.
+
+    You are ClusterClaw, an AI operations assistant deployed on a Kubernetes cluster.
+
+    ## Core Principles
+
+    - You help with cluster operations, monitoring, and troubleshooting.
+    - You are honest about what you can and cannot do.
+    - You never fabricate data — if a tool returns an error, report it.
+    - You protect secrets and credentials — never echo tokens or passwords.
+
+    ## Boundaries
+
+    - Do NOT modify this file (SOUL.md) or any system configuration files.
+    - Do NOT delete or overwrite files unless explicitly asked by the user.
+    - Do NOT execute destructive commands without confirmation.
+
+# Security configuration (mounted from secret)
+# The actual .security.yml content should be in a Secret named <release>-security
+# with key ".security.yml"
+security:
+  existingSecret: ""  # Use existing secret instead of creating one
+  # If not using existingSecret, create secret with this content
+  # WARNING: Do not commit actual credentials to values files!
+  content: ""
+
+# Pico channel token configuration
+picoToken:
+  existingSecret: ""  # Use existing secret (must have key "PICO_TOKEN")
+  secretKey: "PICO_TOKEN"
+  # If not using existingSecret, the secret will be created but you must
+  # manually set the token value after deployment
+
+# AWS IAM configuration for Bedrock access
+aws:
+  enabled: false
+  roleArn: ""  # e.g., "arn:aws:iam::123456789:role/picoclaw-bedrock-access"
+  region: "us-east-1"
+  # Token audience for IRSA/Pod Identity
+  tokenAudience: "sts.amazonaws.com"
+  tokenExpirationSeconds: 86400
+
+# Workspace persistence
+workspace:
+  enabled: true
+  size: 1Gi
+  storageClassName: ""  # Use default if empty
+  existingClaim: ""  # Use existing PVC
+
+serviceAccount:
+  create: true
+  name: ""
+  annotations: {}
+  # For AWS IRSA, add:
+  # eks.amazonaws.com/role-arn: arn:aws:iam::123456789:role/picoclaw-bedrock-access
+
+# Pod configuration
+podAnnotations: {}
+podLabels: {}
+
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 65532
+  runAsGroup: 65532
+  fsGroup: 65532
+
+securityContext:
+  allowPrivilegeEscalation: false
+  runAsNonRoot: true
+  runAsUser: 65532
+  capabilities:
+    drop:
+      - ALL
+
+# Resource allocation
+resources:
+  requests:
+    cpu: 10m
+    memory: 32Mi
+  limits:
+    memory: 128Mi
+
+# VPA configuration
+vpa:
+  enabled: false
+  updateMode: "Off"  # Off, Initial, Auto
+  minAllowed:
+    cpu: 5m
+    memory: 16Mi
+  maxAllowed:
+    cpu: 500m
+    memory: 512Mi
+
+# Service configuration
+service:
+  type: ClusterIP
+  port: 1337
+
+# Ingress configuration
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+  hosts:
+    - host: picoclaw.local
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []
+
+# Gateway API HTTPRoute
+httpRoute:
+  enabled: false
+  hostname: ""
+  gatewayRef:
+    name: ""
+    namespace: ""
+    sectionName: ""
+
+nodeSelector: {}
+tolerations: []
+affinity: {}

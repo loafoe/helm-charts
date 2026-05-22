@@ -1,0 +1,19 @@
+apiVersion: v2
+name: picoclaw
+description: AI-powered Kubernetes operations assistant with multi-channel support (Telegram, Slack, Teams, Pico)
+type: application
+version: 0.1.0
+appVersion: "v0.0.19"
+keywords:
+  - kubernetes
+  - ai
+  - chatops
+  - telegram
+  - slack
+  - mcp
+home: https://github.com/loafoe/picoclaw
+sources:
+  - https://github.com/loafoe/picoclaw
+maintainers:
+  - name: Andy Lo-A-Foe
+    email: andy.lo-a-foe@philips.com

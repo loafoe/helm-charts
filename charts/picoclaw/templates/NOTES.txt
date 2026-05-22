@@ -1,0 +1,40 @@
+Thank you for installing {{ .Chart.Name }}!
+
+Your release is named: {{ .Release.Name }}
+
+{{- if .Values.config.channels.pico.enabled }}
+
+Pico WebSocket endpoint (for pico-mcp integration):
+  ws://{{ include "picoclaw.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.service.port }}/pico/ws
+{{- end }}
+
+{{- if .Values.config.channels.telegram.enabled }}
+
+Telegram channel is enabled.
+Make sure your .security.yml secret contains the bot token:
+  telegram:
+    bot_token: "your-bot-token"
+{{- end }}
+
+To verify the installation:
+  kubectl get pods -n {{ .Release.Namespace }} -l "app.kubernetes.io/name={{ include "picoclaw.name" . }},app.kubernetes.io/instance={{ .Release.Name }}"
+
+To view logs:
+  kubectl logs -n {{ .Release.Namespace }} -l "app.kubernetes.io/name={{ include "picoclaw.name" . }}" -f
+
+{{- if not .Values.security.existingSecret }}
+
+WARNING: You need to create the security secret with your .security.yml:
+  kubectl create secret generic {{ include "picoclaw.fullname" . }}-security -n {{ .Release.Namespace }} \
+    --from-file=.security.yml=your-security-file.yml
+{{- end }}
+
+{{- if and .Values.config.channels.pico.enabled (not .Values.picoToken.existingSecret) }}
+
+WARNING: The Pico token secret was created with a placeholder value.
+Update it with your actual token:
+  kubectl patch secret {{ include "picoclaw.fullname" . }}-pico-token -n {{ .Release.Namespace }} \
+    -p '{"stringData":{"{{ .Values.picoToken.secretKey }}":"your-actual-token"}}'
+{{- end }}
+
+For more information, visit: {{ .Chart.Home }}

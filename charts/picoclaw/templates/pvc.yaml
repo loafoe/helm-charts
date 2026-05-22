@@ -1,0 +1,17 @@
+{{- if and .Values.workspace.enabled (not .Values.workspace.existingClaim) }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "picoclaw.workspacePvcName" . }}
+  labels:
+    {{- include "picoclaw.labels" . | nindent 4 }}
+spec:
+  accessModes:
+    - ReadWriteOnce
+  {{- if .Values.workspace.storageClassName }}
+  storageClassName: {{ .Values.workspace.storageClassName | quote }}
+  {{- end }}
+  resources:
+    requests:
+      storage: {{ .Values.workspace.size }}
+{{- end }}
