@@ -105,6 +105,9 @@ data:
         cooldown: {{ .Values.alerts.pvUsage.cooldown | quote }}
         {{- end }}
         auto_remediate: {{ .Values.alerts.pvUsage.autoRemediate | default false }}
+        {{- if .Values.alerts.pvUsage.maxPVSizeGi }}
+        max_pv_size_gi: {{ .Values.alerts.pvUsage.maxPVSizeGi }}
+        {{- end }}
     {{- end }}
     {{- if and .Values.ui .Values.ui.logo .Values.ui.logo.enabled }}
     ui:
