@@ -155,6 +155,12 @@ rules:
     resources: ["applications"]
     verbs: ["get", "list", "watch"]
 {{- end }}
+{{- if .Values.features.configmapRead }}
+  # ConfigMap read access for list_configmaps and get_configmap introspection
+  - apiGroups: [""]
+    resources: ["configmaps"]
+    verbs: ["get", "list"]
+{{- end }}
 {{- with .Values.rbac.additionalRules }}
 {{ toYaml . | indent 2 }}
 {{- end }}

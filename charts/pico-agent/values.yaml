@@ -95,6 +95,10 @@ features:
   # Enable Argo CD application introspection
   # When enabled, grants get/list/watch on argoproj.io applications
   argocd: false
+  # Enable list_configmaps + get_configmap tasks for ConfigMap introspection
+  # When enabled, grants get/list on configmaps. get_configmap redacts
+  # secret-looking values (high-entropy/PEM/inline-secret/secret-key-name).
+  configmapRead: false
   # Enable http_request task for making HTTP requests to cluster-internal services
   # Useful for admin endpoints, ring management, config reloads, debugging
   # Only allows requests to cluster-internal addresses (pods, services)
