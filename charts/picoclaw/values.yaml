@@ -71,14 +71,15 @@ config:
       allow_from: []
       settings:
         allow_token_query: true
-        streaming: true
+        streaming:
+          enabled: true
         max_connections: 100
 
   # Model configuration
   models: []
   # Example:
   # - model_name: "bedrock-claude"
-  #   model: "bedrock/us.anthropic.claude-opus-4-6-v1"
+  #   model: "bedrock/us.anthropic.claude-opus-4-8"
   #   api_base: "us-east-1"
 
   # Tool configuration
