@@ -1,6 +1,6 @@
 # pico-agent
 
-![Version: 0.30.0](https://img.shields.io/badge/Version-0.30.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.33.10](https://img.shields.io/badge/AppVersion-v0.33.10-informational?style=flat-square)
+![Version: 0.42.0](https://img.shields.io/badge/Version-0.42.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.40.0](https://img.shields.io/badge/AppVersion-v0.40.0-informational?style=flat-square)
 
 A lightweight Kubernetes helper service for webhook-triggered cluster operations
 
@@ -22,12 +22,15 @@ A lightweight Kubernetes helper service for webhook-triggered cluster operations
 |-----|------|---------|-------------|
 | affinity | object | `{}` |  |
 | features.argocd | bool | `false` |  |
+| features.configmapRead | bool | `false` |  |
 | features.getResource | bool | `false` |  |
+| features.httpRequest | bool | `false` |  |
 | features.nodeclaimDelete | bool | `false` |  |
 | features.podEvict | bool | `false` |  |
 | features.podResize | bool | `false` |  |
 | features.podResizeAbsoluteCap | string | `"4Gi"` |  |
 | features.podResizePercentageCap | int | `50` |  |
+| features.pvResize | bool | `false` |  |
 | features.workloadRestart | bool | `false` |  |
 | features.workloadScale | bool | `false` |  |
 | fullnameOverride | string | `""` |  |
@@ -70,9 +73,14 @@ A lightweight Kubernetes helper service for webhook-triggered cluster operations
 | serviceAccount.create | bool | `true` |  |
 | serviceAccount.name | string | `""` |  |
 | serviceMonitor.enabled | bool | `false` |  |
+| serviceMonitor.honorLabels | bool | `false` |  |
 | serviceMonitor.interval | string | `"30s"` |  |
 | serviceMonitor.labels | object | `{}` |  |
+| serviceMonitor.metricRelabelings | list | `[]` |  |
+| serviceMonitor.namespace | string | `""` |  |
+| serviceMonitor.relabelings | list | `[]` |  |
 | serviceMonitor.scrapeTimeout | string | `"10s"` |  |
+| serviceMonitor.targetLabels | list | `[]` |  |
 | spire.agentSocket | string | `"unix:///spiffe-workload-api/spire-agent.sock"` |  |
 | spire.allowedSPIFFEIDs | list | `[]` |  |
 | spire.className | string | `"spire-release-spire"` |  |

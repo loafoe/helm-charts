@@ -145,12 +145,30 @@ observability:
   otelEndpoint: ""
   otelServiceName: pico-agent
 
-# Prometheus ServiceMonitor
+# Prometheus ServiceMonitor (requires the Prometheus Operator CRDs).
+# Scrapes the metrics port (9090) at /metrics. The pico-agent exposes:
+#   pico_agent_http_* / tasks_* / auth_attempts_total / k8s_requests_* /
+#   log_stream_* / build_info, plus Go runtime + process collectors.
 serviceMonitor:
+  # Enable creation of a ServiceMonitor resource
   enabled: false
+  # Namespace for the ServiceMonitor (defaults to the release namespace).
+  # Set this when your Prometheus watches a specific namespace.
+  namespace: ""
+  # Scrape interval and per-scrape timeout
   interval: 30s
   scrapeTimeout: 10s
+  # Extra labels on the ServiceMonitor. Often required so the Prometheus
+  # Operator's serviceMonitorSelector picks it up, e.g. {release: kube-prometheus-stack}
   labels: {}
+  # Keep metric labels from the target instead of overwriting on conflict
+  honorLabels: false
+  # Service labels to copy onto scraped metrics as target labels
+  targetLabels: []
+  # Prometheus relabeling applied before scraping (relabel_configs)
+  relabelings: []
+  # Prometheus relabeling applied to scraped samples (metric_relabel_configs)
+  metricRelabelings: []
 
 nodeSelector:
   kubernetes.io/os: linux
