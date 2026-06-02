@@ -1,0 +1,100 @@
+# Default values for mt-mcp-grafana.
+# This is a YAML-formatted file.
+
+# -- Override the name of the chart
+nameOverride: ""
+# -- Override the fully qualified name of the chart
+fullnameOverride: ""
+
+# -- Configuration for the proxy deployment
+replicaCount: 1
+
+image:
+  # -- Docker registry repository for mt-mcp-grafana
+  repository: andy/mt-mcp-grafana
+  # -- Overrides the image tag (defaults to the chart appVersion)
+  tag: ""
+  # -- Docker image pull policy
+  pullPolicy: IfNotPresent
+
+service:
+  # -- Kubernetes Service type for exposing the proxy
+  type: ClusterIP
+  # -- Service port
+  port: 8080
+
+server:
+  # -- The port the proxy binary listens on inside the container
+  port: 8080
+  # -- The exposed MCP endpoint path
+  path: /mcp
+
+# -- Authentication settings for incoming LLM/client JWTs
+auth:
+  # -- JWT verification mode: jwks | static | insecure
+  mode: jwks
+  # -- Path to the claim in the JWT holding user groups
+  groupsClaim: groups
+  # -- Expected JWT issuer (iss claim)
+  issuer: "https://issuer.company.com"
+  # -- Expected JWT audience (aud claim)
+  audience: "mcp-grafana"
+  # -- Optional explicit JWKS URL (if omitted, discovered via OIDC metadata)
+  jwksUrl: ""
+  
+  # -- Static mode credentials (only evaluated if auth.mode is "static")
+  # hmacSecret: "my-hmac-shared-key"
+  # publicKeyPemFile: "" # Mount as /etc/mt-mcp-grafana/keys/public.pem if used
+
+# -- Managed mcp-grafana backends deployed in the same cluster
+# For each instance configured in this list, the Helm chart will automatically:
+# 1. Deploy an mcp-grafana instance (using ghcr.io/grafana-community/grafana-mcp).
+# 2. Expose an in-cluster Kubernetes Service (http://<release>-<name>-mcp:8000/mcp).
+# 3. Securely mount and map the Grafana service account token via Secret references.
+# 4. Dynamically configure mt-mcp-grafana to route authorized traffic to this backend.
+mcpInstances:
+  - name: team-ab
+    # -- List of JWT groups authorized to query this backend
+    groups:
+      - team-a
+      - team-b
+    # -- Target Grafana stack URL
+    grafanaUrl: "https://grafana.company.com/team-ab"
+    # -- Configuration for the service account token secret
+    tokenSecret:
+      # -- Kubernetes Secret name
+      name: team-ab-token-secret
+      # -- Key in the Secret holding the token
+      key: token
+      # -- Whether this chart should create the Secret inline
+      create: true
+      # -- Raw service account token (only used if tokenSecret.create is true)
+      value: "glsa_my-service-account-token-ab"
+
+  - name: team-c
+    groups:
+      - team-c
+    grafanaUrl: "https://grafana.company.com/team-c"
+    tokenSecret:
+      name: team-c-token-secret
+      key: token
+      create: true
+      value: "glsa_my-service-account-token-c"
+
+# -- Pod resource requests and limits
+resources: {}
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+# -- Node selectors for pod scheduling
+nodeSelector: {}
+
+# -- Pod tolerations
+tolerations: []
+
+# -- Pod affinity rules
+affinity: {}

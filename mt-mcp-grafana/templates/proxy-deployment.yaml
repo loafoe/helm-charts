@@ -1,0 +1,85 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "mt-mcp-grafana.fullname" . }}
+  labels:
+    {{- include "mt-mcp-grafana.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "mt-mcp-grafana.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "mt-mcp-grafana.selectorLabels" . | nindent 8 }}
+      # Force rolling update when configuration values change
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/proxy-configmap.yaml") . | sha256sum }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command:
+            - "/mt-mcp-grafana"
+            - "-config"
+            - "/etc/mt-mcp-grafana/config.yaml"
+          ports:
+            - name: http
+              containerPort: {{ .Values.server.port | default 8080 }}
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          env:
+            # Dynamically map backend service account tokens from K8s secrets
+            # into matching environment variables for secure interpolation at startup
+            {{- range .Values.mcpInstances }}
+            - name: "{{ (print .name "_TOKEN") | upper | replace "-" "_" }}"
+              valueFrom:
+                secretKeyRef:
+                  name: "{{ .tokenSecret.name }}"
+                  key: "{{ .tokenSecret.key | default "token" }}"
+            {{- end }}
+          volumeMounts:
+            - name: config-volume
+              mountPath: /etc/mt-mcp-grafana
+              readOnly: true
+            {{- if and (eq .Values.auth.mode "static") .Values.auth.publicKeyPemFile }}
+            - name: keys-volume
+              mountPath: /etc/mt-mcp-grafana/keys
+              readOnly: true
+            {{- end }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      volumes:
+        - name: config-volume
+          configMap:
+            name: {{ include "mt-mcp-grafana.fullname" . }}-config
+        {{- if and (eq .Values.auth.mode "static") .Values.auth.publicKeyPemFile }}
+        - name: keys-volume
+          configMap:
+            name: {{ include "mt-mcp-grafana.fullname" . }}-keys
+        {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

@@ -1,0 +1,37 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "mt-mcp-grafana.fullname" . }}-config
+  labels:
+    {{- include "mt-mcp-grafana.labels" . | nindent 4 }}
+data:
+  config.yaml: |
+    server:
+      listen: ":{{ .Values.server.port | default 8080 }}"
+      path: "{{ .Values.server.path | default "/mcp" }}"
+    auth:
+      mode: "{{ .Values.auth.mode | default "jwks" }}"
+      groups_claim: "{{ .Values.auth.groupsClaim | default "groups" }}"
+      issuer: "{{ .Values.auth.issuer }}"
+      audience: "{{ .Values.auth.audience }}"
+      {{- if .Values.auth.jwksUrl }}
+      jwks_url: "{{ .Values.auth.jwksUrl }}"
+      {{- end }}
+      {{- if eq .Values.auth.mode "static" }}
+      {{- if .Values.auth.hmacSecret }}
+      hmac_secret: "{{ .Values.auth.hmacSecret }}"
+      {{- end }}
+      {{- if .Values.auth.publicKeyPemFile }}
+      public_key_pem_file: "/etc/mt-mcp-grafana/keys/public.pem"
+      {{- end }}
+      {{- end }}
+    backends:
+      {{- range .Values.mcpInstances }}
+      - name: "{{ .name }}"
+        url: "http://{{ $.Release.Name }}-{{ .name }}-mcp:8000/mcp"
+        groups:
+          {{- range .groups }}
+          - "{{ . }}"
+          {{- end }}
+        service_account_token: {{ printf "${%s}" ((print .name "_TOKEN") | upper | replace "-" "_" ) | quote }}
+      {{- end }}

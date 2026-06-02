@@ -1,0 +1,70 @@
+{{- range .Values.mcpInstances }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "{{ $.Release.Name }}-{{ .name }}-mcp"
+  labels:
+    {{- include "mt-mcp-grafana.labels" $ | nindent 4 }}
+    mcp-instance: "{{ .name }}"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "mt-mcp-grafana.selectorLabels" $ | nindent 6 }}
+      mcp-instance: "{{ .name }}"
+  template:
+    metadata:
+      labels:
+        {{- include "mt-mcp-grafana.selectorLabels" $ | nindent 8 }}
+        mcp-instance: "{{ .name }}"
+    spec:
+      containers:
+        - name: grafana-mcp
+          # Deploys the official community Grafana MCP server image
+          image: "ghcr.io/grafana-community/grafana-mcp:latest"
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8000
+              protocol: TCP
+          env:
+            - name: GRAFANA_URL
+              value: "{{ .grafanaUrl }}"
+            - name: GRAFANA_SERVICE_ACCOUNT_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: "{{ .tokenSecret.name }}"
+                  key: "{{ .tokenSecret.key | default "token" }}"
+          # The community mcp-grafana exposes a health checking capability
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            initialDelaySeconds: 15
+            periodSeconds: 15
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            initialDelaySeconds: 15
+            periodSeconds: 15
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: "{{ $.Release.Name }}-{{ .name }}-mcp"
+  labels:
+    {{- include "mt-mcp-grafana.labels" $ | nindent 4 }}
+    mcp-instance: "{{ .name }}"
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8000
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "mt-mcp-grafana.selectorLabels" $ | nindent 4 }}
+    mcp-instance: "{{ .name }}"
+{{- end }}
