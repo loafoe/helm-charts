@@ -46,21 +46,31 @@ auth:
   # hmacSecret: "my-hmac-shared-key"
   # publicKeyPemFile: "" # Mount as /etc/mt-mcp-grafana/keys/public.pem if used
 
-# -- Managed mcp-grafana backends deployed in the same cluster.
-# For each backend the chart will:
-# 1. Deploy an mcp-grafana instance (ghcr.io/grafana/mcp-grafana).
-# 2. Expose an in-cluster Service (http://<release>-<name>-mcp:8000/mcp).
-# 3. Mount the Grafana service account token from a Secret.
-# 4. Configure the proxy to route authorized traffic via tenants.
+# -- mcp-grafana backends.
+# Each entry is either a MANAGED backend (the chart deploys an mcp-grafana pod
+# for it) or an EXTERNAL backend (an already-running mcp-grafana at a URL you
+# provide). The proxy routes to both the same way.
+#
+# Managed (default): the chart deploys an mcp-grafana pod + Service and wires
+# the proxy to it via in-cluster DNS. Set grafanaUrl + tokenSecret.
+#
+# External: set externalUrl to the pre-existing mcp-grafana endpoint URL.
+# The chart will NOT deploy a pod/service; the proxy routes directly to that
+# URL. The service account token must still be provided (via tokenSecret) so
+# the proxy can inject it as the upstream Authorization header.
+# SECURITY: external mcp-grafana has no inbound auth. The URL must be
+# network-secured (VPN, mTLS, IP allowlist) — anyone who can reach it bypasses
+# the proxy's JWT verification.
 #
 # Model: groups authorize, tenant selects, backend executes.
 # A tenant id is what list_grafana_instances advertises and what the agent
 # targets via the `tenant` tool argument. The caller's JWT groups must
 # intersect a tenant's groups to use it.
 backends:
+  # -- Example: managed backend (chart deploys mcp-grafana pod + service)
   - # -- Internal/ops name for this backend (logging, must be unique)
     name: grafana-ab
-    # -- Target Grafana stack URL for this mcp-grafana instance
+    # -- Target Grafana stack URL for the managed mcp-grafana instance
     grafanaUrl: "https://grafana.company.com/team-ab"
     # -- Optional per-backend headers sent toward this mcp-grafana instance
     headers: {}
@@ -91,6 +101,7 @@ backends:
         headers:
           X-Grafana-Org-Id: "2"
 
+  # -- Example: another managed backend
   - name: grafana-c
     grafanaUrl: "https://grafana.company.com/team-c"
     headers: {}
@@ -104,6 +115,22 @@ backends:
         groups:
           - team-c
         headers: {}
+
+  # -- Example: external backend (pre-existing mcp-grafana, no pod deployed)
+  # - name: grafana-external
+  #   # -- URL of the pre-existing mcp-grafana endpoint. When set, no pod/service
+  #   # is deployed; the proxy routes directly to this URL.
+  #   externalUrl: "https://mcp-grafana.private.example.com/mcp"
+  #   headers: {}
+  #   tokenSecret:
+  #     name: grafana-external-token-secret
+  #     key: token
+  #     create: false  # use a pre-existing Secret
+  #   tenants:
+  #     - id: team-ext
+  #       groups:
+  #         - team-external
+  #       headers: {}
 
 # -- Pod resource requests and limits
 resources: {}

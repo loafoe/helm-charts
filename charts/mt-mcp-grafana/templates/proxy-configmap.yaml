@@ -28,7 +28,11 @@ data:
     backends:
       {{- range .Values.backends }}
       - name: "{{ .name }}"
+        {{- if .externalUrl }}
+        url: "{{ .externalUrl }}"
+        {{- else }}
         url: "http://{{ $.Release.Name }}-{{ .name }}-mcp:8000/mcp"
+        {{- end }}
         service_account_token: {{ printf "${%s}" ((print .name "_TOKEN") | upper | replace "-" "_" ) | quote }}
         {{- if .headers }}
         headers:

@@ -1,4 +1,5 @@
 {{- range .Values.backends }}
+{{- if not .externalUrl }}
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -21,8 +22,7 @@ spec:
     spec:
       containers:
         - name: grafana-mcp
-          # Deploys the official community Grafana MCP server image
-          image: "ghcr.io/grafana-community/grafana-mcp:latest"
+          image: "ghcr.io/grafana/mcp-grafana:latest"
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
@@ -36,7 +36,6 @@ spec:
                 secretKeyRef:
                   name: "{{ .tokenSecret.name }}"
                   key: "{{ .tokenSecret.key | default "token" }}"
-          # The community mcp-grafana exposes a health checking capability
           livenessProbe:
             httpGet:
               path: /healthz
@@ -67,4 +66,5 @@ spec:
   selector:
     {{- include "mt-mcp-grafana.selectorLabels" $ | nindent 4 }}
     mcp-instance: "{{ .name }}"
+{{- end }}
 {{- end }}
