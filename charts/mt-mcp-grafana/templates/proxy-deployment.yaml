@@ -9,10 +9,12 @@ spec:
   selector:
     matchLabels:
       {{- include "mt-mcp-grafana.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: proxy
   template:
     metadata:
       labels:
         {{- include "mt-mcp-grafana.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: proxy
       # Force rolling update when configuration values change
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/proxy-configmap.yaml") . | sha256sum }}
