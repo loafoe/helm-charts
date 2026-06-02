@@ -22,7 +22,7 @@ spec:
     spec:
       containers:
         - name: grafana-mcp
-          image: "ghcr.io/grafana/mcp-grafana:latest"
+          image: "grafana/mcp-grafana:{{ .imageTag | default "0.14.0" }}"
           imagePullPolicy: IfNotPresent
           command: ["/app/mcp-grafana"]
           args:

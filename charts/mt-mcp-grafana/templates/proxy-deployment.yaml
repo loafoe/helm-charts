@@ -22,7 +22,7 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command:
-            - "/mt-mcp-grafana"
+            - "/ko-app/mt-mcp-grafana"
             - "-config"
             - "/etc/mt-mcp-grafana/config.yaml"
           ports:
