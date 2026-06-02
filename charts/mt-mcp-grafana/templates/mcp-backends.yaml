@@ -24,12 +24,15 @@ spec:
         - name: grafana-mcp
           image: "ghcr.io/grafana/mcp-grafana:latest"
           imagePullPolicy: IfNotPresent
-          {{- if .args }}
+          command: ["/app/mcp-grafana"]
           args:
+            - "--transport"
+            - "streamable-http"
+            - "--address"
+            - "0.0.0.0:8000"
             {{- range .args }}
             - "{{ . }}"
             {{- end }}
-          {{- end }}
           ports:
             - name: http
               containerPort: 8000
