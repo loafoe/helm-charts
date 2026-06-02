@@ -1,6 +1,6 @@
 # mt-mcp-grafana
 
-![Version: 0.5.0](https://img.shields.io/badge/Version-0.5.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.0.0](https://img.shields.io/badge/AppVersion-1.0.0-informational?style=flat-square)
+![Version: 0.6.0](https://img.shields.io/badge/Version-0.6.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.1.0](https://img.shields.io/badge/AppVersion-0.1.0-informational?style=flat-square)
 
 A multi-tenant proxy that aggregates and secures multiple mcp-grafana backend instances speaking the MCP streamable-HTTP transport.
 
@@ -33,8 +33,8 @@ A multi-tenant proxy that aggregates and secures multiple mcp-grafana backend in
 | backends[1] | object | `{"grafanaUrl":"https://grafana.company.com/team-c","headers":{},"name":"grafana-c","tenants":[{"groups":["team-c"],"headers":{},"id":"team-c"}],"tokenSecret":{"create":true,"key":"token","name":"grafana-c-token-secret","value":"glsa_my-service-account-token-c"}}` | Example: another managed backend |
 | fullnameOverride | string | `""` | Override the fully qualified name of the chart |
 | image.pullPolicy | string | `"IfNotPresent"` | Docker image pull policy |
-| image.repository | string | `"andy/mt-mcp-grafana"` | Docker registry repository for mt-mcp-grafana |
-| image.tag | string | `""` | Overrides the image tag (defaults to the chart appVersion) |
+| image.repository | string | `"ghcr.io/loafoe/mt-mcp-grafana"` | Docker registry repository for mt-mcp-grafana |
+| image.tag | string | `"v0.1.0"` | Image tag to deploy. Matches the upstream git tag / published OCI tag (the build workflow publishes ghcr.io/loafoe/mt-mcp-grafana:<git-tag>). |
 | nameOverride | string | `""` | Override the name of the chart |
 | nodeSelector | object | `{}` | Node selectors for pod scheduling |
 | replicaCount | int | `1` | Number of proxy replicas (sessions are in-memory; use sticky routing with >1) |

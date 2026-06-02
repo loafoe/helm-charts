@@ -11,9 +11,10 @@ replicaCount: 1
 
 image:
   # -- Docker registry repository for mt-mcp-grafana
-  repository: andy/mt-mcp-grafana
-  # -- Overrides the image tag (defaults to the chart appVersion)
-  tag: ""
+  repository: ghcr.io/loafoe/mt-mcp-grafana
+  # -- Image tag to deploy. Matches the upstream git tag / published OCI tag
+  # (the build workflow publishes ghcr.io/loafoe/mt-mcp-grafana:<git-tag>).
+  tag: "v0.1.0"
   # -- Docker image pull policy
   pullPolicy: IfNotPresent
 
