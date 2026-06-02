@@ -72,6 +72,11 @@ backends:
     name: grafana-ab
     # -- Target Grafana stack URL for the managed mcp-grafana instance
     grafanaUrl: "https://grafana.company.com/team-ab"
+    # -- Optional CLI arguments passed to the mcp-grafana container
+    args:
+      - "--disable-sift"
+      - "--disable-oncall"
+      - "--disable-incident"
     # -- Optional per-backend headers sent toward this mcp-grafana instance
     headers: {}
     # -- Service account token secret configuration
