@@ -1,101 +1,46 @@
-# Helm Chart: mt-mcp-grafana
+# mt-mcp-grafana
 
-A production-grade, multi-tenant Model Context Protocol (MCP) gateway that aggregates and secures multiple `mcp-grafana` server instances speaking the modern **streamable-HTTP** transport.
+![Version: 0.2.0](https://img.shields.io/badge/Version-0.2.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.0.0](https://img.shields.io/badge/AppVersion-1.0.0-informational?style=flat-square)
 
-This Helm chart deploys the `mt-mcp-grafana` proxy gateway along with multiple individual community-supported `mcp-grafana` instances inside the same cluster. It securely wires the entire architecture—routing, configuration, secrets, and in-cluster DNS—automatically.
+A multi-tenant proxy that aggregates and secures multiple mcp-grafana backend instances speaking the MCP streamable-HTTP transport.
 
----
+## Values
 
-## 1. Architecture Overview
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| affinity | object | `{}` | Pod affinity rules |
+| auth | object | `{"audience":"mcp-grafana","groupsClaim":"groups","issuer":"https://issuer.company.com","jwksUrl":"","mode":"jwks"}` | Authentication settings for incoming LLM/client JWTs |
+| auth.audience | string | `"mcp-grafana"` | Expected JWT audience (aud claim) |
+| auth.groupsClaim | string | `"groups"` | Path to the claim in the JWT holding user groups |
+| auth.issuer | string | `"https://issuer.company.com"` | Expected JWT issuer (iss claim) |
+| auth.jwksUrl | string | `""` | Optional explicit JWKS URL (if omitted, discovered via OIDC metadata) |
+| auth.mode | string | `"jwks"` | JWT verification mode: jwks | static | insecure |
+| backends | list | `[{"grafanaUrl":"https://grafana.company.com/team-ab","headers":{},"name":"grafana-ab","tenants":[{"groups":["team-a"],"headers":{},"id":"team-a"},{"groups":["team-b"],"headers":{"X-Grafana-Org-Id":"2"},"id":"team-b"}],"tokenSecret":{"create":true,"key":"token","name":"grafana-ab-token-secret","value":"glsa_my-service-account-token-ab"}},{"grafanaUrl":"https://grafana.company.com/team-c","headers":{},"name":"grafana-c","tenants":[{"groups":["team-c"],"headers":{},"id":"team-c"}],"tokenSecret":{"create":true,"key":"token","name":"grafana-c-token-secret","value":"glsa_my-service-account-token-c"}}]` | Managed mcp-grafana backends deployed in the same cluster. For each backend the chart will: 1. Deploy an mcp-grafana instance (ghcr.io/grafana/mcp-grafana). 2. Expose an in-cluster Service (http://<release>-<name>-mcp:8000/mcp). 3. Mount the Grafana service account token from a Secret. 4. Configure the proxy to route authorized traffic via tenants.  Model: groups authorize, tenant selects, backend executes. A tenant id is what list_grafana_instances advertises and what the agent targets via the `tenant` tool argument. The caller's JWT groups must intersect a tenant's groups to use it. |
+| backends[0].grafanaUrl | string | `"https://grafana.company.com/team-ab"` | Target Grafana stack URL for this mcp-grafana instance |
+| backends[0].headers | object | `{}` | Optional per-backend headers sent toward this mcp-grafana instance |
+| backends[0].name | string | `"grafana-ab"` | Internal/ops name for this backend (logging, must be unique) |
+| backends[0].tenants | list | `[{"groups":["team-a"],"headers":{},"id":"team-a"},{"groups":["team-b"],"headers":{"X-Grafana-Org-Id":"2"},"id":"team-b"}]` | Tenants served by this backend. Each tenant is a selectable routing unit: its id is advertised to the agent, and its groups determine who can select it. |
+| backends[0].tenants[0].groups | list | `["team-a"]` | JWT groups authorized to select this tenant |
+| backends[0].tenants[0].headers | object | `{}` | Optional per-tenant headers (merge over backend headers) |
+| backends[0].tenants[0].id | string | `"team-a"` | Globally unique tenant id (the routing key) |
+| backends[0].tokenSecret | object | `{"create":true,"key":"token","name":"grafana-ab-token-secret","value":"glsa_my-service-account-token-ab"}` | Service account token secret configuration |
+| backends[0].tokenSecret.create | bool | `true` | Whether this chart should create the Secret inline |
+| backends[0].tokenSecret.key | string | `"token"` | Key in the Secret holding the token |
+| backends[0].tokenSecret.name | string | `"grafana-ab-token-secret"` | Kubernetes Secret name |
+| backends[0].tokenSecret.value | string | `"glsa_my-service-account-token-ab"` | Raw service account token (only used if tokenSecret.create is true) |
+| fullnameOverride | string | `""` | Override the fully qualified name of the chart |
+| image.pullPolicy | string | `"IfNotPresent"` | Docker image pull policy |
+| image.repository | string | `"andy/mt-mcp-grafana"` | Docker registry repository for mt-mcp-grafana |
+| image.tag | string | `""` | Overrides the image tag (defaults to the chart appVersion) |
+| nameOverride | string | `""` | Override the name of the chart |
+| nodeSelector | object | `{}` | Node selectors for pod scheduling |
+| replicaCount | int | `1` | Number of proxy replicas (sessions are in-memory; use sticky routing with >1) |
+| resources | object | `{}` | Pod resource requests and limits |
+| server.path | string | `"/mcp"` | The exposed MCP endpoint path |
+| server.port | int | `8080` | The port the proxy binary listens on inside the container |
+| service.port | int | `8080` | Service port |
+| service.type | string | `"ClusterIP"` | Kubernetes Service type for exposing the proxy |
+| tolerations | list | `[]` | Pod tolerations |
 
-```
-              client --(HTTPS, JWT)--> [ mt-mcp-grafana Proxy ]
-                                               |
-                                     (JWT Signature Verify)
-                                     (Group Routing Lookup)
-                                               |
-                 +-----------------------------+-----------------------------+
-                 | (Group: team-a/b)                                         | (Group: team-c)
-                 v                                                           v
-   [ my-release-team-ab-mcp Service ]                         [ my-release-team-c-mcp Service ]
-                 |                                                           |
-                 v                                                           v
-   [ my-release-team-ab-mcp Pod ]                             [ my-release-team-c-mcp Pod ]
-                 | (Secret Ref: Token AB)                                    | (Secret Ref: Token C)
-                 v                                                           v
-      [ Grafana Instance AB ]                                     [ Grafana Instance C ]
-```
-
-1. **Authentication Boundary**: The proxy authenticates incoming LLM/client requests using the configured JWT verification method (`jwks`, `static`, or `insecure`).
-2. **Dynamic Routing**: The proxy resolves the backend instance dynamically based on the verified JWT groups, or lets the LLM explicitly select a backend using the `tenant` tool parameter.
-3. **Secret Isolation**: Each `mcp-grafana` instance is deployed as an isolated Pod inside the same namespace and references its own Kubernetes Secret containing the Grafana Service Account Token.
-4. **Auto-Wiring DNS**: The proxy's `config.yaml` is dynamically generated at release time, linking the proxy to each backend's in-cluster DNS service (`http://<release>-<name>-mcp:8000/mcp`) automatically.
-
----
-
-## 2. Prerequisites
-
-* Kubernetes 1.20+
-* Helm 3.0+
-* A running OIDC Issuer (like Keycloak, Auth0, Okta, or Grafana Cloud OIDC) to sign client JWTs.
-
----
-
-## 3. Installation
-
-Add the local or community repositories and run:
-
-```bash
-cd /Users/andy/DEV/Personal/helm-charts
-helm install mt-mcp-grafana ./mt-mcp-grafana -f values.yaml
-```
-
----
-
-## 4. Key Configuration Options
-
-### A. JWT Authentication Setup (`values.yaml`)
-Configure how the proxy validates client-side JWTs:
-
-```yaml
-auth:
-  mode: jwks
-  groupsClaim: groups
-  issuer: "https://auth.company.com/realms/mcp"
-  audience: "mcp-grafana"
-```
-
-### B. Configuring Managed Backends & Secrets (`values.yaml`)
-To deploy multiple isolated backends, list them under `mcpInstances`.
-
-```yaml
-mcpInstances:
-  - name: team-ab
-    groups:
-      - team-a
-      - team-b
-    grafanaUrl: "https://grafana.company.com/team-ab"
-    tokenSecret:
-      name: team-ab-token-secret
-      key: token
-      create: true  # Automatically generates the Secret containing the token below
-      value: "glsa_my-service-account-token-ab"
-
-  - name: team-c
-    groups:
-      - team-c
-    grafanaUrl: "https://grafana.company.com/team-c"
-    tokenSecret:
-      name: team-c-token-secret
-      key: token
-      create: false # Use a pre-existing external Secret (Vault, ExternalSecrets, etc.)
-```
-
----
-
-## 5. Security & Secret Management
-
-For production deployments, storing raw API tokens inside `values.yaml` is highly discouraged. Instead:
-1. Set `create: false` for each backend in `values.yaml`.
-2. Reference pre-existing Kubernetes Secrets managed by systems like Vault, ExternalSecrets, SealedSecrets, or GitOps pipelines.
-3. Ensure the Secret matches the configured `name` and contains the token under the specified `key`.
+----------------------------------------------
+Autogenerated from chart metadata using [helm-docs v1.14.2](https://github.com/norwoodj/helm-docs/releases/v1.14.2)

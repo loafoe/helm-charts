@@ -6,7 +6,7 @@ nameOverride: ""
 # -- Override the fully qualified name of the chart
 fullnameOverride: ""
 
-# -- Configuration for the proxy deployment
+# -- Number of proxy replicas (sessions are in-memory; use sticky routing with >1)
 replicaCount: 1
 
 image:
@@ -41,45 +41,69 @@ auth:
   audience: "mcp-grafana"
   # -- Optional explicit JWKS URL (if omitted, discovered via OIDC metadata)
   jwksUrl: ""
-  
+
   # -- Static mode credentials (only evaluated if auth.mode is "static")
   # hmacSecret: "my-hmac-shared-key"
   # publicKeyPemFile: "" # Mount as /etc/mt-mcp-grafana/keys/public.pem if used
 
-# -- Managed mcp-grafana backends deployed in the same cluster
-# For each instance configured in this list, the Helm chart will automatically:
-# 1. Deploy an mcp-grafana instance (using ghcr.io/grafana-community/grafana-mcp).
-# 2. Expose an in-cluster Kubernetes Service (http://<release>-<name>-mcp:8000/mcp).
-# 3. Securely mount and map the Grafana service account token via Secret references.
-# 4. Dynamically configure mt-mcp-grafana to route authorized traffic to this backend.
-mcpInstances:
-  - name: team-ab
-    # -- List of JWT groups authorized to query this backend
-    groups:
-      - team-a
-      - team-b
-    # -- Target Grafana stack URL
+# -- Managed mcp-grafana backends deployed in the same cluster.
+# For each backend the chart will:
+# 1. Deploy an mcp-grafana instance (ghcr.io/grafana/mcp-grafana).
+# 2. Expose an in-cluster Service (http://<release>-<name>-mcp:8000/mcp).
+# 3. Mount the Grafana service account token from a Secret.
+# 4. Configure the proxy to route authorized traffic via tenants.
+#
+# Model: groups authorize, tenant selects, backend executes.
+# A tenant id is what list_grafana_instances advertises and what the agent
+# targets via the `tenant` tool argument. The caller's JWT groups must
+# intersect a tenant's groups to use it.
+backends:
+  - # -- Internal/ops name for this backend (logging, must be unique)
+    name: grafana-ab
+    # -- Target Grafana stack URL for this mcp-grafana instance
     grafanaUrl: "https://grafana.company.com/team-ab"
-    # -- Configuration for the service account token secret
+    # -- Optional per-backend headers sent toward this mcp-grafana instance
+    headers: {}
+    # -- Service account token secret configuration
     tokenSecret:
       # -- Kubernetes Secret name
-      name: team-ab-token-secret
+      name: grafana-ab-token-secret
       # -- Key in the Secret holding the token
       key: token
       # -- Whether this chart should create the Secret inline
       create: true
       # -- Raw service account token (only used if tokenSecret.create is true)
       value: "glsa_my-service-account-token-ab"
+    # -- Tenants served by this backend. Each tenant is a selectable routing
+    # unit: its id is advertised to the agent, and its groups determine who
+    # can select it.
+    tenants:
+      - # -- Globally unique tenant id (the routing key)
+        id: team-a
+        # -- JWT groups authorized to select this tenant
+        groups:
+          - team-a
+        # -- Optional per-tenant headers (merge over backend headers)
+        headers: {}
+      - id: team-b
+        groups:
+          - team-b
+        headers:
+          X-Grafana-Org-Id: "2"
 
-  - name: team-c
-    groups:
-      - team-c
+  - name: grafana-c
     grafanaUrl: "https://grafana.company.com/team-c"
+    headers: {}
     tokenSecret:
-      name: team-c-token-secret
+      name: grafana-c-token-secret
       key: token
       create: true
       value: "glsa_my-service-account-token-c"
+    tenants:
+      - id: team-c
+        groups:
+          - team-c
+        headers: {}
 
 # -- Pod resource requests and limits
 resources: {}

@@ -26,12 +26,28 @@ data:
       {{- end }}
       {{- end }}
     backends:
-      {{- range .Values.mcpInstances }}
+      {{- range .Values.backends }}
       - name: "{{ .name }}"
         url: "http://{{ $.Release.Name }}-{{ .name }}-mcp:8000/mcp"
-        groups:
-          {{- range .groups }}
-          - "{{ . }}"
-          {{- end }}
         service_account_token: {{ printf "${%s}" ((print .name "_TOKEN") | upper | replace "-" "_" ) | quote }}
+        {{- if .headers }}
+        headers:
+          {{- range $k, $v := .headers }}
+          {{ $k }}: {{ $v | quote }}
+          {{- end }}
+        {{- end }}
+        tenants:
+          {{- range .tenants }}
+          - id: "{{ .id }}"
+            groups:
+              {{- range .groups }}
+              - "{{ . }}"
+              {{- end }}
+            {{- if .headers }}
+            headers:
+              {{- range $k, $v := .headers }}
+              {{ $k }}: {{ $v | quote }}
+              {{- end }}
+            {{- end }}
+          {{- end }}
       {{- end }}

@@ -44,7 +44,7 @@ spec:
           env:
             # Dynamically map backend service account tokens from K8s secrets
             # into matching environment variables for secure interpolation at startup
-            {{- range .Values.mcpInstances }}
+            {{- range .Values.backends }}
             - name: "{{ (print .name "_TOKEN") | upper | replace "-" "_" }}"
               valueFrom:
                 secretKeyRef:
