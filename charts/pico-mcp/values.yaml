@@ -258,3 +258,22 @@ database:
     # Optional: point-in-time recovery target (ISO 8601 format)
     # If omitted, recovers to latest available WAL
     targetTime: ""
+
+# -- ServiceMonitor for Prometheus Operator scraping
+serviceMonitor:
+  # -- Enable ServiceMonitor creation
+  enabled: false
+  # -- Namespace for the ServiceMonitor (defaults to release namespace)
+  namespace: ""
+  # -- Additional labels for ServiceMonitor discovery
+  labels: {}
+  # -- Scrape interval
+  interval: "30s"
+  # -- Scrape timeout
+  scrapeTimeout: "10s"
+  # -- Target labels to transfer from the Service to scraped metrics
+  targetLabels: []
+  # -- Relabeling rules
+  relabelings: []
+  # -- Metric relabeling rules
+  metricRelabelings: []
