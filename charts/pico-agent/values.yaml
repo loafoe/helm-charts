@@ -106,6 +106,9 @@ features:
   # Enable pv_resize task for resizing persistent volumes
   # When enabled, grants patch permission on PVCs
   pvResize: false
+  # Enable auto-remediation workflows orchestrated by pico-mcp
+  # (e.g. PV usage alerting and automatic resize). Sets AUTO_REMEDIATE_ENABLED.
+  autoRemediate: false
 
 podAnnotations: {}
 
@@ -138,11 +141,22 @@ resources:
     memory: 32Mi
 
 # Observability settings
+#
+# Distributed tracing: pico-agent participates in traces that originate in
+# pico-mcp (the caller) using W3C Trace Context. Trace context propagation is
+# ALWAYS ON — the inbound traceparent is honoured and re-injected into outbound
+# Kubernetes API calls regardless of whether spans are exported. Setting
+# otelEndpoint additionally exports spans to an OTLP collector. Sampling
+# decisions made upstream by pico-mcp are honoured (ParentBased sampler).
 observability:
   logLevel: info
   logFormat: json
-  # OpenTelemetry endpoint (optional)
+  # OpenTelemetry OTLP collector endpoint for span export (host:port). When
+  # empty, spans are not exported but trace context is still propagated.
   otelEndpoint: ""
+  # Use plaintext (insecure) for the OTLP exporter. Set to false to use TLS.
+  # Maps to OTEL_EXPORTER_OTLP_INSECURE. Only applies when otelEndpoint is set.
+  otelInsecure: true
   otelServiceName: pico-agent
 
 # Prometheus ServiceMonitor (requires the Prometheus Operator CRDs).

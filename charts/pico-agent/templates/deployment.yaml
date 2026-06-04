@@ -51,6 +51,8 @@ spec:
             {{- if .Values.observability.otelEndpoint }}
             - name: OTEL_EXPORTER_OTLP_ENDPOINT
               value: {{ .Values.observability.otelEndpoint | quote }}
+            - name: OTEL_EXPORTER_OTLP_INSECURE
+              value: {{ .Values.observability.otelInsecure | quote }}
             {{- end }}
             - name: OTEL_SERVICE_NAME
               value: {{ .Values.observability.otelServiceName | quote }}

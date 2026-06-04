@@ -1,6 +1,6 @@
 # pico-agent
 
-![Version: 0.42.0](https://img.shields.io/badge/Version-0.42.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.40.0](https://img.shields.io/badge/AppVersion-v0.40.0-informational?style=flat-square)
+![Version: 0.43.0](https://img.shields.io/badge/Version-0.43.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.41.0](https://img.shields.io/badge/AppVersion-v0.41.0-informational?style=flat-square)
 
 A lightweight Kubernetes helper service for webhook-triggered cluster operations
 
@@ -22,6 +22,7 @@ A lightweight Kubernetes helper service for webhook-triggered cluster operations
 |-----|------|---------|-------------|
 | affinity | object | `{}` |  |
 | features.argocd | bool | `false` |  |
+| features.autoRemediate | bool | `false` |  |
 | features.configmapRead | bool | `false` |  |
 | features.getResource | bool | `false` |  |
 | features.httpRequest | bool | `false` |  |
@@ -49,6 +50,7 @@ A lightweight Kubernetes helper service for webhook-triggered cluster operations
 | observability.logFormat | string | `"json"` |  |
 | observability.logLevel | string | `"info"` |  |
 | observability.otelEndpoint | string | `""` |  |
+| observability.otelInsecure | bool | `true` |  |
 | observability.otelServiceName | string | `"pico-agent"` |  |
 | podAnnotations | object | `{}` |  |
 | podSecurityContext.fsGroup | int | `65532` |  |
