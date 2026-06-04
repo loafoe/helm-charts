@@ -157,6 +157,9 @@ spec:
             - name: http
               containerPort: {{ .Values.service.port }}
               protocol: TCP
+            - name: metrics
+              containerPort: {{ .Values.metrics.port | default 9090 }}
+              protocol: TCP
           {{- if eq .Values.server.transport "sse" }}
           livenessProbe:
             httpGet:

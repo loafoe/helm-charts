@@ -259,6 +259,11 @@ database:
     # If omitted, recovers to latest available WAL
     targetTime: ""
 
+# -- Metrics server configuration (separate port from main HTTP, not publicly exposed)
+metrics:
+  # -- Port for the internal metrics server (serves /metrics for Prometheus)
+  port: 9090
+
 # -- ServiceMonitor for Prometheus Operator scraping
 serviceMonitor:
   # -- Enable ServiceMonitor creation

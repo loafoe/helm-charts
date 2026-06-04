@@ -1,6 +1,6 @@
 # pico-mcp
 
-![Version: 0.42.0](https://img.shields.io/badge/Version-0.42.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.49.1](https://img.shields.io/badge/AppVersion-v0.49.1-informational?style=flat-square)
+![Version: 0.43.0](https://img.shields.io/badge/Version-0.43.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.49.2](https://img.shields.io/badge/AppVersion-v0.49.2-informational?style=flat-square)
 
 MCP server for managing multiple pico-agent instances
 
@@ -67,6 +67,8 @@ MCP server for managing multiple pico-agent instances
 | ipAllowlist.cidrs | list | `[]` |  |
 | ipAllowlist.enabled | bool | `false` |  |
 | leaderElection.enabled | bool | `false` |  |
+| metrics | object | `{"port":9090}` | Metrics server configuration (separate port from main HTTP, not publicly exposed) |
+| metrics.port | int | `9090` | Port for the internal metrics server (serves /metrics for Prometheus) |
 | nameOverride | string | `""` |  |
 | networkPolicy.enabled | bool | `false` |  |
 | nodeSelector."kubernetes.io/os" | string | `"linux"` |  |
