@@ -30,6 +30,54 @@ server:
   # -- The exposed MCP endpoint path
   path: /mcp
 
+# -- Observability. The proxy exposes Prometheus metrics on a SEPARATE listener
+# (isolated from the /mcp data plane), and emits OTLP traces driven by the
+# standard OTEL_* environment variables.
+metrics:
+  # -- Enable the metrics listener (adds a container/service port + config block)
+  enabled: true
+  # -- Port the proxy serves Prometheus metrics on inside the container
+  port: 9090
+  # -- Path the metrics endpoint is served on
+  path: /metrics
+
+# -- OpenTelemetry tracing. Tracing is enabled inside the proxy only when
+# OTEL_EXPORTER_OTLP_ENDPOINT is set. The same vars can be set on the managed
+# mcp-grafana backends so downstream traces correlate end-to-end with the
+# proxy's (the proxy always injects W3C traceparent on backend calls).
+tracing:
+  # -- Enable tracing by setting OTEL_* env on the proxy (and backends)
+  enabled: false
+  # -- OTLP gRPC collector endpoint (sets OTEL_EXPORTER_OTLP_ENDPOINT)
+  endpoint: "http://otel-collector:4317"
+  # -- Service name reported by the proxy (sets OTEL_SERVICE_NAME)
+  serviceName: "mt-mcp-grafana"
+  # -- Additional raw OTEL_* env vars to set on the proxy container
+  extraEnv: {}
+    # OTEL_EXPORTER_OTLP_INSECURE: "true"
+  # -- Also set OTEL_* env on the managed mcp-grafana backend pods so they join
+  # the proxy's trace. OTEL_SERVICE_NAME is derived per backend (mcp-grafana-<name>).
+  enableOnBackends: false
+
+# -- ServiceMonitor for Prometheus Operator scraping of the proxy metrics port
+serviceMonitor:
+  # -- Enable ServiceMonitor creation (requires the Prometheus Operator CRDs)
+  enabled: false
+  # -- Namespace for the ServiceMonitor (defaults to release namespace)
+  namespace: ""
+  # -- Additional labels for ServiceMonitor discovery (e.g. release: kube-prometheus-stack)
+  labels: {}
+  # -- Scrape interval
+  interval: "30s"
+  # -- Scrape timeout
+  scrapeTimeout: "10s"
+  # -- Target labels to transfer from the Service to scraped metrics
+  targetLabels: []
+  # -- Relabeling rules applied before scraping
+  relabelings: []
+  # -- Metric relabeling rules applied after scraping
+  metricRelabelings: []
+
 # -- Authentication settings for incoming LLM/client JWTs
 auth:
   # -- JWT verification mode: jwks | static | insecure

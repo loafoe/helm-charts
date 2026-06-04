@@ -45,6 +45,18 @@ spec:
                 secretKeyRef:
                   name: "{{ .tokenSecret.name }}"
                   key: "{{ .tokenSecret.key | default "token" }}"
+            {{- if and $.Values.tracing.enabled $.Values.tracing.enableOnBackends }}
+            # OpenTelemetry: let this mcp-grafana join the proxy's trace by
+            # exporting to the same collector (the proxy injects W3C traceparent).
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              value: "{{ $.Values.tracing.endpoint }}"
+            - name: OTEL_SERVICE_NAME
+              value: "mcp-grafana-{{ .name }}"
+            {{- range $k, $v := $.Values.tracing.extraEnv }}
+            - name: "{{ $k }}"
+              value: "{{ $v }}"
+            {{- end }}
+            {{- end }}
           livenessProbe:
             httpGet:
               path: /healthz

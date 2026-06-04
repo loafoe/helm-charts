@@ -4,6 +4,7 @@ metadata:
   name: {{ include "mt-mcp-grafana.fullname" . }}
   labels:
     {{- include "mt-mcp-grafana.labels" . | nindent 4 }}
+    app.kubernetes.io/component: proxy
 spec:
   type: {{ .Values.service.type }}
   ports:
@@ -11,6 +12,12 @@ spec:
       targetPort: http
       protocol: TCP
       name: http
+    {{- if .Values.metrics.enabled }}
+    - port: {{ .Values.metrics.port | default 9090 }}
+      targetPort: metrics
+      protocol: TCP
+      name: metrics
+    {{- end }}
   selector:
     {{- include "mt-mcp-grafana.selectorLabels" . | nindent 4 }}
     app.kubernetes.io/component: proxy

@@ -31,6 +31,11 @@ spec:
             - name: http
               containerPort: {{ .Values.server.port | default 8080 }}
               protocol: TCP
+            {{- if .Values.metrics.enabled }}
+            - name: metrics
+              containerPort: {{ .Values.metrics.port | default 9090 }}
+              protocol: TCP
+            {{- end }}
           livenessProbe:
             httpGet:
               path: /healthz
@@ -44,6 +49,18 @@ spec:
             initialDelaySeconds: 5
             periodSeconds: 10
           env:
+            {{- if .Values.tracing.enabled }}
+            # OpenTelemetry tracing. The proxy enables OTLP export when
+            # OTEL_EXPORTER_OTLP_ENDPOINT is set.
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              value: "{{ .Values.tracing.endpoint }}"
+            - name: OTEL_SERVICE_NAME
+              value: "{{ .Values.tracing.serviceName | default "mt-mcp-grafana" }}"
+            {{- range $k, $v := .Values.tracing.extraEnv }}
+            - name: "{{ $k }}"
+              value: "{{ $v }}"
+            {{- end }}
+            {{- end }}
             # Dynamically map backend service account tokens from K8s secrets
             # into matching environment variables for secure interpolation at startup
             {{- range .Values.backends }}

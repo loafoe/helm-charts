@@ -9,6 +9,14 @@ data:
     server:
       listen: ":{{ .Values.server.port | default 8080 }}"
       path: "{{ .Values.server.path | default "/mcp" }}"
+    observability:
+      {{- if .Values.metrics.enabled }}
+      metrics_listen: ":{{ .Values.metrics.port | default 9090 }}"
+      metrics_path: "{{ .Values.metrics.path | default "/metrics" }}"
+      {{- else }}
+      # Metrics listener disabled.
+      metrics_listen: ""
+      {{- end }}
     auth:
       mode: "{{ .Values.auth.mode | default "jwks" }}"
       groups_claim: "{{ .Values.auth.groupsClaim | default "groups" }}"
