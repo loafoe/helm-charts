@@ -78,6 +78,38 @@ serviceMonitor:
   # -- Metric relabeling rules applied after scraping
   metricRelabelings: []
 
+# -- Metrics for the managed mcp-grafana backend pods. The unmodified
+# mcp-grafana image serves Prometheus metrics on a SEPARATE listener
+# (--metrics --metrics-address :<port>), kept off the :8000 MCP data plane to
+# avoid a port clash. Backends emit the same OTel mcp_server_* series as the
+# proxy; they do not collide because each scrape target carries distinct
+# job/service/pod labels, and the backend ServiceMonitor adds the per-instance
+# mcp_instance label. Only applies to managed backends (externalUrl backends
+# are scraped by whoever runs them).
+backendMetrics:
+  # -- Enable the metrics listener on managed mcp-grafana backends
+  enabled: true
+  # -- Port the backend serves Prometheus metrics on (separate from MCP :8000)
+  port: 9090
+  # -- Path the backend metrics endpoint is served on (mcp-grafana uses /metrics)
+  path: /metrics
+  # -- Create a ServiceMonitor for the backend metrics (requires the Operator)
+  serviceMonitor:
+    # -- Enable backend ServiceMonitor creation
+    enabled: false
+    # -- Namespace for the ServiceMonitor (defaults to release namespace)
+    namespace: ""
+    # -- Additional labels for ServiceMonitor discovery
+    labels: {}
+    # -- Scrape interval
+    interval: "30s"
+    # -- Scrape timeout
+    scrapeTimeout: "10s"
+    # -- Relabeling rules applied before scraping
+    relabelings: []
+    # -- Metric relabeling rules applied after scraping
+    metricRelabelings: []
+
 # -- Authentication settings for incoming LLM/client JWTs
 auth:
   # -- JWT verification mode: jwks | static | insecure

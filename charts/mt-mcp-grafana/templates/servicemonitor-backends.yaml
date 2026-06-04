@@ -1,0 +1,41 @@
+{{- if .Values.backendMetrics.serviceMonitor.enabled }}
+{{- if not .Values.backendMetrics.enabled }}
+{{- fail "backendMetrics.serviceMonitor.enabled requires backendMetrics.enabled" }}
+{{- end }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "mt-mcp-grafana.fullname" . }}-backends
+  namespace: {{ default .Release.Namespace .Values.backendMetrics.serviceMonitor.namespace }}
+  labels:
+    {{- include "mt-mcp-grafana.labels" . | nindent 4 }}
+    app.kubernetes.io/component: backend
+    {{- with .Values.backendMetrics.serviceMonitor.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "mt-mcp-grafana.selectorLabels" . | nindent 6 }}
+      # Scope to the managed backend Services only; the proxy Service shares the
+      # base selector labels but carries component=proxy instead.
+      app.kubernetes.io/component: backend
+  # Promote the per-backend mcp-instance Service label onto scraped series so
+  # each downstream mcp-grafana is distinguishable (and never collides with the
+  # proxy's identically-named mcp_server_* series).
+  targetLabels:
+    - mcp-instance
+  endpoints:
+    - port: metrics
+      path: {{ .Values.backendMetrics.path | default "/metrics" }}
+      interval: {{ .Values.backendMetrics.serviceMonitor.interval | default "30s" }}
+      scrapeTimeout: {{ .Values.backendMetrics.serviceMonitor.scrapeTimeout | default "10s" }}
+      {{- with .Values.backendMetrics.serviceMonitor.relabelings }}
+      relabelings:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.backendMetrics.serviceMonitor.metricRelabelings }}
+      metricRelabelings:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+{{- end }}

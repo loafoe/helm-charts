@@ -30,6 +30,13 @@ spec:
             - "streamable-http"
             - "--address"
             - "0.0.0.0:8000"
+            {{- if $.Values.backendMetrics.enabled }}
+            # Prometheus metrics on a separate listener, off the :8000 MCP data
+            # plane (no port clash).
+            - "--metrics"
+            - "--metrics-address"
+            - "0.0.0.0:{{ $.Values.backendMetrics.port | default 9090 }}"
+            {{- end }}
             {{- range .args }}
             - "{{ . }}"
             {{- end }}
@@ -37,6 +44,11 @@ spec:
             - name: http
               containerPort: 8000
               protocol: TCP
+            {{- if $.Values.backendMetrics.enabled }}
+            - name: metrics
+              containerPort: {{ $.Values.backendMetrics.port | default 9090 }}
+              protocol: TCP
+            {{- end }}
           env:
             - name: GRAFANA_URL
               value: "{{ .grafanaUrl }}"
@@ -76,6 +88,7 @@ metadata:
   name: "{{ $.Release.Name }}-{{ .name }}-mcp"
   labels:
     {{- include "mt-mcp-grafana.labels" $ | nindent 4 }}
+    app.kubernetes.io/component: backend
     mcp-instance: "{{ .name }}"
 spec:
   type: ClusterIP
@@ -84,6 +97,12 @@ spec:
       targetPort: http
       protocol: TCP
       name: http
+    {{- if $.Values.backendMetrics.enabled }}
+    - port: {{ $.Values.backendMetrics.port | default 9090 }}
+      targetPort: metrics
+      protocol: TCP
+      name: metrics
+    {{- end }}
   selector:
     {{- include "mt-mcp-grafana.selectorLabels" $ | nindent 4 }}
     mcp-instance: "{{ .name }}"
