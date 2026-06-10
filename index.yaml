@@ -242,6 +242,18 @@ entries:
     urls:
     - https://loafoe.github.io/helm-charts/lessor-0.0.10.tgz
     version: 0.0.10
+  mt-mcp-grafana:
+  - apiVersion: v2
+    appVersion: 0.1.0
+    created: "2026-06-10T07:39:43.089777202Z"
+    description: A multi-tenant proxy that aggregates and secures multiple mcp-grafana
+      backend instances speaking the MCP streamable-HTTP transport.
+    digest: d730e831a587701f29bb4636a18b85ef99eb2f9114ef77cb1e2a16812ac1bed6
+    name: mt-mcp-grafana
+    type: application
+    urls:
+    - https://github.com/loafoe/helm-charts/releases/download/mt-mcp-grafana-0.9.0/mt-mcp-grafana-0.9.0.tgz
+    version: 0.9.0
   otlp-gateway:
   - apiVersion: v1
     appVersion: v0.3.0
@@ -346,4 +358,4 @@ entries:
     urls:
     - https://loafoe.github.io/helm-charts/tempo-distributed-1.20.1.tgz
     version: 1.20.1
-generated: "2025-11-04T11:08:34.937768+01:00"
+generated: "2026-06-10T07:39:43.089829341Z"
