@@ -303,6 +303,26 @@ entries:
     urls:
     - https://loafoe.github.io/helm-charts/patch-operator-v0.11.3.tgz
     version: v0.11.3
+  pico-mcp:
+  - apiVersion: v2
+    appVersion: v0.51.4
+    created: "2026-06-10T10:15:13.403874616Z"
+    description: MCP server for managing multiple pico-agent instances
+    digest: 03c3f23ea4a8f9bc19af83350261e6de1c9f5cde4b9c8a494eb1cea0dff0f1e8
+    home: https://github.com/loafoe/pico-mcp
+    keywords:
+    - kubernetes
+    - mcp
+    - spiffe
+    - ai
+    maintainers:
+    - email: andy.lo-a-foe@philips.com
+      name: Andy Lo-A-Foe
+    name: pico-mcp
+    type: application
+    urls:
+    - https://github.com/loafoe/helm-charts/releases/download/pico-mcp-0.44.3/pico-mcp-0.44.3.tgz
+    version: 0.44.3
   solgate:
   - apiVersion: v2
     appVersion: v0.0.12
@@ -358,4 +378,4 @@ entries:
     urls:
     - https://loafoe.github.io/helm-charts/tempo-distributed-1.20.1.tgz
     version: 1.20.1
-generated: "2026-06-10T07:39:43.089829341Z"
+generated: "2026-06-10T10:15:13.403931561Z"
