@@ -109,9 +109,16 @@ data:
         max_pv_size_gi: {{ .Values.alerts.pvUsage.maxPVSizeGi }}
         {{- end }}
     {{- end }}
-    {{- if and .Values.ui .Values.ui.logo .Values.ui.logo.enabled }}
+    {{- if .Values.ui }}
+    {{- if or (and .Values.ui.logo .Values.ui.logo.enabled) .Values.ui.idleTimeout }}
     ui:
+      {{- if and .Values.ui.logo .Values.ui.logo.enabled }}
       logo_path: "/etc/pico-mcp/logo/logo.svg"
+      {{- end }}
+      {{- if .Values.ui.idleTimeout }}
+      idle_timeout: {{ .Values.ui.idleTimeout | quote }}
+      {{- end }}
+    {{- end }}
     {{- end }}
     {{- if and .Values.cron .Values.cron.enabled }}
     cron:
