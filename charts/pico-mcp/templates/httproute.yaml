@@ -2,9 +2,9 @@
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
-  name: {{ include "pico-mcp.fullname" . }}
+  name: {{ include "centcom.fullname" . }}
   labels:
-    {{- include "pico-mcp.labels" . | nindent 4 }}
+    {{- include "centcom.labels" . | nindent 4 }}
   {{- with .Values.httpRoute.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
@@ -24,6 +24,6 @@ spec:
             type: PathPrefix
             value: /
       backendRefs:
-        - name: {{ include "pico-mcp.fullname" . }}
+        - name: {{ include "centcom.fullname" . }}
           port: {{ .Values.service.port }}
 {{- end }}

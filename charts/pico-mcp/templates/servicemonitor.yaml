@@ -2,17 +2,17 @@
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
-  name: {{ include "pico-mcp.fullname" . }}
+  name: {{ include "centcom.fullname" . }}
   namespace: {{ default .Release.Namespace .Values.serviceMonitor.namespace }}
   labels:
-    {{- include "pico-mcp.labels" . | nindent 4 }}
+    {{- include "centcom.labels" . | nindent 4 }}
     {{- with .Values.serviceMonitor.labels }}
     {{- toYaml . | nindent 4 }}
     {{- end }}
 spec:
   selector:
     matchLabels:
-      {{- include "pico-mcp.selectorLabels" . | nindent 6 }}
+      {{- include "centcom.selectorLabels" . | nindent 6 }}
   {{- with .Values.serviceMonitor.targetLabels }}
   targetLabels:
     {{- toYaml . | nindent 4 }}

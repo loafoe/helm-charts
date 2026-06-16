@@ -2,13 +2,13 @@
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:
-  name: {{ include "pico-mcp.fullname" . }}
+  name: {{ include "centcom.fullname" . }}
   labels:
-    {{- include "pico-mcp.labels" . | nindent 4 }}
+    {{- include "centcom.labels" . | nindent 4 }}
 spec:
   endpointSelector:
     matchLabels:
-      {{- include "pico-mcp.selectorLabels" . | nindent 6 }}
+      {{- include "centcom.selectorLabels" . | nindent 6 }}
   ingress:
     # Allow from Cilium envoy in kube-system (gateway proxy)
     - fromEndpoints:
