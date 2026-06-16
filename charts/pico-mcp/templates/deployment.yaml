@@ -1,14 +1,14 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "pico-mcp.fullname" . }}
+  name: {{ include "centcom.fullname" . }}
   labels:
-    {{- include "pico-mcp.labels" . | nindent 4 }}
+    {{- include "centcom.labels" . | nindent 4 }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      {{- include "pico-mcp.selectorLabels" . | nindent 6 }}
+      {{- include "centcom.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       annotations:
@@ -17,13 +17,13 @@ spec:
         {{- toYaml . | nindent 8 }}
         {{- end }}
       labels:
-        {{- include "pico-mcp.selectorLabels" . | nindent 8 }}
+        {{- include "centcom.selectorLabels" . | nindent 8 }}
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: {{ include "pico-mcp.serviceAccountName" . }}
+      serviceAccountName: {{ include "centcom.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
@@ -78,7 +78,7 @@ spec:
                   name: {{ .Values.api.clientSecretRef.name }}
                   key: {{ .Values.api.clientSecretRef.key | default "client-secret" }}
                   {{- else }}
-                  name: {{ include "pico-mcp.fullname" . }}-oauth2
+                  name: {{ include "centcom.fullname" . }}-oauth2
                   key: client-secret
                   {{- end }}
           {{- end }}
@@ -86,32 +86,32 @@ spec:
             - name: DATABASE_HOST
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "pico-mcp.fullname" . }}-postgres-connection
+                  name: {{ include "centcom.fullname" . }}-postgres-connection
                   key: host
             - name: DATABASE_PORT
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "pico-mcp.fullname" . }}-postgres-connection
+                  name: {{ include "centcom.fullname" . }}-postgres-connection
                   key: port
             - name: DATABASE_NAME
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "pico-mcp.fullname" . }}-postgres-connection
+                  name: {{ include "centcom.fullname" . }}-postgres-connection
                   key: database
             - name: DATABASE_USER
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "pico-mcp.fullname" . }}-postgres-connection
+                  name: {{ include "centcom.fullname" . }}-postgres-connection
                   key: username
             - name: DATABASE_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "pico-mcp.fullname" . }}-postgres-connection
+                  name: {{ include "centcom.fullname" . }}-postgres-connection
                   key: password
             - name: DATABASE_SSLMODE
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "pico-mcp.fullname" . }}-postgres-connection
+                  name: {{ include "centcom.fullname" . }}-postgres-connection
                   key: sslmode
                   optional: true
           {{- end }}
@@ -119,7 +119,7 @@ spec:
             - name: OTEL_ENABLED
               value: "true"
             - name: OTEL_SERVICE_NAME
-              value: {{ include "pico-mcp.fullname" . | quote }}
+              value: {{ include "centcom.fullname" . | quote }}
             {{- if .Values.otel.endpoint }}
             - name: OTEL_EXPORTER_OTLP_ENDPOINT
               value: {{ .Values.otel.endpoint | quote }}
@@ -193,11 +193,11 @@ spec:
       volumes:
         - name: config
           configMap:
-            name: {{ include "pico-mcp.fullname" . }}-config
+            name: {{ include "centcom.fullname" . }}-config
         {{- if and .Values.ui .Values.ui.logo .Values.ui.logo.enabled }}
         - name: logo
           configMap:
-            name: {{ include "pico-mcp.fullname" . }}-logo
+            name: {{ include "centcom.fullname" . }}-logo
         {{- end }}
         {{- if .Values.spire.enabled }}
         - name: spire-agent-socket

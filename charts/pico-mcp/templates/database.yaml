@@ -2,10 +2,10 @@
 apiVersion: dip.io/v1alpha1
 kind: Postgres
 metadata:
-  name: {{ include "pico-mcp.fullname" . }}
+  name: {{ include "centcom.fullname" . }}
   namespace: {{ .Release.Namespace }}
   labels:
-    {{- include "pico-mcp.labels" . | nindent 4 }}
+    {{- include "centcom.labels" . | nindent 4 }}
   annotations:
     "argocd.argoproj.io/sync-wave": "-1"
 spec:
@@ -17,7 +17,7 @@ spec:
 {{- end }}
 
   parameters:
-    identifier: {{ .Values.database.identifier | default (include "pico-mcp.fullname" .) }}
+    identifier: {{ .Values.database.identifier | default (include "centcom.fullname" .) }}
     size: {{ .Values.database.size | default "small" }}
     engineVersion: {{ .Values.database.engineVersion | default "16" | quote }}
     databaseName: {{ .Values.database.databaseName | default "picomcp" }}
@@ -55,5 +55,5 @@ spec:
       snapshotIdentifier: {{ .Values.database.snapshotId }}
   {{- end }}
   writeConnectionSecretToRef:
-    name: {{ include "pico-mcp.fullname" . }}-postgres-connection
+    name: {{ include "centcom.fullname" . }}-postgres-connection
 {{- end }}
