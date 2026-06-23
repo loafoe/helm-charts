@@ -305,6 +305,25 @@ entries:
     version: v0.11.3
   pico-mcp:
   - apiVersion: v2
+    appVersion: v0.67.0
+    created: "2026-06-23T22:02:58.707212727Z"
+    description: MCP server for managing multiple pico-agent instances
+    digest: d8aead67a221642c04bedfb7edf64214f0da6fe2e813e57b03ba92f22b8efa94
+    home: https://github.com/loafoe/pico-mcp
+    keywords:
+    - kubernetes
+    - mcp
+    - spiffe
+    - ai
+    maintainers:
+    - email: andy.lo-a-foe@philips.com
+      name: Andy Lo-A-Foe
+    name: pico-mcp
+    type: application
+    urls:
+    - https://github.com/loafoe/helm-charts/releases/download/pico-mcp-0.52.0/pico-mcp-0.52.0.tgz
+    version: 0.52.0
+  - apiVersion: v2
     appVersion: v0.61.0
     created: "2026-06-16T20:09:01.067788815Z"
     description: MCP server for managing multiple pico-agent instances
@@ -511,4 +530,4 @@ entries:
     urls:
     - https://loafoe.github.io/helm-charts/tempo-distributed-1.20.1.tgz
     version: 1.20.1
-generated: "2026-06-16T20:09:01.067869404Z"
+generated: "2026-06-23T22:02:58.707299859Z"
