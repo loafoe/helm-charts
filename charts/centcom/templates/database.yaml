@@ -1,0 +1,59 @@
+{{- if .Values.database.enabled }}
+apiVersion: dip.io/v1alpha1
+kind: Postgres
+metadata:
+  name: {{ include "centcom.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "centcom.labels" . | nindent 4 }}
+  annotations:
+    "argocd.argoproj.io/sync-wave": "-1"
+spec:
+{{- if .Values.database.cnpg }}
+  crossplane:
+    compositionSelector:
+      matchLabels:
+        provider: cnpg
+{{- end }}
+
+  parameters:
+    identifier: {{ .Values.database.identifier | default (include "centcom.fullname" .) }}
+    size: {{ .Values.database.size | default "small" }}
+    engineVersion: {{ .Values.database.engineVersion | default "16" | quote }}
+    databaseName: {{ .Values.database.databaseName | default "picomcp" }}
+    masterUsername: {{ .Values.database.username | default "picomcp" }}
+  {{- if and .Values.database.cnpg .Values.database.snapshots.enabled }}
+    enableSnapshots: true
+    snapshotClassName: {{ .Values.database.snapshots.snapshotClassName | quote }}
+    storageClassName: {{ .Values.database.snapshots.storageClassName | quote }}
+  {{- end }}
+  {{- if and .Values.database.cnpg (and .Values.database.barmanBackup .Values.database.barmanBackup.enabled) }}
+    barmanBackup:
+      enabled: true
+      {{- if .Values.database.barmanBackup.bucketName }}
+      bucketName: {{ .Values.database.barmanBackup.bucketName | quote }}
+      {{- end }}
+      {{- if .Values.database.barmanBackup.bucketPrefix }}
+      bucketPrefix: {{ .Values.database.barmanBackup.bucketPrefix | quote }}
+      {{- end }}
+      retentionDays: {{ .Values.database.barmanBackup.retentionDays | default 7 }}
+      compression: {{ .Values.database.barmanBackup.compression | default "gzip" | quote }}
+  {{- end }}
+  {{- if and .Values.database.cnpg .Values.database.restoreFromBarman .Values.database.restoreFromBarman.enabled }}
+    restore:
+      method: barmanObjectStore
+      {{- if .Values.database.restoreFromBarman.targetTime }}
+      targetTime: {{ .Values.database.restoreFromBarman.targetTime | quote }}
+      {{- end }}
+  {{- else if and .Values.database.cnpg .Values.database.restoreFromVolumeSnapshot.enabled }}
+    storageClassName: {{ .Values.database.restoreFromVolumeSnapshot.storageClassName | quote }}
+    restore:
+      method: volumeSnapshot
+      sourceIdentifier: {{ .Values.database.restoreFromVolumeSnapshot.sourceIdentifier | quote }}
+  {{- else if .Values.database.restoreFromSnapshot }}
+    restore:
+      snapshotIdentifier: {{ .Values.database.snapshotId }}
+  {{- end }}
+  writeConnectionSecretToRef:
+    name: {{ include "centcom.fullname" . }}-postgres-connection
+{{- end }}

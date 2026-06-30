@@ -1,0 +1,15 @@
+apiVersion: v2
+name: centcom
+description: MCP server for managing multiple pico-agent instances
+type: application
+version: 0.52.0
+appVersion: "v0.67.0"
+keywords:
+  - kubernetes
+  - mcp
+  - spiffe
+  - ai
+home: https://github.com/loafoe/centcom
+maintainers:
+  - name: Andy Lo-A-Foe
+    email: andy.lo-a-foe@philips.com

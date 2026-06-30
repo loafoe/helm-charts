@@ -1,0 +1,143 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "centcom.fullname" . }}-config
+  labels:
+    {{- include "centcom.labels" . | nindent 4 }}
+data:
+  config.yaml: |
+    server:
+      transport: {{ .Values.server.transport | quote }}
+      port: {{ .Values.server.port }}
+      {{- if .Values.server.baseURL }}
+      base_url: {{ .Values.server.baseURL | quote }}
+      {{- end }}
+    spire:
+      agent_socket: {{ .Values.spire.agentSocket | quote }}
+      enabled: {{ .Values.spire.enabled }}
+    {{- if .Values.api }}
+    api:
+      port: {{ .Values.api.port | default .Values.server.port }}
+      client_id: {{ .Values.api.clientId | quote }}
+      {{- if .Values.api.corsOrigins }}
+      cors_origins:
+        {{- range .Values.api.corsOrigins }}
+        - {{ . | quote }}
+        {{- end }}
+      {{- end }}
+      {{- if .Values.api.oauth2 }}
+      oauth2:
+        enabled: {{ .Values.api.oauth2.enabled }}
+        issuer: {{ .Values.api.oauth2.issuer | quote }}
+        audience: {{ .Values.api.oauth2.audience | quote }}
+        {{- if .Values.api.oauth2.additionalAudiences }}
+        additional_audiences:
+          {{- range .Values.api.oauth2.additionalAudiences }}
+          - {{ . | quote }}
+          {{- end }}
+        {{- end }}
+        jwks_url: {{ .Values.api.oauth2.jwksURL | quote }}
+        {{- if .Values.api.oauth2.allowedGroups }}
+        allowed_groups:
+          {{- range .Values.api.oauth2.allowedGroups }}
+          - {{ . | quote }}
+          {{- end }}
+        {{- end }}
+      {{- end }}
+    {{- end }}
+    ip_allowlist:
+      enabled: {{ .Values.ipAllowlist.enabled }}
+      {{- if .Values.ipAllowlist.cidrs }}
+      cidrs:
+        {{- range .Values.ipAllowlist.cidrs }}
+        - {{ . | quote }}
+        {{- end }}
+      {{- else }}
+      cidrs: []
+      {{- end }}
+    {{- if .Values.adminGroups }}
+    adminGroups:
+      {{- range .Values.adminGroups }}
+      - {{ . | quote }}
+      {{- end }}
+    {{- end }}
+    agents:
+      {{- range .Values.agents }}
+      - id: {{ .id | quote }}
+        url: {{ .url | quote }}
+        jwt_audience: {{ .jwt_audience | quote }}
+        {{- if .groups }}
+        groups:
+          {{- range .groups }}
+          - {{ . | quote }}
+          {{- end }}
+        {{- end }}
+      {{- end }}
+    {{- if .Values.picoclaw.enabled }}
+    picoclaw:
+      url: {{ .Values.picoclaw.url | quote }}
+    {{- end }}
+    {{- if .Values.serviceIdentity.enabled }}
+    service_identity:
+      enabled: true
+      region: {{ .Values.serviceIdentity.region | quote }}
+      environment: {{ .Values.serviceIdentity.environment | quote }}
+      oauth2_client_id: {{ .Values.serviceIdentity.oauth2ClientId | quote }}
+      oidc_issuer: {{ .Values.serviceIdentity.oidcIssuer | quote }}
+      connector_id: {{ .Values.serviceIdentity.connectorId | default "iam-preview" | quote }}
+      audience: {{ .Values.serviceIdentity.audience | default .Values.api.oauth2.audience | quote }}
+    {{- end }}
+    {{- if .Values.features }}
+    features:
+      get_resource: {{ .Values.features.getResource | default false }}
+    {{- end }}
+    {{- if .Values.alerts }}
+    alerts:
+      pv_usage:
+        enabled: {{ .Values.alerts.pvUsage.enabled | default false }}
+        {{- if .Values.alerts.pvUsage.interval }}
+        interval: {{ .Values.alerts.pvUsage.interval | quote }}
+        {{- end }}
+        {{- if .Values.alerts.pvUsage.thresholdPercent }}
+        threshold_percent: {{ .Values.alerts.pvUsage.thresholdPercent }}
+        {{- end }}
+        {{- if .Values.alerts.pvUsage.cooldown }}
+        cooldown: {{ .Values.alerts.pvUsage.cooldown | quote }}
+        {{- end }}
+        auto_remediate: {{ .Values.alerts.pvUsage.autoRemediate | default false }}
+        {{- if .Values.alerts.pvUsage.maxPVSizeGi }}
+        max_pv_size_gi: {{ .Values.alerts.pvUsage.maxPVSizeGi }}
+        {{- end }}
+    {{- end }}
+    {{- if .Values.ui }}
+    {{- if or (and .Values.ui.logo .Values.ui.logo.enabled) .Values.ui.idleTimeout }}
+    ui:
+      {{- if and .Values.ui.logo .Values.ui.logo.enabled }}
+      logo_path: "/etc/centcom/logo/logo.svg"
+      {{- end }}
+      {{- if .Values.ui.idleTimeout }}
+      idle_timeout: {{ .Values.ui.idleTimeout | quote }}
+      {{- end }}
+    {{- end }}
+    {{- end }}
+    {{- if and .Values.cron .Values.cron.enabled }}
+    cron:
+      enabled: true
+      default_channel: {{ .Values.cron.defaultChannel | default "cron:system" | quote }}
+    {{- end }}
+    {{- if .Values.leaderElection.enabled }}
+    leaderElection:
+      enabled: true
+    {{- end }}
+---
+{{- if and .Values.ui .Values.ui.logo .Values.ui.logo.enabled .Values.ui.logo.content }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "centcom.fullname" . }}-logo
+  labels:
+    {{- include "centcom.labels" . | nindent 4 }}
+data:
+  logo.svg: |
+{{ .Values.ui.logo.content | indent 4 }}
+{{- end }}

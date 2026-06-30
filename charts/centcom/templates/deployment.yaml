@@ -1,0 +1,225 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "centcom.fullname" . }}
+  labels:
+    {{- include "centcom.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "centcom.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+        {{- with .Values.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      labels:
+        {{- include "centcom.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "centcom.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          args:
+            - "--config"
+            - "/etc/centcom/config.yaml"
+          env:
+          {{- if .Values.leaderElection.enabled }}
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+          {{- end }}
+          {{- if and .Values.picoclaw.enabled .Values.picoclaw.tokenSecret.name }}
+            - name: PICOCLAW_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.picoclaw.tokenSecret.name }}
+                  key: {{ .Values.picoclaw.tokenSecret.key | default "token" }}
+          {{- end }}
+          {{- if .Values.serviceIdentity.enabled }}
+            - name: SERVICE_IDENTITY_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.serviceIdentity.credentialsSecret.name }}
+                  key: {{ .Values.serviceIdentity.credentialsSecret.usernameKey | default "username" }}
+            - name: SERVICE_IDENTITY_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.serviceIdentity.credentialsSecret.name }}
+                  key: {{ .Values.serviceIdentity.credentialsSecret.passwordKey | default "password" }}
+            - name: SERVICE_IDENTITY_OAUTH2_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.serviceIdentity.credentialsSecret.name }}
+                  key: {{ .Values.serviceIdentity.credentialsSecret.oauth2SecretKey | default "oauth2-secret" }}
+          {{- end }}
+          {{- if or .Values.api.clientSecretRef .Values.api.clientSecretValue }}
+            - name: OAUTH2_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  {{- if .Values.api.clientSecretRef }}
+                  name: {{ .Values.api.clientSecretRef.name }}
+                  key: {{ .Values.api.clientSecretRef.key | default "client-secret" }}
+                  {{- else }}
+                  name: {{ include "centcom.fullname" . }}-oauth2
+                  key: client-secret
+                  {{- end }}
+          {{- end }}
+          {{- if .Values.database.enabled }}
+            - name: DATABASE_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "centcom.fullname" . }}-postgres-connection
+                  key: host
+            - name: DATABASE_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "centcom.fullname" . }}-postgres-connection
+                  key: port
+            - name: DATABASE_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "centcom.fullname" . }}-postgres-connection
+                  key: database
+            - name: DATABASE_USER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "centcom.fullname" . }}-postgres-connection
+                  key: username
+            - name: DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "centcom.fullname" . }}-postgres-connection
+                  key: password
+            - name: DATABASE_SSLMODE
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "centcom.fullname" . }}-postgres-connection
+                  key: sslmode
+                  optional: true
+          {{- end }}
+          {{- if .Values.otel.enabled }}
+            - name: OTEL_ENABLED
+              value: "true"
+            - name: OTEL_SERVICE_NAME
+              value: {{ include "centcom.fullname" . | quote }}
+            {{- if .Values.otel.endpoint }}
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              value: {{ .Values.otel.endpoint | quote }}
+            {{- end }}
+            - name: OTEL_EXPORTER_OTLP_PROTOCOL
+              value: {{ .Values.otel.protocol | default "grpc" | quote }}
+            - name: OTEL_GENAI_CAPTURE_CONTENT
+              value: {{ .Values.otel.captureContent | quote }}
+            {{- if .Values.otel.tracesPath }}
+            - name: OTEL_EXPORTER_OTLP_TRACES_PATH
+              value: {{ .Values.otel.tracesPath | quote }}
+            {{- end }}
+            {{- if .Values.otel.metricsPath }}
+            - name: OTEL_EXPORTER_OTLP_METRICS_PATH
+              value: {{ .Values.otel.metricsPath | quote }}
+            {{- end }}
+            {{- if .Values.otel.insecure }}
+            - name: OTEL_EXPORTER_OTLP_INSECURE
+              value: "true"
+            {{- end }}
+            {{- if .Values.otel.authSecretRef }}
+            - name: OTEL_EXPORTER_OTLP_AUTH_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.otel.authSecretRef.name }}
+                  key: {{ .Values.otel.authSecretRef.usernameKey | default "username" }}
+            - name: OTEL_EXPORTER_OTLP_AUTH_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.otel.authSecretRef.name }}
+                  key: {{ .Values.otel.authSecretRef.passwordKey | default "password" }}
+            {{- end }}
+          {{- end }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.port }}
+              protocol: TCP
+            - name: metrics
+              containerPort: {{ .Values.metrics.port | default 9090 }}
+              protocol: TCP
+          {{- if eq .Values.server.transport "sse" }}
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 3
+            periodSeconds: 5
+          {{- end }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - name: config
+              mountPath: /etc/centcom
+              readOnly: true
+            {{- if and .Values.ui .Values.ui.logo .Values.ui.logo.enabled }}
+            - name: logo
+              mountPath: /etc/centcom/logo
+              readOnly: true
+            {{- end }}
+            {{- if .Values.spire.enabled }}
+            - name: spire-agent-socket
+              mountPath: {{ .Values.spire.socketMountPath | default "/spiffe-workload-api" }}
+              readOnly: true
+            {{- end }}
+      volumes:
+        - name: config
+          configMap:
+            name: {{ include "centcom.fullname" . }}-config
+        {{- if and .Values.ui .Values.ui.logo .Values.ui.logo.enabled }}
+        - name: logo
+          configMap:
+            name: {{ include "centcom.fullname" . }}-logo
+        {{- end }}
+        {{- if .Values.spire.enabled }}
+        - name: spire-agent-socket
+          {{- if .Values.spire.csi.enabled }}
+          csi:
+            driver: csi.spiffe.io
+            readOnly: true
+          {{- else }}
+          hostPath:
+            path: {{ .Values.spire.hostSocketPath | default "/run/spire/agent-sockets" }}
+            type: DirectoryOrCreate
+          {{- end }}
+        {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

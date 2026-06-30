@@ -1,0 +1,288 @@
+# Default values for centcom
+
+replicaCount: 1
+
+image:
+  repository: ghcr.io/loafoe/centcom
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion
+  tag: ""
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+# SPIRE/SPIFFE configuration
+spire:
+  # Enable SPIRE connection (required for JWT-SVID identity)
+  enabled: true
+  # SPIRE agent socket path (env var passed to the application)
+  agentSocket: "unix:///spiffe-workload-api/spire-agent.sock"
+  # Mount path for the SPIRE socket inside the container
+  socketMountPath: "/spiffe-workload-api"
+  # Host path for SPIRE socket (used when csi.enabled=false)
+  hostSocketPath: "/run/spire/agent-sockets"
+  # CSI driver configuration (recommended for clusters with spiffe-csi-driver)
+  csi:
+    enabled: true
+
+# Server configuration
+server:
+  # Transport mode: "stdio" or "sse"
+  transport: "sse"
+  # Port for SSE server
+  port: 8080
+  # Base URL for SSE server (required for external access)
+  # This URL is sent to clients so they know where to POST messages
+  # Example: "https://centcom.example.com"
+  baseURL: ""
+
+# Remote pico-agents to manage
+agents:
+  - id: "cluster-alpha"
+    url: "http://pico-agent.alpha.svc.cluster.local:8080"
+    jwt_audience: "pico-agent-alpha"
+  - id: "cluster-beta"
+    url: "http://pico-agent.beta.svc.cluster.local:8080"
+    jwt_audience: "pico-agent-beta"
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use
+  name: ""
+
+podAnnotations: {}
+
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 65532
+  runAsGroup: 65532
+  fsGroup: 65532
+  seccompProfile:
+    type: RuntimeDefault
+
+securityContext:
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: true
+  capabilities:
+    drop:
+      - ALL
+
+service:
+  type: ClusterIP
+  port: 8080
+
+resources:
+  limits:
+    cpu: 100m
+    memory: 128Mi
+  requests:
+    cpu: 10m
+    memory: 32Mi
+
+nodeSelector:
+  kubernetes.io/os: linux
+
+tolerations: []
+
+affinity: {}
+
+# HTTPRoute configuration for Gateway API
+httpRoute:
+  # Enable HTTPRoute for external access
+  enabled: false
+  # Hostname for the route
+  hostname: ""
+  # Gateway reference
+  gatewayRef:
+    name: platform
+    namespace: kube-system
+    sectionName: https
+  # Optional annotations
+  annotations: {}
+
+# Network policy (Cilium)
+networkPolicy:
+  # Enable CiliumNetworkPolicy to restrict ingress to gateway only
+  enabled: false
+
+# IP allowlist for SSE endpoint (checked at application level via X-Forwarded-For)
+ipAllowlist:
+  # Enable IP allowlist checking
+  enabled: false
+  # List of allowed CIDRs
+  cidrs: []
+  # Example:
+  # cidrs:
+  #   - "10.0.0.0/8"
+  #   - "192.168.1.0/24"
+  #   - "203.0.113.42/32"
+
+# Picoclaw WebSocket client configuration
+picoclaw:
+  # Enable picoclaw integration for streaming chat
+  enabled: false
+  # WebSocket URL for picoclaw pico channel (without token query param)
+  # Example: "ws://picoclaw.picoclaw.svc.cluster.local:1337/pico/ws"
+  url: ""
+  # Secret containing the picoclaw token
+  # The secret should have a key named "token"
+  tokenSecret:
+    name: ""
+    key: "token"
+
+# Service identity for system-to-system authentication (e.g., remediation)
+# Uses HSP IAM service credentials + OIDC token exchange
+serviceIdentity:
+  # Enable service identity authentication
+  enabled: false
+  # HSP IAM URL
+  iamURL: ""
+  # Service ID registered in IAM
+  serviceId: ""
+  # Secret containing the RSA private key (PEM format)
+  privateKeySecret:
+    name: ""
+    key: "private-key"
+  # OIDC issuer for token exchange (same as api.oauth2.issuer typically)
+  oidcIssuer: ""
+  # Audience for the exchanged token (same as api.oauth2.audience typically)
+  audience: ""
+
+# Leader election for horizontal scaling
+leaderElection:
+  # Enable leader election (required for safe scaling with picoclaw/alerts)
+  # When enabled, only the leader replica runs picoclaw and alert monitors
+  enabled: false
+
+# Feature flags for optional functionality
+features:
+  # Enable get_resource tool for fetching arbitrary Kubernetes resources
+  getResource: false
+
+# Cron service for scheduled tasks
+cron:
+  # Enable cron service (requires picoclaw.enabled and database.enabled)
+  enabled: false
+  # Default channel for cron job messages
+  defaultChannel: "cron:system"
+
+# Alerting configuration
+alerts:
+  pvUsage:
+    # Enable PV usage monitoring and alerting
+    enabled: false
+    # Polling interval (Go duration format)
+    interval: "5m"
+    # Alert threshold percentage (0-100)
+    thresholdPercent: 80
+    # Cooldown between repeated alerts for same PV
+    cooldown: "1h"
+    # Enable auto-remediation (resize PVCs via picoclaw skill)
+    autoRemediate: false
+
+# OpenTelemetry configuration
+otel:
+  # Enable OpenTelemetry instrumentation
+  enabled: false
+  # OTLP exporter endpoint (e.g., "tempo.monitoring:4317")
+  endpoint: ""
+  # Export protocol: "grpc" or "http"
+  protocol: "grpc"
+  # Capture prompt/completion content (may contain PII)
+  captureContent: false
+
+# API configuration (see api section above for usage)
+# api:
+#   oauth2:
+#     allowedGroups: []  # Empty = all authenticated users allowed
+#     # Example: allowedGroups: ["pico-admins", "platform-team"]
+
+# UI configuration
+ui:
+  # Custom logo configuration
+  # By default, the embedded Kubernetes logo is used
+  logo:
+    # Enable custom logo (creates ConfigMap with logo content)
+    enabled: false
+    # SVG content for the custom logo (inline in values)
+    # content: |
+    #   <svg viewBox="0 0 100 100">...</svg>
+  # Inactivity period after which a UI session is revoked and the user is
+  # logged out. Accepts a Go duration string (e.g. "15m", "30m", "1h").
+  # Defaults to 15m when unset.
+  # idleTimeout: "15m"
+
+# Database configuration (dip.io Postgres CRD)
+database:
+  # Enable PostgreSQL database for persistent state (chat history, alerts)
+  enabled: false
+  # Use CNPG (CloudNativePG) provider instead of RDS
+  cnpg: true
+  # Database identifier (defaults to release fullname)
+  identifier: ""
+  # Database size: small, medium, large
+  size: "small"
+  # PostgreSQL version
+  engineVersion: "18.1"
+  # Database name
+  databaseName: "picomcp"
+  # Master username
+  username: "picomcp"
+  # Restore from snapshot
+  restoreFromSnapshot: false
+  snapshotId: ""
+  # CNPG snapshot configuration
+  snapshots:
+    enabled: false
+    snapshotClassName: ""
+    storageClassName: ""
+  # CNPG volume snapshot restore
+  restoreFromVolumeSnapshot:
+    enabled: false
+    storageClassName: ""
+    sourceIdentifier: ""
+  # CNPG Barman backup to S3 (continuous WAL archiving)
+  barmanBackup:
+    enabled: false
+    # S3 bucket name (defaults to ${resourcePrefix}-barman from environment config)
+    bucketName: ""
+    # Bucket prefix (defaults to ${namespace}/${clusterName})
+    bucketPrefix: ""
+    # Retention period in days
+    retentionDays: 7
+    # Compression algorithm: gzip, bzip2, snappy, none
+    compression: "gzip"
+  # CNPG restore from Barman S3 backup (point-in-time recovery)
+  restoreFromBarman:
+    enabled: false
+    # Optional: point-in-time recovery target (ISO 8601 format)
+    # If omitted, recovers to latest available WAL
+    targetTime: ""
+
+# -- Metrics server configuration (separate port from main HTTP, not publicly exposed)
+metrics:
+  # -- Port for the internal metrics server (serves /metrics for Prometheus)
+  port: 9090
+
+# -- ServiceMonitor for Prometheus Operator scraping
+serviceMonitor:
+  # -- Enable ServiceMonitor creation
+  enabled: false
+  # -- Namespace for the ServiceMonitor (defaults to release namespace)
+  namespace: ""
+  # -- Additional labels for ServiceMonitor discovery
+  labels: {}
+  # -- Scrape interval
+  interval: "30s"
+  # -- Scrape timeout
+  scrapeTimeout: "10s"
+  # -- Target labels to transfer from the Service to scraped metrics
+  targetLabels: []
+  # -- Relabeling rules
+  relabelings: []
+  # -- Metric relabeling rules
+  metricRelabelings: []
