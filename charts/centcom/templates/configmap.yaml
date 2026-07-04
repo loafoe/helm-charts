@@ -9,6 +9,7 @@ data:
     server:
       transport: {{ .Values.server.transport | quote }}
       port: {{ .Values.server.port }}
+      mcp_port: {{ .Values.server.mcpPort | default 3000 }}
       {{- if .Values.server.baseURL }}
       base_url: {{ .Values.server.baseURL | quote }}
       {{- end }}

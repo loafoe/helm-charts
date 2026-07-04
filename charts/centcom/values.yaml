@@ -30,8 +30,13 @@ spire:
 server:
   # Transport mode: "stdio" or "sse"
   transport: "sse"
-  # Port for SSE server
+  # Port for the UI/API HTTP server (this is the port fronted by the public HTTPRoute)
   port: 8080
+  # Port for the Streamable HTTP MCP endpoint (/mcp), served on a SEPARATE
+  # listener so it is NOT covered by the public HTTPRoute. In-cluster clients
+  # (e.g. picoclaw) reach it at <svc>:3000/mcp. Set equal to `port` to co-serve
+  # /mcp on the public UI port (legacy single-port behavior).
+  mcpPort: 3000
   # Base URL for SSE server (required for external access)
   # This URL is sent to clients so they know where to POST messages
   # Example: "https://centcom.example.com"

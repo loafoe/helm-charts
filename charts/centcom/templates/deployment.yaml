@@ -157,6 +157,9 @@ spec:
             - name: http
               containerPort: {{ .Values.service.port }}
               protocol: TCP
+            - name: mcp
+              containerPort: {{ .Values.server.mcpPort | default 3000 }}
+              protocol: TCP
             - name: metrics
               containerPort: {{ .Values.metrics.port | default 9090 }}
               protocol: TCP
