@@ -1,0 +1,56 @@
+name: Regenerate Helm Docs
+
+# Chart versions and values are bumped manually and pushed straight to main.
+# The helm-docs README (Version/AppVersion badges + value tables) is generated
+# from chart metadata and drifts whenever that metadata changes. This workflow
+# regenerates the docs on every push to main that touches charts/** and commits
+# the result back, so the published READMEs stay in sync.
+#
+# The commit is pushed with the default GITHUB_TOKEN, which by design does NOT
+# trigger further workflow runs — so this can't loop, and it won't re-fire the
+# release workflow (chart-releaser uses skip_existing, and a README-only change
+# doesn't change the packaged chart version anyway).
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'charts/**'
+      - '.github/workflows/helm-docs.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  helm-docs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install helm-docs
+        env:
+          # renovate: datasource=github-releases depName=norwoodj/helm-docs
+          HELM_DOCS_VERSION: 1.14.2
+        run: |
+          curl -fsSL "https://github.com/norwoodj/helm-docs/releases/download/v${HELM_DOCS_VERSION}/helm-docs_${HELM_DOCS_VERSION}_Linux_x86_64.tar.gz" \
+            | sudo tar -xz -C /usr/local/bin helm-docs
+          helm-docs --version
+
+      - name: Regenerate docs
+        run: helm-docs --chart-search-root=charts
+
+      - name: Commit and push
+        run: |
+          if git diff --quiet -- charts/; then
+            echo "Docs already up to date."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add 'charts/**/README.md'
+          git commit -m "docs: regenerate helm-docs"
+          git push
