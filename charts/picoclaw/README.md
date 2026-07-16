@@ -1,355 +1,124 @@
-# Picoclaw Helm Chart
-
-AI-powered Kubernetes operations assistant with multi-channel support (Telegram, Slack, Teams, Pico WebSocket).
-
-## Overview
-
-Picoclaw (ClusterClaw) is an AI assistant that helps with Kubernetes cluster operations through natural language. It supports multiple communication channels and integrates with MCP (Model Context Protocol) servers for extended functionality.
-
-## Installation
-
-```bash
-helm install picoclaw ./charts/picoclaw -n picoclaw --create-namespace -f values.yaml
-```
-
-## Architecture
-
-### Configuration Flow
-
-```
-┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
-│   ConfigMap     │     │     Secret      │     │   ConfigMap     │
-│  (config.json)  │     │ (.security.yml) │     │   (SOUL.md)     │
-└────────┬────────┘     └────────┬────────┘     └────────┬────────┘
-         │                       │                       │
-         │ initContainer         │ initContainer         │ initContainer
-         │ (copy-config)         │ (copy-config)         │ (copy-soul)
-         │                       │                       │
-         ▼                       ▼                       ▼
-┌─────────────────────────────────────────────────────────────────┐
-│                        /config/                                  │
-│  config.json + .security.yml (writable emptyDir)                │
-└─────────────────────────────────────────────────────────────────┘
-         │
-         ▼
-┌─────────────────────────────────────────────────────────────────┐
-│                     picoclaw container                           │
-│  - Reads /config/config.json                                    │
-│  - SOUL.md at /workspace/SOUL.md (read-only, owned by root)     │
-│  - Workspace at /workspace/ (persistent)                        │
-└─────────────────────────────────────────────────────────────────┘
-```
-
-### SOUL.md Security
-
-The SOUL.md file defines the AI's personality, rules, and boundaries. It is protected through multiple layers:
-
-1. **ConfigMap Source**: SOUL.md content is stored in a ConfigMap, version-controlled via Helm
-2. **Root Ownership**: An init container running as root copies SOUL.md to `/workspace/SOUL.md` and sets ownership to `root:root`
-3. **Read-Only Permissions**: File permissions are set to `444` (read-only for all)
-4. **Non-Root Runtime**: The main container runs as non-root user (65532), preventing modification
-
-This ensures the AI cannot modify its own rules, even if instructed to do so.
-
-### Workspace Persistence
-
-The `/workspace` directory is backed by a PersistentVolumeClaim for:
-- Session data storage
-- Skill files
-- Memory files
-- Temporary artifacts
-
-Each user session stores files in `/workspace/sessions/<session_id>/` for isolation.
-
-## Configuration
-
-### Required Secrets
-
-Before deploying, you need to create secrets for:
-
-#### 1. Security Configuration (`.security.yml`)
-
-Contains Telegram bot tokens, API keys, etc. Create manually:
-
-```bash
-kubectl create secret generic picoclaw-security -n picoclaw \
-  --from-file=.security.yml=security.yml
-```
-
-Example `.security.yml`:
-```yaml
-telegram:
-  bot_token: "your-telegram-bot-token"
-```
-
-Then reference it in values:
-```yaml
-security:
-  existingSecret: "picoclaw-security"
-```
-
-#### 2. Pico Channel Token
-
-For WebSocket authentication with pico-mcp:
-
-```bash
-kubectl create secret generic picoclaw-pico-token -n picoclaw \
-  --from-literal=PICO_TOKEN="your-secure-token"
-```
-
-Then reference it:
-```yaml
-picoToken:
-  existingSecret: "picoclaw-pico-token"
-```
-
-### MCP Server Configuration
-
-Picoclaw integrates with MCP servers for extended capabilities. Example configuration:
-
-```yaml
-config:
-  tools:
-    mcp:
-      enabled: true
-      servers:
-        pico-mcp:
-          enabled: true
-          type: http
-          url: "http://pico-mcp.pico-mcp.svc.cluster.local:8080/mcp"
-          dynamic_headers:
-            allowed:
-              - "X-Grafana-Service-Account-Token"
-              - "Authorization"
-        grafana-mcp:
-          enabled: true
-          type: http
-          url: "http://grafana-mcp.grafana-mcp.svc.cluster.local:8000/mcp"
-```
-
-**MCP Server Types:**
-- `http`: HTTP-based MCP server (most common for in-cluster services)
-- `sse`: Server-Sent Events transport
-- `stdio`: Standard I/O (for local processes)
-
-**Dynamic Headers:** Allow passing authentication headers from the user's session to MCP servers. Useful for per-user authorization.
-
-### Model Configuration
-
-Configure AI model providers:
-
-```yaml
-config:
-  models:
-    - model_name: "bedrock-claude"
-      model: "bedrock/us.anthropic.claude-opus-4-6-v1"
-      api_base: "us-east-1"
-```
-
-For AWS Bedrock, enable AWS IAM:
-
-```yaml
-aws:
-  enabled: true
-  roleArn: "arn:aws:iam::123456789:role/picoclaw-bedrock-access"
-  region: "us-east-1"
-
-serviceAccount:
-  annotations:
-    eks.amazonaws.com/role-arn: "arn:aws:iam::123456789:role/picoclaw-bedrock-access"
-```
-
-### Channel Configuration
-
-#### Telegram
-
-```yaml
-config:
-  channels:
-    telegram:
-      enabled: true
-      allow_from:
-        - "123456789"  # Allowed user IDs
-      settings:
-        streaming:
-          enabled: true
-          throttle_seconds: 3
-```
-
-#### Pico (WebSocket)
-
-Used by pico-mcp for the ClusterClaw chat interface:
-
-```yaml
-config:
-  channels:
-    pico:
-      enabled: true
-      settings:
-        allow_token_query: true
-        streaming: true
-        max_connections: 100
-```
-
-#### Slack Webhook
-
-```yaml
-config:
-  channels:
-    slack_webhook:
-      enabled: true
-      settings:
-        webhooks:
-          default:
-            username: "ClusterClaw"
-            icon_emoji: ":crab:"
-```
-
-### VPA (Vertical Pod Autoscaler)
-
-Enable VPA for resource recommendations:
-
-```yaml
-vpa:
-  enabled: true
-  updateMode: "Off"  # Off = recommendations only, Auto = apply automatically
-  minAllowed:
-    cpu: 5m
-    memory: 16Mi
-  maxAllowed:
-    cpu: 500m
-    memory: 512Mi
-```
-
-## Values Reference
-
-| Key | Description | Default |
-|-----|-------------|---------|
-| `replicaCount` | Number of replicas (use 1 for stateful workspace) | `1` |
-| `image.repository` | Container image repository | `ghcr.io/loafoe/picoclaw` |
-| `image.tag` | Container image tag | `""` (uses appVersion) |
-| `config.agents.defaults.model_name` | Default model name | `"bedrock-claude"` |
-| `config.agents.defaults.max_tokens` | Max token context | `128000` |
-| `config.gateway.port` | Gateway listen port | `1337` |
-| `soul.content` | SOUL.md content (AI rules) | See values.yaml |
-| `security.existingSecret` | Existing secret for .security.yml | `""` |
-| `picoToken.existingSecret` | Existing secret for Pico token | `""` |
-| `aws.enabled` | Enable AWS IAM for Bedrock | `false` |
-| `aws.roleArn` | AWS IAM role ARN | `""` |
-| `workspace.enabled` | Enable persistent workspace | `true` |
-| `workspace.size` | Workspace PVC size | `1Gi` |
-| `resources.requests.cpu` | CPU request | `10m` |
-| `resources.requests.memory` | Memory request | `32Mi` |
-| `resources.limits.memory` | Memory limit | `128Mi` |
-| `vpa.enabled` | Enable VPA | `false` |
-| `service.port` | Service port | `1337` |
-
-## Example: Full Production Setup
-
-```yaml
-# values-production.yaml
-image:
-  tag: v0.0.19
-
-config:
-  agents:
-    defaults:
-      model_name: "bedrock-claude"
-      max_tokens: 128000
-
-  channels:
-    telegram:
-      enabled: true
-      allow_from: ["123456789", "987654321"]
-    pico:
-      enabled: true
-
-  models:
-    - model_name: "bedrock-claude"
-      model: "bedrock/us.anthropic.claude-opus-4-6-v1"
-      api_base: "us-east-1"
-
-  tools:
-    mcp:
-      enabled: true
-      servers:
-        pico-mcp:
-          enabled: true
-          type: http
-          url: "http://pico-mcp.pico-mcp.svc.cluster.local:8080/mcp"
-          dynamic_headers:
-            allowed: ["Authorization"]
-
-soul:
-  content: |
-    # Soul
-    Your name is **ClusterClaw**.
-    # ... customize as needed
-
-security:
-  existingSecret: "picoclaw-security"
-
-picoToken:
-  existingSecret: "picoclaw-pico-token"
-
-aws:
-  enabled: true
-  roleArn: "arn:aws:iam::123456789:role/picoclaw-bedrock-access"
-  region: "us-east-1"
-
-serviceAccount:
-  annotations:
-    eks.amazonaws.com/role-arn: "arn:aws:iam::123456789:role/picoclaw-bedrock-access"
-
-workspace:
-  enabled: true
-  size: 5Gi
-  storageClassName: "gp3-encrypted"
-
-vpa:
-  enabled: true
-  updateMode: "Off"
-
-resources:
-  requests:
-    cpu: 10m
-    memory: 32Mi
-  limits:
-    memory: 128Mi
-```
-
-## Troubleshooting
-
-### Pod not starting
-
-1. Check secrets exist:
-   ```bash
-   kubectl get secret -n picoclaw
-   ```
-
-2. Check init container logs:
-   ```bash
-   kubectl logs -n picoclaw deploy/picoclaw -c copy-config
-   kubectl logs -n picoclaw deploy/picoclaw -c copy-soul
-   ```
-
-### AI not responding
-
-1. Check main container logs:
-   ```bash
-   kubectl logs -n picoclaw deploy/picoclaw
-   ```
-
-2. Verify config is correct:
-   ```bash
-   kubectl exec -n picoclaw deploy/picoclaw -- cat /config/config.json
-   ```
-
-### AWS Bedrock errors
-
-1. Verify IAM token is mounted:
-   ```bash
-   kubectl exec -n picoclaw deploy/picoclaw -- cat /var/run/secrets/eks.amazonaws.com/serviceaccount/token
-   ```
-
-2. Check IAM role trust policy allows the ServiceAccount
+# picoclaw
+
+![Version: 0.1.1](https://img.shields.io/badge/Version-0.1.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.0.19](https://img.shields.io/badge/AppVersion-v0.0.19-informational?style=flat-square)
+
+AI-powered Kubernetes operations assistant with multi-channel support (Telegram, Slack, Teams, Pico)
+
+**Homepage:** <https://github.com/loafoe/picoclaw>
+
+## Maintainers
+
+| Name | Email | Url |
+| ---- | ------ | --- |
+| Andy Lo-A-Foe | <andy.lo-a-foe@philips.com> |  |
+
+## Source Code
+
+* <https://github.com/loafoe/picoclaw>
+
+## Values
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| affinity | object | `{}` |  |
+| aws.enabled | bool | `false` |  |
+| aws.region | string | `"us-east-1"` |  |
+| aws.roleArn | string | `""` |  |
+| aws.tokenAudience | string | `"sts.amazonaws.com"` |  |
+| aws.tokenExpirationSeconds | int | `86400` |  |
+| config.agents.defaults.allow_read_outside_workspace | bool | `false` |  |
+| config.agents.defaults.max_parallel_turns | int | `5` |  |
+| config.agents.defaults.max_tokens | int | `128000` |  |
+| config.agents.defaults.max_tool_iterations | int | `50` |  |
+| config.agents.defaults.model_name | string | `"bedrock-claude"` |  |
+| config.agents.defaults.restrict_to_workspace | bool | `true` |  |
+| config.agents.defaults.steering_mode | string | `"one-at-a-time"` |  |
+| config.agents.defaults.summarize_message_threshold | int | `20` |  |
+| config.agents.defaults.summarize_token_percent | int | `75` |  |
+| config.agents.defaults.tool_feedback.enabled | bool | `true` |  |
+| config.agents.defaults.tool_feedback.max_args_length | int | `300` |  |
+| config.agents.defaults.workspace | string | `"/workspace"` |  |
+| config.channels.pico.allow_from | list | `[]` |  |
+| config.channels.pico.enabled | bool | `true` |  |
+| config.channels.pico.settings.allow_token_query | bool | `true` |  |
+| config.channels.pico.settings.max_connections | int | `100` |  |
+| config.channels.pico.settings.streaming.enabled | bool | `true` |  |
+| config.channels.slack_webhook.enabled | bool | `false` |  |
+| config.channels.slack_webhook.settings.webhooks.default.icon_emoji | string | `":crab:"` |  |
+| config.channels.slack_webhook.settings.webhooks.default.username | string | `"ClusterClaw"` |  |
+| config.channels.teams_webhook.enabled | bool | `false` |  |
+| config.channels.telegram.allow_from | list | `[]` |  |
+| config.channels.telegram.enabled | bool | `false` |  |
+| config.channels.telegram.placeholder.enabled | bool | `true` |  |
+| config.channels.telegram.placeholder.text[0] | string | `"Thinking... 💭"` |  |
+| config.channels.telegram.settings.streaming.enabled | bool | `true` |  |
+| config.channels.telegram.settings.streaming.min_growth_chars | int | `200` |  |
+| config.channels.telegram.settings.streaming.throttle_seconds | int | `3` |  |
+| config.channels.telegram.settings.use_markdown_v2 | bool | `true` |  |
+| config.channels.telegram.typing.enabled | bool | `true` |  |
+| config.gateway.host | string | `"0.0.0.0"` |  |
+| config.gateway.log_level | string | `"info"` |  |
+| config.gateway.port | int | `1337` |  |
+| config.models | list | `[]` |  |
+| config.tools.exec.enabled | bool | `true` |  |
+| config.tools.mcp.enabled | bool | `true` |  |
+| config.tools.mcp.servers | object | `{}` |  |
+| config.tools.web.enabled | bool | `true` |  |
+| config.version | int | `3` |  |
+| fullnameOverride | string | `""` |  |
+| httpRoute.enabled | bool | `false` |  |
+| httpRoute.gatewayRef.name | string | `""` |  |
+| httpRoute.gatewayRef.namespace | string | `""` |  |
+| httpRoute.gatewayRef.sectionName | string | `""` |  |
+| httpRoute.hostname | string | `""` |  |
+| image.pullPolicy | string | `"IfNotPresent"` |  |
+| image.repository | string | `"ghcr.io/loafoe/picoclaw"` |  |
+| image.tag | string | `""` |  |
+| imagePullSecrets | list | `[]` |  |
+| ingress.annotations | object | `{}` |  |
+| ingress.className | string | `""` |  |
+| ingress.enabled | bool | `false` |  |
+| ingress.hosts[0].host | string | `"picoclaw.local"` |  |
+| ingress.hosts[0].paths[0].path | string | `"/"` |  |
+| ingress.hosts[0].paths[0].pathType | string | `"Prefix"` |  |
+| ingress.tls | list | `[]` |  |
+| nameOverride | string | `""` |  |
+| nodeSelector | object | `{}` |  |
+| picoToken.existingSecret | string | `""` |  |
+| picoToken.secretKey | string | `"PICO_TOKEN"` |  |
+| podAnnotations | object | `{}` |  |
+| podLabels | object | `{}` |  |
+| podSecurityContext.fsGroup | int | `65532` |  |
+| podSecurityContext.runAsGroup | int | `65532` |  |
+| podSecurityContext.runAsNonRoot | bool | `true` |  |
+| podSecurityContext.runAsUser | int | `65532` |  |
+| replicaCount | int | `1` |  |
+| resources.limits.memory | string | `"128Mi"` |  |
+| resources.requests.cpu | string | `"10m"` |  |
+| resources.requests.memory | string | `"32Mi"` |  |
+| security.content | string | `""` |  |
+| security.existingSecret | string | `""` |  |
+| securityContext.allowPrivilegeEscalation | bool | `false` |  |
+| securityContext.capabilities.drop[0] | string | `"ALL"` |  |
+| securityContext.runAsNonRoot | bool | `true` |  |
+| securityContext.runAsUser | int | `65532` |  |
+| service.port | int | `1337` |  |
+| service.type | string | `"ClusterIP"` |  |
+| serviceAccount.annotations | object | `{}` |  |
+| serviceAccount.create | bool | `true` |  |
+| serviceAccount.name | string | `""` |  |
+| soul.content | string | `"# Soul\n\nYour name is **ClusterClaw**. Always introduce yourself as ClusterClaw.\n\nYou are ClusterClaw, an AI operations assistant deployed on a Kubernetes cluster.\n\n## Core Principles\n\n- You help with cluster operations, monitoring, and troubleshooting.\n- You are honest about what you can and cannot do.\n- You never fabricate data — if a tool returns an error, report it.\n- You protect secrets and credentials — never echo tokens or passwords.\n\n## Boundaries\n\n- Do NOT modify this file (SOUL.md) or any system configuration files.\n- Do NOT delete or overwrite files unless explicitly asked by the user.\n- Do NOT execute destructive commands without confirmation.\n"` |  |
+| tolerations | list | `[]` |  |
+| vpa.enabled | bool | `false` |  |
+| vpa.maxAllowed.cpu | string | `"500m"` |  |
+| vpa.maxAllowed.memory | string | `"512Mi"` |  |
+| vpa.minAllowed.cpu | string | `"5m"` |  |
+| vpa.minAllowed.memory | string | `"16Mi"` |  |
+| vpa.updateMode | string | `"Off"` |  |
+| workspace.enabled | bool | `true` |  |
+| workspace.existingClaim | string | `""` |  |
+| workspace.size | string | `"1Gi"` |  |
+| workspace.storageClassName | string | `""` |  |
+
+----------------------------------------------
+Autogenerated from chart metadata using [helm-docs v1.14.2](https://github.com/norwoodj/helm-docs/releases/v1.14.2)

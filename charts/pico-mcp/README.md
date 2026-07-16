@@ -1,6 +1,6 @@
 # pico-mcp
 
-![Version: 0.43.0](https://img.shields.io/badge/Version-0.43.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.49.2](https://img.shields.io/badge/AppVersion-v0.49.2-informational?style=flat-square)
+![Version: 0.52.0](https://img.shields.io/badge/Version-0.52.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.67.0](https://img.shields.io/badge/AppVersion-v0.67.0-informational?style=flat-square)
 
 MCP server for managing multiple pico-agent instances
 

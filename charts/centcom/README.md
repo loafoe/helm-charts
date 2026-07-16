@@ -1,8 +1,8 @@
 # centcom
 
-![Version: 0.52.0](https://img.shields.io/badge/Version-0.52.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.67.0](https://img.shields.io/badge/AppVersion-v0.67.0-informational?style=flat-square)
+![Version: 0.59.0](https://img.shields.io/badge/Version-0.59.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.79.0](https://img.shields.io/badge/AppVersion-v0.79.0-informational?style=flat-square)
 
-MCP server for managing multiple pico-agent instances
+MCP server for managing multiple centcom-satellite instances
 
 **Homepage:** <https://github.com/loafoe/centcom>
 
@@ -95,6 +95,7 @@ MCP server for managing multiple pico-agent instances
 | securityContext.capabilities.drop[0] | string | `"ALL"` |  |
 | securityContext.readOnlyRootFilesystem | bool | `true` |  |
 | server.baseURL | string | `""` |  |
+| server.mcpPort | int | `3000` |  |
 | server.port | int | `8080` |  |
 | server.transport | string | `"sse"` |  |
 | service.port | int | `8080` |  |
