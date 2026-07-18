@@ -1,6 +1,6 @@
 # centcom
 
-![Version: 0.59.0](https://img.shields.io/badge/Version-0.59.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.79.0](https://img.shields.io/badge/AppVersion-v0.79.0-informational?style=flat-square)
+![Version: 0.61.0](https://img.shields.io/badge/Version-0.61.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.86.0](https://img.shields.io/badge/AppVersion-v0.86.0-informational?style=flat-square)
 
 MCP server for managing multiple centcom-satellite instances
 
@@ -28,6 +28,13 @@ MCP server for managing multiple centcom-satellite instances
 | alerts.pvUsage.enabled | bool | `false` |  |
 | alerts.pvUsage.interval | string | `"5m"` |  |
 | alerts.pvUsage.thresholdPercent | int | `80` |  |
+| channel.hermes.apiKeySecret.key | string | `"API_SERVER_KEY"` |  |
+| channel.hermes.apiKeySecret.name | string | `""` |  |
+| channel.hermes.url | string | `""` |  |
+| channel.picoclaw.tokenSecret.key | string | `"token"` |  |
+| channel.picoclaw.tokenSecret.name | string | `""` |  |
+| channel.picoclaw.url | string | `""` |  |
+| channel.type | string | `""` |  |
 | cron.defaultChannel | string | `"cron:system"` |  |
 | cron.enabled | bool | `false` |  |
 | database.barmanBackup.bucketName | string | `""` |  |
