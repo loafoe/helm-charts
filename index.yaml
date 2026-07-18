@@ -2,6 +2,25 @@ apiVersion: v1
 entries:
   centcom:
   - apiVersion: v2
+    appVersion: v0.86.0
+    created: "2026-07-18T07:57:36.028425732Z"
+    description: MCP server for managing multiple centcom-satellite instances
+    digest: a20c99b0406482741c3cfb14605688ceb492f54a70b2debc42597e6fb5d5f0ec
+    home: https://github.com/loafoe/centcom
+    keywords:
+    - kubernetes
+    - mcp
+    - spiffe
+    - ai
+    maintainers:
+    - email: andy.lo-a-foe@philips.com
+      name: Andy Lo-A-Foe
+    name: centcom
+    type: application
+    urls:
+    - https://github.com/loafoe/helm-charts/releases/download/centcom-0.61.0/centcom-0.61.0.tgz
+    version: 0.61.0
+  - apiVersion: v2
     appVersion: v0.79.0
     created: "2026-07-04T20:39:44.06353104Z"
     description: MCP server for managing multiple centcom-satellite instances
@@ -374,6 +393,27 @@ entries:
     urls:
     - https://loafoe.github.io/helm-charts/go-hello-world-0.3.0.tgz
     version: 0.3.0
+  go-ocpp-server:
+  - apiVersion: v2
+    appVersion: v0.2.1
+    created: "2026-07-18T07:57:36.137807953Z"
+    description: OCPP 1.6-J Central System for EV chargers
+    digest: 4d0352441612df8029a924089957ae5a2c218603258d52301c6430615848a6be
+    home: https://github.com/loafoe/go-occp-server
+    keywords:
+    - ocpp
+    - ev
+    - charger
+    - wallbox
+    - websocket
+    maintainers:
+    - email: andy.lo-a-foe@philips.com
+      name: Andy Lo-A-Foe
+    name: go-ocpp-server
+    type: application
+    urls:
+    - https://github.com/loafoe/helm-charts/releases/download/go-ocpp-server-0.2.1/go-ocpp-server-0.2.1.tgz
+    version: 0.2.1
   lessor:
   - apiVersion: v2
     appVersion: v0.0.12
@@ -628,6 +668,31 @@ entries:
     urls:
     - https://github.com/loafoe/helm-charts/releases/download/pico-mcp-0.44.3/pico-mcp-0.44.3.tgz
     version: 0.44.3
+  picoclaw:
+  - apiVersion: v2
+    appVersion: v0.0.19
+    created: "2026-07-18T07:57:36.680208178Z"
+    description: AI-powered Kubernetes operations assistant with multi-channel support
+      (Telegram, Slack, Teams, Pico)
+    digest: 78a28aa69f124c5dd41661629c070dd6df892084e736ba4f877ab846441a2054
+    home: https://github.com/loafoe/picoclaw
+    keywords:
+    - kubernetes
+    - ai
+    - chatops
+    - telegram
+    - slack
+    - mcp
+    maintainers:
+    - email: andy.lo-a-foe@philips.com
+      name: Andy Lo-A-Foe
+    name: picoclaw
+    sources:
+    - https://github.com/loafoe/picoclaw
+    type: application
+    urls:
+    - https://github.com/loafoe/helm-charts/releases/download/picoclaw-0.1.1/picoclaw-0.1.1.tgz
+    version: 0.1.1
   solgate:
   - apiVersion: v2
     appVersion: v0.0.12
@@ -683,4 +748,4 @@ entries:
     urls:
     - https://loafoe.github.io/helm-charts/tempo-distributed-1.20.1.tgz
     version: 1.20.1
-generated: "2026-07-04T20:39:44.063587406Z"
+generated: "2026-07-18T07:57:36.799241756Z"
