@@ -78,6 +78,18 @@ data:
     picoclaw:
       url: {{ .Values.picoclaw.url | quote }}
     {{- end }}
+    {{- if .Values.channel.type }}
+    channel:
+      type: {{ .Values.channel.type | quote }}
+      {{- if eq .Values.channel.type "picoclaw" }}
+      picoclaw:
+        url: {{ .Values.channel.picoclaw.url | quote }}
+      {{- end }}
+      {{- if eq .Values.channel.type "hermes" }}
+      hermes:
+        url: {{ .Values.channel.hermes.url | quote }}
+      {{- end }}
+    {{- end }}
     {{- if .Values.serviceIdentity.enabled }}
     service_identity:
       enabled: true

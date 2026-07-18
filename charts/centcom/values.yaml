@@ -127,6 +127,11 @@ ipAllowlist:
   #   - "203.0.113.42/32"
 
 # Picoclaw WebSocket client configuration
+# Deprecated: use `channel.type: picoclaw` + `channel.picoclaw` below instead.
+# Kept for backward compatibility — centcom's own config-loading applies the
+# same shim (legacy picoclaw.url set + channel.type unset => channel.type
+# becomes "picoclaw") so existing releases using only this block are
+# unaffected by upgrading the chart.
 picoclaw:
   # Enable picoclaw integration for streaming chat
   enabled: false
@@ -138,6 +143,31 @@ picoclaw:
   tokenSecret:
     name: ""
     key: "token"
+
+# Channel selects and configures centcom's active chat backend: "picoclaw"
+# (native WebSocket) or "hermes" (hermes-agent's OpenAI-compatible Runs API).
+# Only one backend is active per deployment. Leave `type` empty to keep using
+# the legacy `picoclaw:` block above unchanged.
+channel:
+  # "picoclaw" or "hermes". Leave empty to fall back to the legacy picoclaw:
+  # block above.
+  type: ""
+  picoclaw:
+    # WebSocket URL for picoclaw's pico channel (without token query param)
+    url: ""
+    tokenSecret:
+      name: ""
+      key: "token"
+  hermes:
+    # hermes-agent's API server URL, e.g.
+    # "http://hermes-agent.hermes-agent.svc.cluster.local:8642"
+    url: ""
+    # Secret containing hermes-agent's API_SERVER_KEY bearer token.
+    # The secret should have a key named "API_SERVER_KEY" (matching
+    # hermes-agent's own Secret convention) unless overridden below.
+    apiKeySecret:
+      name: ""
+      key: "API_SERVER_KEY"
 
 # Service identity for system-to-system authentication (e.g., remediation)
 # Uses HSP IAM service credentials + OIDC token exchange

@@ -53,6 +53,20 @@ spec:
                   name: {{ .Values.picoclaw.tokenSecret.name }}
                   key: {{ .Values.picoclaw.tokenSecret.key | default "token" }}
           {{- end }}
+          {{- if and (eq .Values.channel.type "picoclaw") .Values.channel.picoclaw.tokenSecret.name }}
+            - name: PICOCLAW_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.channel.picoclaw.tokenSecret.name }}
+                  key: {{ .Values.channel.picoclaw.tokenSecret.key | default "token" }}
+          {{- end }}
+          {{- if and (eq .Values.channel.type "hermes") .Values.channel.hermes.apiKeySecret.name }}
+            - name: HERMES_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.channel.hermes.apiKeySecret.name }}
+                  key: {{ .Values.channel.hermes.apiKeySecret.key | default "API_SERVER_KEY" }}
+          {{- end }}
           {{- if .Values.serviceIdentity.enabled }}
             - name: SERVICE_IDENTITY_USERNAME
               valueFrom:
