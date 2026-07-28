@@ -14,7 +14,7 @@ image:
   repository: ghcr.io/loafoe/mt-mcp-grafana
   # -- Image tag to deploy. Matches the upstream git tag / published OCI tag
   # (the build workflow publishes ghcr.io/loafoe/mt-mcp-grafana:<git-tag>).
-  tag: "v0.1.0"
+  tag: "v0.1.1"
   # -- Docker image pull policy
   pullPolicy: IfNotPresent
 
