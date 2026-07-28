@@ -1,6 +1,6 @@
 # mt-mcp-grafana
 
-![Version: 0.9.0](https://img.shields.io/badge/Version-0.9.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.1.0](https://img.shields.io/badge/AppVersion-0.1.0-informational?style=flat-square)
+![Version: 0.10.0](https://img.shields.io/badge/Version-0.10.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.1.1](https://img.shields.io/badge/AppVersion-0.1.1-informational?style=flat-square)
 
 A multi-tenant proxy that aggregates and secures multiple mcp-grafana backend instances speaking the MCP streamable-HTTP transport.
 
@@ -46,7 +46,7 @@ A multi-tenant proxy that aggregates and secures multiple mcp-grafana backend in
 | fullnameOverride | string | `""` | Override the fully qualified name of the chart |
 | image.pullPolicy | string | `"IfNotPresent"` | Docker image pull policy |
 | image.repository | string | `"ghcr.io/loafoe/mt-mcp-grafana"` | Docker registry repository for mt-mcp-grafana |
-| image.tag | string | `"v0.1.0"` | Image tag to deploy. Matches the upstream git tag / published OCI tag (the build workflow publishes ghcr.io/loafoe/mt-mcp-grafana:<git-tag>). |
+| image.tag | string | `"v0.1.1"` | Image tag to deploy. Matches the upstream git tag / published OCI tag (the build workflow publishes ghcr.io/loafoe/mt-mcp-grafana:<git-tag>). |
 | metrics | object | `{"enabled":true,"path":"/metrics","port":9090}` | Observability. The proxy exposes Prometheus metrics on a SEPARATE listener (isolated from the /mcp data plane), and emits OTLP traces driven by the standard OTEL_* environment variables. |
 | metrics.enabled | bool | `true` | Enable the metrics listener (adds a container/service port + config block) |
 | metrics.path | string | `"/metrics"` | Path the metrics endpoint is served on |
