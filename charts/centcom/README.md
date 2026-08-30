@@ -1,6 +1,6 @@
 # centcom
 
-![Version: 0.62.0](https://img.shields.io/badge/Version-0.62.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.121.0](https://img.shields.io/badge/AppVersion-v0.121.0-informational?style=flat-square)
+![Version: 0.63.0](https://img.shields.io/badge/Version-0.63.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.122.0](https://img.shields.io/badge/AppVersion-v0.122.0-informational?style=flat-square)
 
 MCP server for managing multiple centcom-satellite instances
 
@@ -73,8 +73,6 @@ MCP server for managing multiple centcom-satellite instances
 | imageImport.allowedOrigins | list | `[]` |  |
 | imageImport.enabled | bool | `false` |  |
 | imagePullSecrets | list | `[]` |  |
-| ipAllowlist.cidrs | list | `[]` |  |
-| ipAllowlist.enabled | bool | `false` |  |
 | leaderElection.enabled | bool | `false` |  |
 | metrics | object | `{"port":9090}` | Metrics server configuration (separate port from main HTTP, not publicly exposed) |
 | metrics.port | int | `9090` | Port for the internal metrics server (serves /metrics for Prometheus) |

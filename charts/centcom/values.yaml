@@ -114,18 +114,6 @@ networkPolicy:
   # Enable CiliumNetworkPolicy to restrict ingress to gateway only
   enabled: false
 
-# IP allowlist for SSE endpoint (checked at application level via X-Forwarded-For)
-ipAllowlist:
-  # Enable IP allowlist checking
-  enabled: false
-  # List of allowed CIDRs
-  cidrs: []
-  # Example:
-  # cidrs:
-  #   - "10.0.0.0/8"
-  #   - "192.168.1.0/24"
-  #   - "203.0.113.42/32"
-
 # import_image MCP tool: fetches an image from a server-side-configured
 # origin allowlist and stores it in centcom's document store for inline
 # rendering in chat. Off by default — requires an explicit allowlist.

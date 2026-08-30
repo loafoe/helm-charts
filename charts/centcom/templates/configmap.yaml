@@ -46,16 +46,6 @@ data:
         {{- end }}
       {{- end }}
     {{- end }}
-    ip_allowlist:
-      enabled: {{ .Values.ipAllowlist.enabled }}
-      {{- if .Values.ipAllowlist.cidrs }}
-      cidrs:
-        {{- range .Values.ipAllowlist.cidrs }}
-        - {{ . | quote }}
-        {{- end }}
-      {{- else }}
-      cidrs: []
-      {{- end }}
     {{- if .Values.imageImport }}
     image_import:
       enabled: {{ .Values.imageImport.enabled | default false }}
