@@ -2,8 +2,8 @@ apiVersion: v2
 name: centcom
 description: MCP server for managing multiple centcom-satellite instances
 type: application
-version: 0.64.0
-appVersion: "v0.126.0"
+version: 0.65.0
+appVersion: "v0.127.0"
 keywords:
   - kubernetes
   - mcp

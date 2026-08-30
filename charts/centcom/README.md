@@ -1,6 +1,6 @@
 # centcom
 
-![Version: 0.64.0](https://img.shields.io/badge/Version-0.64.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.126.0](https://img.shields.io/badge/AppVersion-v0.126.0-informational?style=flat-square)
+![Version: 0.65.0](https://img.shields.io/badge/Version-0.65.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.127.0](https://img.shields.io/badge/AppVersion-v0.127.0-informational?style=flat-square)
 
 MCP server for managing multiple centcom-satellite instances
 
