@@ -56,6 +56,18 @@ data:
       {{- else }}
       cidrs: []
       {{- end }}
+    {{- if .Values.imageImport }}
+    image_import:
+      enabled: {{ .Values.imageImport.enabled | default false }}
+      {{- if .Values.imageImport.allowedOrigins }}
+      allowed_origins:
+        {{- range .Values.imageImport.allowedOrigins }}
+        - {{ . | quote }}
+        {{- end }}
+      {{- else }}
+      allowed_origins: []
+      {{- end }}
+    {{- end }}
     {{- if .Values.adminGroups }}
     adminGroups:
       {{- range .Values.adminGroups }}

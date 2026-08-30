@@ -126,6 +126,18 @@ ipAllowlist:
   #   - "192.168.1.0/24"
   #   - "203.0.113.42/32"
 
+# import_image MCP tool: fetches an image from a server-side-configured
+# origin allowlist and stores it in centcom's document store for inline
+# rendering in chat. Off by default — requires an explicit allowlist.
+imageImport:
+  # Enable the import_image MCP tool
+  enabled: false
+  # Exact "host[:port]" allowlist import_image may fetch from
+  allowedOrigins: []
+  # Example:
+  # allowedOrigins:
+  #   - "grafana.internal:3000"
+
 # Picoclaw WebSocket client configuration
 # Deprecated: use `channel.type: picoclaw` + `channel.picoclaw` below instead.
 # Kept for backward compatibility — centcom's own config-loading applies the
