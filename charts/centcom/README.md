@@ -1,6 +1,6 @@
 # centcom
 
-![Version: 0.65.0](https://img.shields.io/badge/Version-0.65.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.127.0](https://img.shields.io/badge/AppVersion-v0.127.0-informational?style=flat-square)
+![Version: 0.66.0](https://img.shields.io/badge/Version-0.66.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.137.0](https://img.shields.io/badge/AppVersion-v0.137.0-informational?style=flat-square)
 
 MCP server for managing multiple centcom-satellite instances
 
@@ -37,6 +37,7 @@ MCP server for managing multiple centcom-satellite instances
 | channel.type | string | `""` |  |
 | cron.defaultChannel | string | `"cron:system"` |  |
 | cron.enabled | bool | `false` |  |
+| cron.groups | list | `[]` |  |
 | database.barmanBackup.bucketName | string | `""` |  |
 | database.barmanBackup.bucketPrefix | string | `""` |  |
 | database.barmanBackup.compression | string | `"gzip"` |  |

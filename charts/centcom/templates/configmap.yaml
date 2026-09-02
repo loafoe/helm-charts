@@ -139,6 +139,12 @@ data:
     cron:
       enabled: true
       default_channel: {{ .Values.cron.defaultChannel | default "cron:system" | quote }}
+      {{- if .Values.cron.groups }}
+      groups:
+        {{- range .Values.cron.groups }}
+        - {{ . | quote }}
+        {{- end }}
+      {{- end }}
     {{- end }}
     {{- if .Values.leaderElection.enabled }}
     leaderElection:

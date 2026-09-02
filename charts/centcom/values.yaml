@@ -204,6 +204,10 @@ cron:
   enabled: false
   # Default channel for cron job messages
   defaultChannel: "cron:system"
+  # Additional groups (beyond adminGroups) whose members may use the cron
+  # tool to add/list/remove/enable/disable jobs. Admins always retain access
+  # regardless of this list. Empty (the default) keeps cron admin-only.
+  groups: []
 
 # Alerting configuration
 alerts:
