@@ -11,7 +11,7 @@ MCP endpoint (in-cluster):
   http://{{ include "mcp-notifier.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.service.port }}{{ .Values.server.path }}
 
 Check status:
-  kubectl get pods -n {{ .Release.Namespace }} -l "{{ include "mcp-notifier.selectorLabels" . }}"
+  kubectl get pods -n {{ .Release.Namespace }} -l app.kubernetes.io/name={{ include "mcp-notifier.name" . }},app.kubernetes.io/instance={{ .Release.Name }}
 
 Tail logs:
-  kubectl logs -n {{ .Release.Namespace }} -l "{{ include "mcp-notifier.selectorLabels" . }}" -f
+  kubectl logs -n {{ .Release.Namespace }} -l app.kubernetes.io/name={{ include "mcp-notifier.name" . }},app.kubernetes.io/instance={{ .Release.Name }} -f
