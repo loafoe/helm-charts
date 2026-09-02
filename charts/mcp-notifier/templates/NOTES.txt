@@ -1,0 +1,17 @@
+mcp-notifier has been deployed.
+
+{{- if not (or .Values.slack.enabled .Values.teams.enabled) }}
+
+WARNING: neither slack.enabled nor teams.enabled is set - no notification
+tools will be registered and the server will fail to start. Set at least
+one provider's `enabled: true` with a "default" webhook.
+{{- end }}
+
+MCP endpoint (in-cluster):
+  http://{{ include "mcp-notifier.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.service.port }}{{ .Values.server.path }}
+
+Check status:
+  kubectl get pods -n {{ .Release.Namespace }} -l "{{ include "mcp-notifier.selectorLabels" . }}"
+
+Tail logs:
+  kubectl logs -n {{ .Release.Namespace }} -l "{{ include "mcp-notifier.selectorLabels" . }}" -f

@@ -1,0 +1,16 @@
+apiVersion: v2
+name: mcp-notifier
+description: MCP server for sending notifications to Slack and Microsoft Teams webhooks
+type: application
+version: 0.1.0
+appVersion: "latest"
+keywords:
+  - mcp
+  - notifications
+  - slack
+  - teams
+  - webhook
+home: https://github.com/loafoe/mcp-notifier
+maintainers:
+  - name: Andy Lo-A-Foe
+    email: andy.lo-a-foe@philips.com

@@ -1,0 +1,109 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "mcp-notifier.fullname" . }}
+  labels:
+    {{- include "mcp-notifier.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "mcp-notifier.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+        {{- with .Values.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      labels:
+        {{- include "mcp-notifier.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "mcp-notifier.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: MCP_NOTIFIER_CONFIG
+              value: "/etc/mcp-notifier/config.yaml"
+            - name: MCP_NOTIFIER_TRANSPORT
+              value: "http"
+            - name: MCP_NOTIFIER_ADDR
+              value: ":{{ .Values.server.port }}"
+            - name: MCP_NOTIFIER_PATH
+              value: {{ .Values.server.path | quote }}
+            {{- if .Values.slack.enabled }}
+            {{- range $wh := .Values.slack.webhooks }}
+            - name: {{ include "mcp-notifier.webhookEnvVar" (list "slack" $wh.name) }}
+              valueFrom:
+                secretKeyRef:
+                  {{- if $wh.existingSecret }}
+                  name: {{ $wh.existingSecret }}
+                  key: {{ $wh.secretKey | default "webhook-url" }}
+                  {{- else }}
+                  name: {{ include "mcp-notifier.inlineSecretName" (list $ "slack" $wh.name) }}
+                  key: webhook-url
+                  {{- end }}
+            {{- end }}
+            {{- end }}
+            {{- if .Values.teams.enabled }}
+            {{- range $wh := .Values.teams.webhooks }}
+            - name: {{ include "mcp-notifier.webhookEnvVar" (list "teams" $wh.name) }}
+              valueFrom:
+                secretKeyRef:
+                  {{- if $wh.existingSecret }}
+                  name: {{ $wh.existingSecret }}
+                  key: {{ $wh.secretKey | default "webhook-url" }}
+                  {{- else }}
+                  name: {{ include "mcp-notifier.inlineSecretName" (list $ "teams" $wh.name) }}
+                  key: webhook-url
+                  {{- end }}
+            {{- end }}
+            {{- end }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.server.port }}
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 3
+            periodSeconds: 5
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - name: config
+              mountPath: /etc/mcp-notifier
+              readOnly: true
+      volumes:
+        - name: config
+          configMap:
+            name: {{ include "mcp-notifier.fullname" . }}-config
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

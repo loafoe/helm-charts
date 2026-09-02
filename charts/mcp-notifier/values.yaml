@@ -1,0 +1,104 @@
+# Default values for mcp-notifier
+
+replicaCount: 1
+
+image:
+  repository: ghcr.io/loafoe/mcp-notifier
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion
+  tag: ""
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+# Server configuration
+server:
+  # HTTP path serving the MCP streamable endpoint
+  path: "/mcp"
+  # Port the server listens on
+  port: 8080
+
+# Slack Incoming Webhook targets. Each entry renders a "webhooks.<name>"
+# section in config.yaml; the webhook URL itself is never written to the
+# ConfigMap - it's injected as an env var and referenced via ${VAR} in the
+# rendered config.
+#
+# Provide the URL via one of:
+#   - existingSecret + secretKey: read from an existing Secret (recommended)
+#   - webhookUrl: inline value, only for quick testing - the chart will
+#     create a Secret for it
+slack:
+  enabled: false
+  webhooks: []
+  # webhooks:
+  #   - name: default
+  #     username: "mcp-notifier"
+  #     iconEmoji: ":bell:"
+  #     existingSecret: "slack-default-webhook"
+  #     secretKey: "webhook-url"
+  #   - name: alerts
+  #     webhookUrl: "https://hooks.slack.com/services/T000/B000/XXXX"
+
+# Microsoft Teams (Power Automate) webhook targets. Same shape as slack.webhooks.
+teams:
+  enabled: false
+  webhooks: []
+  # webhooks:
+  #   - name: default
+  #     title: "Notification"
+  #     existingSecret: "teams-default-webhook"
+  #     secretKey: "webhook-url"
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use
+  name: ""
+
+podAnnotations: {}
+
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 65532
+  runAsGroup: 65532
+  fsGroup: 65532
+  seccompProfile:
+    type: RuntimeDefault
+
+securityContext:
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: true
+  capabilities:
+    drop:
+      - ALL
+
+service:
+  type: ClusterIP
+  port: 8080
+
+resources:
+  limits:
+    cpu: 200m
+    memory: 64Mi
+  requests:
+    cpu: 10m
+    memory: 32Mi
+
+nodeSelector:
+  kubernetes.io/os: linux
+
+tolerations: []
+
+affinity: {}
+
+# Network policy (Cilium). Restricts ingress to the same namespace (plus any
+# extraIngress rules); egress always allows HTTPS to the internet, since
+# Slack/Teams webhook endpoints are external.
+networkPolicy:
+  enabled: false
+  # Additional ingress rules (e.g. to allow a specific namespace of MCP
+  # clients), appended as-is under `ingress:` in the CiliumNetworkPolicy.
+  extraIngress: []
