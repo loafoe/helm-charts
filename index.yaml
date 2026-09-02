@@ -513,6 +513,27 @@ entries:
     version: 0.0.10
   mcp-notifier:
   - apiVersion: v2
+    appVersion: v0.1.0
+    created: "2026-09-02T11:07:02.727959816Z"
+    description: MCP server for sending notifications to Slack and Microsoft Teams
+      webhooks
+    digest: b9eb1c5a31f5a39ce60d98413df57b42540db618014187c4583f111833b54952
+    home: https://github.com/loafoe/mcp-notifier
+    keywords:
+    - mcp
+    - notifications
+    - slack
+    - teams
+    - webhook
+    maintainers:
+    - email: andy.lo-a-foe@philips.com
+      name: Andy Lo-A-Foe
+    name: mcp-notifier
+    type: application
+    urls:
+    - https://github.com/loafoe/helm-charts/releases/download/mcp-notifier-0.1.1/mcp-notifier-0.1.1.tgz
+    version: 0.1.1
+  - apiVersion: v2
     appVersion: latest
     created: "2026-09-02T10:58:57.364505147Z"
     description: MCP server for sending notifications to Slack and Microsoft Teams
@@ -857,4 +878,4 @@ entries:
     urls:
     - https://loafoe.github.io/helm-charts/tempo-distributed-1.20.1.tgz
     version: 1.20.1
-generated: "2026-09-02T10:58:57.364808707Z"
+generated: "2026-09-02T11:07:02.728074872Z"
