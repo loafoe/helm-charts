@@ -44,6 +44,12 @@ data:
           - {{ . | quote }}
           {{- end }}
         {{- end }}
+        {{- if .Values.api.oauth2.scopes }}
+        scopes:
+          {{- range .Values.api.oauth2.scopes }}
+          - {{ . | quote }}
+          {{- end }}
+        {{- end }}
       {{- end }}
     {{- end }}
     {{- if .Values.imageImport }}

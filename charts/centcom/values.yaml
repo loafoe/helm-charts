@@ -239,6 +239,10 @@ otel:
 #   oauth2:
 #     allowedGroups: []  # Empty = all authenticated users allowed
 #     # Example: allowedGroups: ["pico-admins", "platform-team"]
+#     # Scopes requested in the browser OIDC authorization request. Empty
+#     # (the default) preserves centcom's built-in default:
+#     # ["openid", "profile", "email", "groups"]
+#     # scopes: ["openid", "profile", "email", "groups"]
 
 # UI configuration
 ui:
