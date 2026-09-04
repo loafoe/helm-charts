@@ -2,6 +2,25 @@ apiVersion: v1
 entries:
   centcom:
   - apiVersion: v2
+    appVersion: v0.142.0
+    created: "2026-09-04T07:29:02.618794204Z"
+    description: MCP server for managing multiple centcom-satellite instances
+    digest: 26b4f4b6eae9f91ab93509796ac6b2f06f8d26c6dbe67d2b5e236d8ea21c5ed9
+    home: https://github.com/loafoe/centcom
+    keywords:
+    - kubernetes
+    - mcp
+    - spiffe
+    - ai
+    maintainers:
+    - email: andy.lo-a-foe@philips.com
+      name: Andy Lo-A-Foe
+    name: centcom
+    type: application
+    urls:
+    - https://github.com/loafoe/helm-charts/releases/download/centcom-0.67.0/centcom-0.67.0.tgz
+    version: 0.67.0
+  - apiVersion: v2
     appVersion: v0.137.0
     created: "2026-09-02T08:55:54.931109476Z"
     description: MCP server for managing multiple centcom-satellite instances
@@ -878,4 +897,4 @@ entries:
     urls:
     - https://loafoe.github.io/helm-charts/tempo-distributed-1.20.1.tgz
     version: 1.20.1
-generated: "2026-09-02T11:07:02.728074872Z"
+generated: "2026-09-04T07:29:02.618965941Z"
