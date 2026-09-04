@@ -271,6 +271,9 @@ database:
   databaseName: "picomcp"
   # Master username
   username: "picomcp"
+  # Allocated storage in GB (minimum 5 for CNPG). Empty means the provider's
+  # own default applies (20Gi for CNPG as of this writing).
+  allocatedStorage: ""
   # Restore from snapshot
   restoreFromSnapshot: false
   snapshotId: ""

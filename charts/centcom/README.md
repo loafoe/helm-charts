@@ -38,6 +38,7 @@ MCP server for managing multiple centcom-satellite instances
 | cron.defaultChannel | string | `"cron:system"` |  |
 | cron.enabled | bool | `false` |  |
 | cron.groups | list | `[]` |  |
+| database.allocatedStorage | string | `""` |  |
 | database.barmanBackup.bucketName | string | `""` |  |
 | database.barmanBackup.bucketPrefix | string | `""` |  |
 | database.barmanBackup.compression | string | `"gzip"` |  |

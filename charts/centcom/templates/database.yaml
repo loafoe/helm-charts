@@ -22,6 +22,9 @@ spec:
     engineVersion: {{ .Values.database.engineVersion | default "16" | quote }}
     databaseName: {{ .Values.database.databaseName | default "picomcp" }}
     masterUsername: {{ .Values.database.username | default "picomcp" }}
+  {{- if .Values.database.allocatedStorage }}
+    allocatedStorage: {{ .Values.database.allocatedStorage }}
+  {{- end }}
   {{- if and .Values.database.cnpg .Values.database.snapshots.enabled }}
     enableSnapshots: true
     snapshotClassName: {{ .Values.database.snapshots.snapshotClassName | quote }}
