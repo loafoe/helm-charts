@@ -131,13 +131,16 @@ data:
         {{- end }}
     {{- end }}
     {{- if .Values.ui }}
-    {{- if or (and .Values.ui.logo .Values.ui.logo.enabled) .Values.ui.idleTimeout }}
+    {{- if or (and .Values.ui.logo .Values.ui.logo.enabled) .Values.ui.idleTimeout .Values.ui.chatFontSizePx }}
     ui:
       {{- if and .Values.ui.logo .Values.ui.logo.enabled }}
       logo_path: "/etc/centcom/logo/logo.svg"
       {{- end }}
       {{- if .Values.ui.idleTimeout }}
       idle_timeout: {{ .Values.ui.idleTimeout | quote }}
+      {{- end }}
+      {{- if .Values.ui.chatFontSizePx }}
+      chat_font_size_px: {{ .Values.ui.chatFontSizePx }}
       {{- end }}
     {{- end }}
     {{- end }}
