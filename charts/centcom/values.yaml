@@ -260,6 +260,11 @@ ui:
   # idleTimeout: "15m"
   # ClusterClaw chat message font size, in pixels. Defaults to 14px when unset.
   # chatFontSizePx: 14
+  # Optional deeplink URL template for the chat header's session id badge.
+  # Must contain the literal placeholder ${sessionId}, substituted with the
+  # full chat session id when clicked (opens in a new window). Unset by
+  # default, in which case the badge stays plain (non-navigable) text.
+  # langfuseSessionDeeplinkUrl: "https://langfuse.example.com/project/<project-id>/sessions/${sessionId}"
 
 # Database configuration (dip.io Postgres CRD)
 database:
