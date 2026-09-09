@@ -104,6 +104,9 @@ data:
       region: {{ .Values.serviceIdentity.region | quote }}
       environment: {{ .Values.serviceIdentity.environment | quote }}
       oauth2_client_id: {{ .Values.serviceIdentity.oauth2ClientId | quote }}
+      {{- if .Values.serviceIdentity.serviceId }}
+      service_id: {{ .Values.serviceIdentity.serviceId | quote }}
+      {{- end }}
       oidc_issuer: {{ .Values.serviceIdentity.oidcIssuer | quote }}
       connector_id: {{ .Values.serviceIdentity.connectorId | default "iam-preview" | quote }}
       audience: {{ .Values.serviceIdentity.audience | default .Values.api.oauth2.audience | quote }}

@@ -68,6 +68,14 @@ spec:
                   key: {{ .Values.channel.hermes.apiKeySecret.key | default "API_SERVER_KEY" }}
           {{- end }}
           {{- if .Values.serviceIdentity.enabled }}
+          {{- if .Values.serviceIdentity.privateKeySecret.name }}
+            - name: SERVICE_IDENTITY_SERVICE_PRIVATE_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.serviceIdentity.privateKeySecret.name }}
+                  key: {{ .Values.serviceIdentity.privateKeySecret.key | default "private-key" }}
+          {{- end }}
+          {{- if .Values.serviceIdentity.credentialsSecret.name }}
             - name: SERVICE_IDENTITY_USERNAME
               valueFrom:
                 secretKeyRef:
@@ -83,6 +91,7 @@ spec:
                 secretKeyRef:
                   name: {{ .Values.serviceIdentity.credentialsSecret.name }}
                   key: {{ .Values.serviceIdentity.credentialsSecret.oauth2SecretKey | default "oauth2-secret" }}
+          {{- end }}
           {{- end }}
           {{- if or .Values.api.clientSecretRef .Values.api.clientSecretValue }}
             - name: OAUTH2_CLIENT_SECRET
