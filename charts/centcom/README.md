@@ -1,6 +1,6 @@
 # centcom
 
-![Version: 0.77.0](https://img.shields.io/badge/Version-0.77.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.171.1](https://img.shields.io/badge/AppVersion-v0.171.1-informational?style=flat-square)
+![Version: 0.78.0](https://img.shields.io/badge/Version-0.78.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.172.0](https://img.shields.io/badge/AppVersion-v0.172.0-informational?style=flat-square)
 
 MCP server for managing multiple centcom-satellite instances
 
@@ -72,8 +72,6 @@ MCP server for managing multiple centcom-satellite instances
 | image.pullPolicy | string | `"IfNotPresent"` |  |
 | image.repository | string | `"ghcr.io/loafoe/centcom"` |  |
 | image.tag | string | `""` |  |
-| imageImport.allowedOrigins | list | `[]` |  |
-| imageImport.enabled | bool | `false` |  |
 | imagePullSecrets | list | `[]` |  |
 | leaderElection.enabled | bool | `false` |  |
 | metrics | object | `{"port":9090}` | Metrics server configuration (separate port from main HTTP, not publicly exposed) |
