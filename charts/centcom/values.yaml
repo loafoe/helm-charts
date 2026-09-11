@@ -88,6 +88,27 @@ resources:
     cpu: 10m
     memory: 32Mi
 
+# -- Liveness probe timing (SSE transport only — see server.transport). A
+# failure here restarts the container, so this is deliberately more
+# tolerant than a plain httpGet default (1s timeout, 3-strike threshold):
+# on a shared, occasionally-noisy cluster (apiserver latency spikes,
+# node/network jitter unrelated to this pod's own CPU/memory usage — see
+# CLAUDE.md's aws-load-balancer-controller investigation for the same
+# class of issue), a strict 1-second timeout can miss a request purely
+# due to transient network delay even though the app itself is healthy
+# and lightly loaded, causing an unnecessary, disruptive restart
+# (kills in-flight chat/SSE streams and cron runs).
+livenessProbe:
+  timeoutSeconds: 5
+  failureThreshold: 5
+
+# -- Readiness probe timing (SSE transport only). Failure here only pulls
+# the pod out of Service endpoints temporarily (no restart), so it's lower
+# stakes than livenessProbe above, but the same 1s-default timeout is
+# still tight enough to flap under transient network jitter.
+readinessProbe:
+  timeoutSeconds: 5
+
 nodeSelector:
   kubernetes.io/os: linux
 
