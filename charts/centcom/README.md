@@ -1,6 +1,6 @@
 # centcom
 
-![Version: 0.82.3](https://img.shields.io/badge/Version-0.82.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.176.3](https://img.shields.io/badge/AppVersion-v0.176.3-informational?style=flat-square)
+![Version: 0.83.0](https://img.shields.io/badge/Version-0.83.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.179.0](https://img.shields.io/badge/AppVersion-v0.179.0-informational?style=flat-square)
 
 MCP server for managing multiple centcom-satellite instances
 
@@ -74,6 +74,7 @@ MCP server for managing multiple centcom-satellite instances
 | image.tag | string | `""` |  |
 | imagePullSecrets | list | `[]` |  |
 | leaderElection.enabled | bool | `false` |  |
+| livenessProbe | object | `{"failureThreshold":5,"timeoutSeconds":5}` | Liveness probe timing (SSE transport only — see server.transport). A failure here restarts the container, so this is deliberately more tolerant than a plain httpGet default (1s timeout, 3-strike threshold): on a shared, occasionally-noisy cluster (apiserver latency spikes, node/network jitter unrelated to this pod's own CPU/memory usage — see CLAUDE.md's aws-load-balancer-controller investigation for the same class of issue), a strict 1-second timeout can miss a request purely due to transient network delay even though the app itself is healthy and lightly loaded, causing an unnecessary, disruptive restart (kills in-flight chat/SSE streams and cron runs). |
 | metrics | object | `{"port":9090}` | Metrics server configuration (separate port from main HTTP, not publicly exposed) |
 | metrics.port | int | `9090` | Port for the internal metrics server (serves /metrics for Prometheus) |
 | nameOverride | string | `""` |  |
@@ -93,6 +94,7 @@ MCP server for managing multiple centcom-satellite instances
 | podSecurityContext.runAsNonRoot | bool | `true` |  |
 | podSecurityContext.runAsUser | int | `65532` |  |
 | podSecurityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
+| readinessProbe | object | `{"timeoutSeconds":5}` | Readiness probe timing (SSE transport only). Failure here only pulls the pod out of Service endpoints temporarily (no restart), so it's lower stakes than livenessProbe above, but the same 1s-default timeout is still tight enough to flap under transient network jitter. |
 | replicaCount | int | `1` |  |
 | resources.limits.cpu | string | `"100m"` |  |
 | resources.limits.memory | string | `"128Mi"` |  |
