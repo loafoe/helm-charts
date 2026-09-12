@@ -103,24 +103,6 @@ data:
     features:
       get_resource: {{ .Values.features.getResource | default false }}
     {{- end }}
-    {{- if .Values.alerts }}
-    alerts:
-      pv_usage:
-        enabled: {{ .Values.alerts.pvUsage.enabled | default false }}
-        {{- if .Values.alerts.pvUsage.interval }}
-        interval: {{ .Values.alerts.pvUsage.interval | quote }}
-        {{- end }}
-        {{- if .Values.alerts.pvUsage.thresholdPercent }}
-        threshold_percent: {{ .Values.alerts.pvUsage.thresholdPercent }}
-        {{- end }}
-        {{- if .Values.alerts.pvUsage.cooldown }}
-        cooldown: {{ .Values.alerts.pvUsage.cooldown | quote }}
-        {{- end }}
-        auto_remediate: {{ .Values.alerts.pvUsage.autoRemediate | default false }}
-        {{- if .Values.alerts.pvUsage.maxPVSizeGi }}
-        max_pv_size_gi: {{ .Values.alerts.pvUsage.maxPVSizeGi }}
-        {{- end }}
-    {{- end }}
     {{- if .Values.ui }}
     {{- if or (and .Values.ui.logo .Values.ui.logo.enabled) .Values.ui.idleTimeout .Values.ui.chatFontSizePx .Values.ui.langfuseSessionDeeplinkUrl }}
     ui:

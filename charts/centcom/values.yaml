@@ -198,8 +198,8 @@ serviceIdentity:
 
 # Leader election for horizontal scaling
 leaderElection:
-  # Enable leader election (required for safe scaling with picoclaw/alerts)
-  # When enabled, only the leader replica runs picoclaw and alert monitors
+  # Enable leader election (required for safe scaling with picoclaw)
+  # When enabled, only the leader replica runs picoclaw
   enabled: false
 
 # Feature flags for optional functionality
@@ -217,20 +217,6 @@ cron:
   # tool to add/list/remove/enable/disable jobs. Admins always retain access
   # regardless of this list. Empty (the default) keeps cron admin-only.
   groups: []
-
-# Alerting configuration
-alerts:
-  pvUsage:
-    # Enable PV usage monitoring and alerting
-    enabled: false
-    # Polling interval (Go duration format)
-    interval: "5m"
-    # Alert threshold percentage (0-100)
-    thresholdPercent: 80
-    # Cooldown between repeated alerts for same PV
-    cooldown: "1h"
-    # Enable auto-remediation (resize PVCs via picoclaw skill)
-    autoRemediate: false
 
 # OpenTelemetry configuration
 otel:
