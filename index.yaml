@@ -2,6 +2,25 @@ apiVersion: v1
 entries:
   centcom:
   - apiVersion: v2
+    appVersion: v0.201.0
+    created: "2026-09-16T14:40:13.452948941Z"
+    description: MCP server for managing multiple centcom-satellite instances
+    digest: 19b0fd587cf9da77c3d5b09cc3c78532e12a4ccb4cafae5b69b776d1eff1aa7f
+    home: https://github.com/loafoe/centcom
+    keywords:
+    - kubernetes
+    - mcp
+    - spiffe
+    - ai
+    maintainers:
+    - email: andy.lo-a-foe@philips.com
+      name: Andy Lo-A-Foe
+    name: centcom
+    type: application
+    urls:
+    - https://github.com/loafoe/helm-charts/releases/download/centcom-0.88.0/centcom-0.88.0.tgz
+    version: 0.88.0
+  - apiVersion: v2
     appVersion: v0.193.0
     created: "2026-09-15T09:48:41.171184189Z"
     description: MCP server for managing multiple centcom-satellite instances
@@ -931,6 +950,28 @@ entries:
     version: 0.0.10
   mcp-notifier:
   - apiVersion: v2
+    appVersion: v0.2.0
+    created: "2026-09-16T14:40:13.666554925Z"
+    description: MCP server for sending notifications to Slack, Microsoft Teams, and
+      Telegram
+    digest: ee81d5c31c27f3cf979263cc1621c8a99df7d154f808e8e89f15647b6bcfe31b
+    home: https://github.com/loafoe/mcp-notifier
+    keywords:
+    - mcp
+    - notifications
+    - slack
+    - teams
+    - telegram
+    - webhook
+    maintainers:
+    - email: andy.lo-a-foe@philips.com
+      name: Andy Lo-A-Foe
+    name: mcp-notifier
+    type: application
+    urls:
+    - https://github.com/loafoe/helm-charts/releases/download/mcp-notifier-0.2.0/mcp-notifier-0.2.0.tgz
+    version: 0.2.0
+  - apiVersion: v2
     appVersion: v0.1.0
     created: "2026-09-02T11:07:02.727959816Z"
     description: MCP server for sending notifications to Slack and Microsoft Teams
@@ -1296,4 +1337,4 @@ entries:
     urls:
     - https://loafoe.github.io/helm-charts/tempo-distributed-1.20.1.tgz
     version: 1.20.1
-generated: "2026-09-15T09:48:41.171705347Z"
+generated: "2026-09-16T14:40:13.666878483Z"
