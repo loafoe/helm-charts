@@ -31,3 +31,15 @@ data:
           {{- end }}
         {{- end }}
     {{- end }}
+    {{- if and .Values.telegram.enabled .Values.telegram.bots }}
+    telegram:
+      bots:
+        {{- range .Values.telegram.bots }}
+        {{ .name }}:
+          bot_token: {{ printf "${%s}" (include "mcp-notifier.telegramEnvVar" (list "BOT_TOKEN" .name)) | quote }}
+          chat_id: {{ printf "${%s}" (include "mcp-notifier.telegramEnvVar" (list "CHAT_ID" .name)) | quote }}
+          {{- if .apiBaseUrl }}
+          api_base_url: {{ .apiBaseUrl | quote }}
+          {{- end }}
+        {{- end }}
+    {{- end }}

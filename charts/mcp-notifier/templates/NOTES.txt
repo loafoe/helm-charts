@@ -1,10 +1,10 @@
 mcp-notifier has been deployed.
 
-{{- if not (or .Values.slack.enabled .Values.teams.enabled) }}
+{{- if not (or .Values.slack.enabled .Values.teams.enabled .Values.telegram.enabled) }}
 
-WARNING: neither slack.enabled nor teams.enabled is set - no notification
-tools will be registered and the server will fail to start. Set at least
-one provider's `enabled: true` with a "default" webhook.
+WARNING: none of slack.enabled, teams.enabled, or telegram.enabled is set -
+no notification tools will be registered and the server will fail to start.
+Set at least one provider's `enabled: true` with a "default" target.
 {{- end }}
 
 MCP endpoint (in-cluster):

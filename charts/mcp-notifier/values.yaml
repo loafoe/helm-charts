@@ -50,6 +50,29 @@ teams:
   #     existingSecret: "teams-default-webhook"
   #     secretKey: "webhook-url"
 
+# Telegram Bot API targets. Each entry renders a "bots.<name>" section in
+# config.yaml; the bot token and chat id are never written to the ConfigMap -
+# they're injected as env vars and referenced via ${VAR} in the rendered
+# config.
+#
+# Provide the token/chat id via one of:
+#   - existingSecret + botTokenKey/chatIdKey: read from an existing Secret
+#     (recommended)
+#   - botToken/chatId: inline values, only for quick testing - the chart
+#     will create a Secret for them
+telegram:
+  enabled: false
+  bots: []
+  # bots:
+  #   - name: default
+  #     existingSecret: "telegram-default-bot"
+  #     botTokenKey: "bot-token"
+  #     chatIdKey: "chat-id"
+  #   - name: alerts
+  #     botToken: "123456789:ABCdefGHIjklMNOpqrsTUVwxyz"
+  #     chatId: "-1001234567890"
+  #     # apiBaseUrl: "https://your-local-bot-api-server"  # optional: self-hosted Bot API server
+
 serviceAccount:
   # Specifies whether a service account should be created
   create: true
@@ -96,7 +119,7 @@ affinity: {}
 
 # Network policy (Cilium). Restricts ingress to the same namespace (plus any
 # extraIngress rules); egress always allows HTTPS to the internet, since
-# Slack/Teams webhook endpoints are external.
+# Slack/Teams/Telegram endpoints are external.
 networkPolicy:
   enabled: false
   # Additional ingress rules (e.g. to allow a specific namespace of MCP

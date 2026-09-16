@@ -81,3 +81,25 @@ e.g. (mcp-notifier.inlineSecretName $ "slack" "default") -> "<release>-mcp-notif
 {{- $name := index . 2 -}}
 {{- printf "%s-%s-%s-webhook" (include "mcp-notifier.fullname" $root) $provider $name | trunc 63 | trimSuffix "-" -}}
 {{- end }}
+
+{{/*
+Deterministic env var name for a Telegram bot target's token/chat id, e.g.
+(mcp-notifier.telegramEnvVar (list "BOT_TOKEN" "default")) -> "TELEGRAM_DEFAULT_BOT_TOKEN"
+(mcp-notifier.telegramEnvVar (list "CHAT_ID" "default")) -> "TELEGRAM_DEFAULT_CHAT_ID"
+*/}}
+{{- define "mcp-notifier.telegramEnvVar" -}}
+{{- $field := index . 0 -}}
+{{- $name := index . 1 -}}
+{{- printf "TELEGRAM_%s_%s" (regexReplaceAll "[^A-Za-z0-9]" $name "_" | upper) $field -}}
+{{- end }}
+
+{{/*
+Deterministic Secret name the chart creates for an inline Telegram bot
+token/chat id, e.g. (mcp-notifier.telegramInlineSecretName $ "default") ->
+"<release>-mcp-notifier-telegram-default-bot"
+*/}}
+{{- define "mcp-notifier.telegramInlineSecretName" -}}
+{{- $root := index . 0 -}}
+{{- $name := index . 1 -}}
+{{- printf "%s-telegram-%s-bot" (include "mcp-notifier.fullname" $root) $name | trunc 63 | trimSuffix "-" -}}
+{{- end }}

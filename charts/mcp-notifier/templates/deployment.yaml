@@ -69,6 +69,30 @@ spec:
                   {{- end }}
             {{- end }}
             {{- end }}
+            {{- if .Values.telegram.enabled }}
+            {{- range $bot := .Values.telegram.bots }}
+            - name: {{ include "mcp-notifier.telegramEnvVar" (list "BOT_TOKEN" $bot.name) }}
+              valueFrom:
+                secretKeyRef:
+                  {{- if $bot.existingSecret }}
+                  name: {{ $bot.existingSecret }}
+                  key: {{ $bot.botTokenKey | default "bot-token" }}
+                  {{- else }}
+                  name: {{ include "mcp-notifier.telegramInlineSecretName" (list $ $bot.name) }}
+                  key: bot-token
+                  {{- end }}
+            - name: {{ include "mcp-notifier.telegramEnvVar" (list "CHAT_ID" $bot.name) }}
+              valueFrom:
+                secretKeyRef:
+                  {{- if $bot.existingSecret }}
+                  name: {{ $bot.existingSecret }}
+                  key: {{ $bot.chatIdKey | default "chat-id" }}
+                  {{- else }}
+                  name: {{ include "mcp-notifier.telegramInlineSecretName" (list $ $bot.name) }}
+                  key: chat-id
+                  {{- end }}
+            {{- end }}
+            {{- end }}
           ports:
             - name: http
               containerPort: {{ .Values.server.port }}
