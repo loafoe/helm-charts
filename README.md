@@ -37,6 +37,7 @@ helm install my-release loafoe/go-hello-world
 |-------|-------------|
 | [go-hello-world](./charts/go-hello-world) | Simple example application |
 | [lessor](./charts/lessor) | Caddy plugin for Loki multi-tenant setups |
+| [mt-mcp-proxy](./charts/mt-mcp-proxy) | Multi-tenant JWT/OIDC auth gateway fronting MCP backends |
 | [otlp-gateway](./charts/otlp-gateway) | OpenTelemetry gateway deployment |
 | [patch-operator](./charts/patch-operator) | Volume/storage CSI expansion operator |
 | [solgate](./charts/solgate) | Caddy plugin for path-based service access |
