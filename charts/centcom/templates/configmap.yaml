@@ -102,6 +102,7 @@ data:
     {{- if .Values.features }}
     features:
       get_resource: {{ .Values.features.getResource | default false }}
+      read_only: {{ .Values.features.readOnly | default false }}
     {{- end }}
     {{- if .Values.ui }}
     {{- if or (and .Values.ui.logo .Values.ui.logo.enabled) .Values.ui.idleTimeout .Values.ui.chatFontSizePx .Values.ui.langfuseSessionDeeplinkUrl }}

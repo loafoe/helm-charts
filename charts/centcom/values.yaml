@@ -206,6 +206,14 @@ leaderElection:
 features:
   # Enable get_resource tool for fetching arbitrary Kubernetes resources
   getResource: false
+  # When true, removes every write/admin MCP tool (pv_resize,
+  # workload_restart, workload_scale, pod_evict, pod_resize,
+  # nodeclaim_delete, upsert_agent, delete_agent, manage_account_role,
+  # securityhub_update_findings) from this instance's registered tool set.
+  # This is a second, independent layer on top of each target
+  # centcom-satellite's own Features.*Enabled gate - see the satellite
+  # chart's `features.*` values.
+  readOnly: false
 
 # Cron service for scheduled tasks
 cron:
