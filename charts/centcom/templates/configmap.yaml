@@ -103,6 +103,7 @@ data:
     features:
       get_resource: {{ .Values.features.getResource | default false }}
       read_only: {{ .Values.features.readOnly | default false }}
+      mcp_legacy_enabled: {{ .Values.features.mcpLegacyEnabled | default false }}
     {{- end }}
     {{- if .Values.ui }}
     {{- if or (and .Values.ui.logo .Values.ui.logo.enabled) .Values.ui.idleTimeout .Values.ui.chatFontSizePx .Values.ui.langfuseSessionDeeplinkUrl }}

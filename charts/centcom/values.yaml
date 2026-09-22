@@ -214,6 +214,11 @@ features:
   # centcom-satellite's own Features.*Enabled gate - see the satellite
   # chart's `features.*` values.
   readOnly: false
+  # centcom's /mcp is modern-only (MCP 2026-07-28, SEP-2575) by default: no
+  # initialize handshake, no Mcp-Session-Id, GET/DELETE both rejected. Set
+  # true only if some MCP client that still speaks a pre-2026-07-28 revision
+  # needs to keep working against this instance.
+  mcpLegacyEnabled: false
 
 # Cron service for scheduled tasks
 cron:
