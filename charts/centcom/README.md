@@ -87,7 +87,7 @@ MCP server for managing multiple centcom-satellite instances
 | picoclaw.url | string | `""` |  |
 | podAnnotations | object | `{}` |  |
 | podDisruptionBudget.enabled | bool | `false` |  |
-| podDisruptionBudget.minAvailable | int | `2` |  |
+| podDisruptionBudget.minAvailable | int | `1` |  |
 | podSecurityContext.fsGroup | int | `65532` |  |
 | podSecurityContext.runAsGroup | int | `65532` |  |
 | podSecurityContext.runAsNonRoot | bool | `true` |  |
