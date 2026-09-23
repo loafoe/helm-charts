@@ -1,4 +1,11 @@
-{{- if .Values.podDisruptionBudget.enabled }}
+{{- /*
+A PDB only protects availability when there's a spare replica to fall back
+on. At replicaCount 1, minAvailable >= 1 makes allowedDisruptions always 0,
+which just blocks Karpenter's voluntary node eviction (until it force-
+terminates) with no availability upside - so skip rendering it entirely
+rather than holding a node hostage for nothing.
+*/}}
+{{- if and .Values.podDisruptionBudget.enabled (gt (int .Values.replicaCount) 1) }}
 apiVersion: policy/v1
 kind: PodDisruptionBudget
 metadata:
