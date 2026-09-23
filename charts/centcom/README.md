@@ -1,6 +1,6 @@
 # centcom
 
-![Version: 0.88.0](https://img.shields.io/badge/Version-0.88.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.201.0](https://img.shields.io/badge/AppVersion-v0.201.0-informational?style=flat-square)
+![Version: 0.89.0](https://img.shields.io/badge/Version-0.89.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.201.0](https://img.shields.io/badge/AppVersion-v0.201.0-informational?style=flat-square)
 
 MCP server for managing multiple centcom-satellite instances
 
@@ -86,6 +86,8 @@ MCP server for managing multiple centcom-satellite instances
 | picoclaw.tokenSecret.name | string | `""` |  |
 | picoclaw.url | string | `""` |  |
 | podAnnotations | object | `{}` |  |
+| podDisruptionBudget.enabled | bool | `false` |  |
+| podDisruptionBudget.minAvailable | int | `2` |  |
 | podSecurityContext.fsGroup | int | `65532` |  |
 | podSecurityContext.runAsGroup | int | `65532` |  |
 | podSecurityContext.runAsNonRoot | bool | `true` |  |
@@ -131,6 +133,7 @@ MCP server for managing multiple centcom-satellite instances
 | spire.hostSocketPath | string | `"/run/spire/agent-sockets"` |  |
 | spire.socketMountPath | string | `"/spiffe-workload-api"` |  |
 | tolerations | list | `[]` |  |
+| topologySpreadConstraints | list | `[]` |  |
 | ui.logo.enabled | bool | `false` |  |
 
 ----------------------------------------------
