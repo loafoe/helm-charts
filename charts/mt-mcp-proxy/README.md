@@ -1,6 +1,6 @@
 # mt-mcp-proxy
 
-![Version: 0.4.0](https://img.shields.io/badge/Version-0.4.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.2.0](https://img.shields.io/badge/AppVersion-0.2.0-informational?style=flat-square)
+![Version: 0.4.1](https://img.shields.io/badge/Version-0.4.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.3.2](https://img.shields.io/badge/AppVersion-0.3.2-informational?style=flat-square)
 
 A generic multi-tenant JWT/OIDC auth gateway that fronts any streamable-HTTP MCP server (e.g. github-mcp-server, mcp-grafana) with group-based tenant routing and per-tenant credential injection.
 
@@ -48,7 +48,7 @@ A generic multi-tenant JWT/OIDC auth gateway that fronts any streamable-HTTP MCP
 | backends[0].managed.port | int | `8082` | Container port the backend's MCP endpoint listens on |
 | backends[0].managed.secretEnv | list | `[]` | Additional secret-backed env vars beyond the single credentialEnvVar/credentialSecret pair above, for backends that need more than one secret injected as an env var (e.g. mcp-notifier needs a Slack AND a Teams webhook URL). Each entry creates one env var sourced from an existing Secret - these secrets are NOT created by this chart, create them out-of-band. |
 | backends[0].name | string | `"github"` | Internal/ops name (logging, DNS of the managed backend service). Must be unique across all entries in this list. |
-| backends[0].protocolVersion | string | `""` | MCP revision the proxy speaks toward THIS backend: "" (default) behaves as "2025-03-26" (stateful: initialize handshake + Mcp-Session-Id). Set to "2026-07-28" for a backend that speaks the stateless revision - the proxy then skips initialize entirely and sends every request self-contained. Requires mt-mcp-proxy >= v0.2.0.  The proxy only goes stateless toward ITS OWN callers (no Mcp-Session-Id, optional initialize, server/discover RPC) when EVERY backend in this release sets protocolVersion: "2026-07-28" - the two modes cannot be mixed per deployment, since a stateful backend's session is keyed off the client-facing session id. |
+| backends[0].protocolVersion | string | `""` | MCP revision spoken toward this backend. Defaults to "2025-03-26" (stateful: initialize handshake + Mcp-Session-Id). Set to "2026-07-28" for a backend that speaks the stateless revision (e.g. github-mcp-server http >= v1.12.2) — the proxy then skips initialize entirely. |
 | backends[0].tenants | list | `[{"credentialSecret":{"create":false,"key":"token","name":"github-pat-platform","value":""},"groups":["platform-eng"],"headers":{"X-MCP-Toolsets":"repos,issues,pull_requests"},"id":"team-platform"},{"credentialSecret":{"create":false,"key":"token","name":"github-pat-data","value":""},"groups":["data-eng"],"headers":{"X-MCP-Readonly":"true"},"id":"team-data"}]` | Tenants this backend serves. Model: groups authorize, tenant selects, backend executes. Each tenant's id is advertised via list_instances and is the `tenant` tool-argument value; its groups gate access; its credential (if set) overrides the backend-level credential above for calls routed to this tenant. |
 | backends[0].tenants[0].credentialSecret | object | `{"create":false,"key":"token","name":"github-pat-platform","value":""}` | Per-tenant credential override (optional). Omit name to fall back to the backend-level credentialSecret above. |
 | backends[0].tenants[0].groups | list | `["platform-eng"]` | JWT groups authorized to select this tenant |
@@ -57,7 +57,7 @@ A generic multi-tenant JWT/OIDC auth gateway that fronts any streamable-HTTP MCP
 | fullnameOverride | string | `""` | Override the fully qualified name of the chart |
 | image.pullPolicy | string | `"IfNotPresent"` | Image pull policy |
 | image.repository | string | `"ghcr.io/loafoe/mt-mcp-proxy"` | Registry repository for the mt-mcp-proxy image |
-| image.tag | string | `"v0.2.0"` | Image tag (the release workflow publishes ghcr.io/loafoe/mt-mcp-proxy:<git-tag>). v0.2.0+ is required for per-backend `protocolVersion` (MCP 2026-07-28 stateless support). |
+| image.tag | string | `"v0.3.0"` | Image tag (the release workflow publishes ghcr.io/loafoe/mt-mcp-proxy:<git-tag>) |
 | metrics | object | `{"enabled":true,"path":"/metrics","port":9090}` | Prometheus metrics on a SEPARATE listener (isolated from the /mcp data plane). |
 | metrics.enabled | bool | `true` | Enable the metrics listener (adds container/service port + config block) |
 | metrics.path | string | `"/metrics"` | Path the metrics endpoint is served on |
