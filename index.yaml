@@ -1076,6 +1076,18 @@ entries:
     version: 0.9.0
   mt-mcp-proxy:
   - apiVersion: v2
+    appVersion: 0.3.3
+    created: "2026-09-23T08:27:10.654357632Z"
+    description: A generic multi-tenant JWT/OIDC auth gateway that fronts any streamable-HTTP
+      MCP server (e.g. github-mcp-server, mcp-grafana) with group-based tenant routing
+      and per-tenant credential injection.
+    digest: ee109d1dbfb045b79b852af8b441758c812a724cd4e13aeacf9a9e51978ae88d
+    name: mt-mcp-proxy
+    type: application
+    urls:
+    - https://github.com/loafoe/helm-charts/releases/download/mt-mcp-proxy-0.4.2/mt-mcp-proxy-0.4.2.tgz
+    version: 0.4.2
+  - apiVersion: v2
     appVersion: 0.3.2
     created: "2026-09-23T07:26:59.51604805Z"
     description: A generic multi-tenant JWT/OIDC auth gateway that fronts any streamable-HTTP
@@ -1412,4 +1424,4 @@ entries:
     urls:
     - https://loafoe.github.io/helm-charts/tempo-distributed-1.20.1.tgz
     version: 1.20.1
-generated: "2026-09-23T07:26:59.516214808Z"
+generated: "2026-09-23T08:27:10.654519792Z"
