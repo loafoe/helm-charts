@@ -122,7 +122,7 @@ topologySpreadConstraints: []
 # all replicas at once (see dip-ce-k3s-eu login-timeout incident, 2026-09-23).
 podDisruptionBudget:
   enabled: false
-  minAvailable: 2
+  minAvailable: 1
 
 # HTTPRoute configuration for Gateway API
 httpRoute:
