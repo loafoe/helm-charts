@@ -92,6 +92,13 @@ spec:
                   name: {{ .Values.serviceIdentity.credentialsSecret.name }}
                   key: {{ .Values.serviceIdentity.credentialsSecret.oauth2SecretKey | default "oauth2-secret" }}
           {{- end }}
+          {{- if .Values.serviceIdentity.exchangeClientSecretRef.name }}
+            - name: SERVICE_IDENTITY_EXCHANGE_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.serviceIdentity.exchangeClientSecretRef.name }}
+                  key: {{ .Values.serviceIdentity.exchangeClientSecretRef.key | default "exchange-client-secret" }}
+          {{- end }}
           {{- end }}
           {{- if or .Values.api.clientSecretRef .Values.api.clientSecretValue }}
             - name: OAUTH2_CLIENT_SECRET

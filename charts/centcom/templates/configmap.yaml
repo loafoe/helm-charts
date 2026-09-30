@@ -98,6 +98,12 @@ data:
       oidc_issuer: {{ .Values.serviceIdentity.oidcIssuer | quote }}
       connector_id: {{ .Values.serviceIdentity.connectorId | default "iam-preview" | quote }}
       audience: {{ .Values.serviceIdentity.audience | default .Values.api.oauth2.audience | quote }}
+      {{- if .Values.serviceIdentity.clientCredentials }}
+      client_credentials: true
+      {{- end }}
+      {{- if .Values.serviceIdentity.exchangeClientId }}
+      exchange_client_id: {{ .Values.serviceIdentity.exchangeClientId | quote }}
+      {{- end }}
     {{- end }}
     {{- if .Values.features }}
     features:

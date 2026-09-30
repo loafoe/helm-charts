@@ -199,10 +199,29 @@ serviceIdentity:
   privateKeySecret:
     name: ""
     key: "private-key"
+  # Secret containing legacy username/password + oauth2 client secret
+  # (resource-owner password grant mode). Unused in clientCredentials mode.
+  credentialsSecret:
+    name: ""
+    usernameKey: "username"
+    passwordKey: "password"
+    oauth2SecretKey: "oauth2-secret"
   # OIDC issuer for token exchange (same as api.oauth2.issuer typically)
   oidcIssuer: ""
   # Audience for the exchanged token (same as api.oauth2.audience typically)
   audience: ""
+  # When true, skip the HSP IAM login + token-exchange steps above entirely
+  # and get a token directly from oidcIssuer via the client_credentials
+  # grant, authenticating as exchangeClientId/exchangeClientSecretRef.
+  clientCredentials: false
+  # client_id for both the legacy token-exchange Basic-auth step and (when
+  # clientCredentials is true) the client_credentials grant itself.
+  exchangeClientId: ""
+  # Secret containing the client's own secret for the client_credentials
+  # grant (or the token-exchange Basic-auth secret in legacy modes).
+  exchangeClientSecretRef:
+    name: ""
+    key: "exchange-client-secret"
 
 # Leader election for horizontal scaling
 leaderElection:
