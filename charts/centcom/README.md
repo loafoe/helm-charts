@@ -1,6 +1,6 @@
 # centcom
 
-![Version: 0.92.0](https://img.shields.io/badge/Version-0.92.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.241.0](https://img.shields.io/badge/AppVersion-v0.241.0-informational?style=flat-square)
+![Version: 0.93.0](https://img.shields.io/badge/Version-0.93.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.243.0](https://img.shields.io/badge/AppVersion-v0.243.0-informational?style=flat-square)
 
 MCP server for managing multiple centcom-satellite instances
 
@@ -112,7 +112,15 @@ MCP server for managing multiple centcom-satellite instances
 | serviceAccount.create | bool | `true` |  |
 | serviceAccount.name | string | `""` |  |
 | serviceIdentity.audience | string | `""` |  |
+| serviceIdentity.clientCredentials | bool | `false` |  |
+| serviceIdentity.credentialsSecret.name | string | `""` |  |
+| serviceIdentity.credentialsSecret.oauth2SecretKey | string | `"oauth2-secret"` |  |
+| serviceIdentity.credentialsSecret.passwordKey | string | `"password"` |  |
+| serviceIdentity.credentialsSecret.usernameKey | string | `"username"` |  |
 | serviceIdentity.enabled | bool | `false` |  |
+| serviceIdentity.exchangeClientId | string | `""` |  |
+| serviceIdentity.exchangeClientSecretRef.key | string | `"exchange-client-secret"` |  |
+| serviceIdentity.exchangeClientSecretRef.name | string | `""` |  |
 | serviceIdentity.iamURL | string | `""` |  |
 | serviceIdentity.oidcIssuer | string | `""` |  |
 | serviceIdentity.privateKeySecret.key | string | `"private-key"` |  |
