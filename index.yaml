@@ -1230,6 +1230,30 @@ entries:
   picoclaw:
   - apiVersion: v2
     appVersion: v0.0.19
+    created: "2026-10-02T14:35:27.566189538Z"
+    description: AI-powered Kubernetes operations assistant with multi-channel support
+      (Telegram, Slack, Teams, Pico)
+    digest: a884577826b81892274f46333f1fa1fdf2f202f87d83a9469a3abc61c817c7c5
+    home: https://github.com/loafoe/picoclaw
+    keywords:
+    - kubernetes
+    - ai
+    - chatops
+    - telegram
+    - slack
+    - mcp
+    maintainers:
+    - email: andy.lo-a-foe@philips.com
+      name: Andy Lo-A-Foe
+    name: picoclaw
+    sources:
+    - https://github.com/loafoe/picoclaw
+    type: application
+    urls:
+    - https://github.com/loafoe/helm-charts/releases/download/picoclaw-0.1.2/picoclaw-0.1.2.tgz
+    version: 0.1.2
+  - apiVersion: v2
+    appVersion: v0.0.19
     created: "2026-07-18T07:57:36.680208178Z"
     description: AI-powered Kubernetes operations assistant with multi-channel support
       (Telegram, Slack, Teams, Pico)
@@ -1263,4 +1287,4 @@ entries:
     urls:
     - https://loafoe.github.io/helm-charts/solgate-0.0.12.tgz
     version: 0.0.12
-generated: "2026-10-02T13:42:46.882038088Z"
+generated: "2026-10-02T14:35:27.566394021Z"
