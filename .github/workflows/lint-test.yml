@@ -60,19 +60,28 @@ jobs:
           REQUESTED_CHART: ${{ inputs.chart }}
         run: |
           set -euo pipefail
+          # Multi-line outputs need the heredoc form: Actions rejects
+          # `key=line1\nline2`.
+          emit() {
+            echo "$1<<EOF" >> "$GITHUB_OUTPUT"
+            echo "$2" >> "$GITHUB_OUTPUT"
+            echo "EOF" >> "$GITHUB_OUTPUT"
+          }
+
           if [ -n "$REQUESTED_CHART" ]; then
             echo "explicitly requested: $REQUESTED_CHART"
-            echo "charts=$REQUESTED_CHART" >> "$GITHUB_OUTPUT"
-            echo "installable=$REQUESTED_CHART" >> "$GITHUB_OUTPUT"
+            emit charts "$REQUESTED_CHART"
+            emit installable "$REQUESTED_CHART"
             exit 0
           fi
+
           changed="$(ct list-changed --target-branch "$TARGET_BRANCH")"
           if [ -z "$changed" ]; then
             echo "no chart changes on this branch"
             exit 0
           fi
           echo "changed charts: $(echo "$changed" | tr '\n' ' ')"
-          echo "charts=$changed" >> "$GITHUB_OUTPUT"
+          emit charts "$changed"
 
           # ct only honours --excluded-charts while auto-detecting, so filter
           # the list ourselves before handing it over.
@@ -86,8 +95,13 @@ jobs:
               installable="${installable}${chart}"$'\n'
             fi
           done <<< "$changed"
-          echo "charts to install: $(echo "$installable" | tr -d '\n' | sed 's|/ ||g')"
-          echo "installable=$(printf '%s' "$installable" | tr -d '\n')" >> "$GITHUB_OUTPUT"
+          installable="$(printf '%s' "$installable" | sed '/^$/d')"
+          if [ -n "$installable" ]; then
+            echo "charts to install: $(echo "$installable" | tr '\n' ' ')"
+          else
+            echo "nothing installable among the changed charts"
+          fi
+          emit installable "$installable"
 
       - name: Run chart-testing (lint)
         if: steps.charts.outputs.charts != ''
