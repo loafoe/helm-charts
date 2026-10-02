@@ -149,7 +149,7 @@ auth:
 # intersect a tenant's groups to use it.
 backends:
   # -- Example: managed backend (chart deploys mcp-grafana pod + service)
-  - # -- Internal/ops name for this backend (logging, must be unique)
+  -   # -- Internal/ops name for this backend (logging, must be unique)
     name: grafana-ab
     # -- Target Grafana stack URL for the managed mcp-grafana instance
     grafanaUrl: "https://grafana.company.com/team-ab"
@@ -174,7 +174,7 @@ backends:
     # unit: its id is advertised to the agent, and its groups determine who
     # can select it.
     tenants:
-      - # -- Globally unique tenant id (the routing key)
+      -   # -- Globally unique tenant id (the routing key)
         id: team-a
         # -- JWT groups authorized to select this tenant
         groups:

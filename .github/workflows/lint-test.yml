@@ -21,14 +21,10 @@ env:
   # Charts that cannot be installed by CI, so they are linted but not
   # installed. Each one is blocked by something only the real target
   # cluster has:
-  #   lessor        - the image ghcr.io/loafoe/lessor does not exist
-  #   patch-operator- pinned to quay.io/.../v0.11.3, upstream only ships v0.1.x
-  #   centcom       - needs the csi.spiffe.io driver (SPIRE)
-  #   pico-mcp      - needs the csi.spiffe.io driver (SPIRE)
-  #   otlp-gateway  - default values point at a Philips-internal Dex issuer
+  #   centcom  - needs the csi.spiffe.io driver (SPIRE)
   # Remove one from this list once its blocker is gone; the manual
   # "workflow_dispatch" input above can install-test any chart regardless.
-  NOT_INSTALLABLE: lessor,patch-operator,centcom,pico-mcp,otlp-gateway
+  NOT_INSTALLABLE: centcom
 
 jobs:
   lint-test:

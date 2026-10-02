@@ -35,11 +35,13 @@ helm install my-release loafoe/go-hello-world
 
 | Chart | Description |
 |-------|-------------|
-| [go-hello-world](./charts/go-hello-world) | Simple example application |
-| [lessor](./charts/lessor) | Caddy plugin for Loki multi-tenant setups |
+| [centcom](./charts/centcom) | MCP server for managing multiple centcom-satellite instances |
+| [go-hello-world](./charts/go-hello-world) | Small, deliberately boring microservice used to smoke-test clusters, with a self-contained dashboard |
+| [go-ocpp-server](./charts/go-ocpp-server) | OCPP 1.6-J Central System for EV chargers |
+| [mcp-notifier](./charts/mcp-notifier) | MCP server for sending notifications to Slack, Microsoft Teams, and Telegram |
+| [mt-mcp-grafana](./charts/mt-mcp-grafana) | Multi-tenant proxy that aggregates and secures mcp-grafana backends |
 | [mt-mcp-proxy](./charts/mt-mcp-proxy) | Multi-tenant JWT/OIDC auth gateway fronting MCP backends |
-| [otlp-gateway](./charts/otlp-gateway) | OpenTelemetry gateway deployment |
-| [patch-operator](./charts/patch-operator) | Volume/storage CSI expansion operator |
+| [picoclaw](./charts/picoclaw) | AI-powered Kubernetes operations assistant with multi-channel support |
 | [solgate](./charts/solgate) | Caddy plugin for path-based service access |
 
 ## Contributing
