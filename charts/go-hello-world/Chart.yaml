@@ -4,6 +4,6 @@ description: Small, deliberately boring microservice used to smoke-test clusters
 
 type: application
 
-version: 0.17.0
+version: 0.17.1
 
 appVersion: "v2.16.0"
