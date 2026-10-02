@@ -3,6 +3,7 @@
 # Declare variables to be passed into your templates.
 
 # Names the instance in the UI, e.g. "azure" or "emerald".
+# ci: throwaway change to exercise lint-test on the new action versions
 color: "colorless"
 
 # Appended to the generated hostnames to build the in-cluster URL.
