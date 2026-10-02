@@ -820,6 +820,17 @@ entries:
     version: 0.52.0
   go-hello-world:
   - apiVersion: v2
+    appVersion: v2.16.0
+    created: "2026-10-02T10:02:43.866793361Z"
+    description: Small, deliberately boring microservice used to smoke-test clusters,
+      with a self-contained dashboard
+    digest: 38a11e5cef3d4a5dd301dfbe4718daed593d45d98a5dfdaf4b6e2f3e7a851c8e
+    name: go-hello-world
+    type: application
+    urls:
+    - https://github.com/loafoe/helm-charts/releases/download/go-hello-world-0.17.0/go-hello-world-0.17.0.tgz
+    version: 0.17.0
+  - apiVersion: v2
     appVersion: v2.13.0
     created: "2025-11-04T11:08:34.950999+01:00"
     description: Simple example application
@@ -1519,4 +1530,4 @@ entries:
     urls:
     - https://loafoe.github.io/helm-charts/tempo-distributed-1.20.1.tgz
     version: 1.20.1
-generated: "2026-09-30T18:15:25.036633822Z"
+generated: "2026-10-02T10:02:43.867061255Z"
