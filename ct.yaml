@@ -3,3 +3,9 @@ chart-dirs:
 validate-maintainers: false
 remote: origin
 target-branch: main
+
+# ct install runs against a bare kind cluster, which has none of the CRDs our
+# charts optionally create (Prometheus Operator's ServiceMonitor, Gateway API's
+# HTTPRoute, ...). Turn those off for the test install; the chart defaults stay
+# untouched for real users.
+helm-extra-set-args: "--set serviceMonitor.create=false"
