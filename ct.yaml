@@ -8,4 +8,4 @@ target-branch: main
 # charts optionally create (Prometheus Operator's ServiceMonitor, Gateway API's
 # HTTPRoute, ...). Turn those off for the test install; the chart defaults stay
 # untouched for real users.
-helm-extra-args: "--set serviceMonitor.create=false"
+helm-extra-set-args: "--set serviceMonitor.create=false"
