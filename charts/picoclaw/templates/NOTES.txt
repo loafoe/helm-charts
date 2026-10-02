@@ -4,7 +4,7 @@ Your release is named: {{ .Release.Name }}
 
 {{- if .Values.config.channels.pico.enabled }}
 
-Pico WebSocket endpoint (for pico-mcp integration):
+Pico WebSocket endpoint:
   ws://{{ include "picoclaw.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.service.port }}/pico/ws
 {{- end }}
 

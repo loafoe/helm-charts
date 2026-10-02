@@ -92,10 +92,10 @@ config:
       enabled: true
       servers: {}
       # Example:
-      # pico-mcp:
+      # grafana:
       #   enabled: true
       #   type: http
-      #   url: "http://pico-mcp.pico-mcp.svc.cluster.local:8080/mcp"
+      #   url: "http://mt-mcp-grafana.mt-mcp-grafana.svc.cluster.local:8080/mcp"
       #   dynamic_headers:
       #     allowed: ["X-Grafana-Service-Account-Token", "Authorization"]
 
