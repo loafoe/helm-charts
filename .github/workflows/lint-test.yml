@@ -69,9 +69,22 @@ jobs:
           }
 
           if [ -n "$REQUESTED_CHART" ]; then
-            echo "explicitly requested: $REQUESTED_CHART"
-            emit charts "$REQUESTED_CHART"
-            emit installable "$REQUESTED_CHART"
+            # ct wants a chart *path*, so accept either "go-hello-world" or
+            # "charts/go-hello-world" and resolve it to one of those.
+            requested=""
+            for candidate in "charts/$REQUESTED_CHART" "$REQUESTED_CHART"; do
+              if [ -f "$candidate/Chart.yaml" ]; then
+                requested="$candidate"
+                break
+              fi
+            done
+            if [ -z "$requested" ]; then
+              echo "::error::no Chart.yaml found for '$REQUESTED_CHART' (tried charts/$REQUESTED_CHART and $REQUESTED_CHART)"
+              exit 1
+            fi
+            echo "explicitly requested: $requested"
+            emit charts "$requested"
+            emit installable "$requested"
             exit 0
           fi
 
