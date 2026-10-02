@@ -18,8 +18,8 @@ runs:
     - name: Package Helm Charts
       shell: bash
       run: |
-        find ${CHARTS_PATH} -type f -name 'Chart.yaml' | sed -r 's|/[^/]+$||' | sort | uniq | xargs --verbose -L 1 helm dep up
-        for d in ${CHARTS_PATH}*/ ; do
+        find "${CHARTS_PATH}" -type f -name 'Chart.yaml' | sed -r 's|/[^/]+$||' | sort | uniq | xargs --verbose -L 1 helm dep up
+        for d in "${CHARTS_PATH}"*/ ; do
             if [[ ! -f "${d}Chart.yaml" ]]; then
                 echo "${d}Chart.yaml not found. Skipping."
                 continue
@@ -30,27 +30,32 @@ runs:
       env:
         CHARTS_PATH: ${{ inputs.chartsPath }}
 
+    # Log in to the registry *host*. Helm 3 only warned when given a
+    # repository path here; Helm 4 rejects it outright
+    # ("invalid registry ghcr.io/loafoe/helm-charts").
     - name: Login to GitHub Container Registry (helm)
       shell: bash
-      run: echo "${GITHUB_TOKEN}" | helm registry login ${REGISTRY} --username ${GITHUB_ACTOR} --password-stdin
+      run: echo "${GITHUB_TOKEN}" | helm registry login "${REGISTRY_HOST}" --username "${GITHUB_ACTOR}" --password-stdin
       env:
-        REGISTRY: "ghcr.io/${{ github.repository }}"
+        REGISTRY_HOST: "ghcr.io"
         GITHUB_TOKEN: ${{ inputs.token }}
 
     - name: Login to GitHub Container Registry (docker)
       shell: bash
-      run: echo "${GITHUB_TOKEN}" | docker login ${REGISTRY} --username ${GITHUB_ACTOR} --password-stdin
+      run: echo "${GITHUB_TOKEN}" | docker login "${REGISTRY_HOST}" --username "${GITHUB_ACTOR}" --password-stdin
       env:
-        REGISTRY: "ghcr.io/${{ github.repository }}"
+        REGISTRY_HOST: "ghcr.io"
         GITHUB_TOKEN: ${{ inputs.token }}
 
     - name: Push Helm Charts to Github Container Registry (OCI)
       shell: bash
       working-directory: dist
       run: |
+        # shellcheck disable=SC2086
         for f in *.tgz ; do
             echo "helm push $f oci://${REGISTRY}"
             helm push $f oci://${REGISTRY}
         done
       env:
+        # The full reference, host *and* repository path, unlike the logins above.
         REGISTRY: "ghcr.io/${{ github.repository }}"
