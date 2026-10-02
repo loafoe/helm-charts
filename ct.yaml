@@ -4,8 +4,7 @@ validate-maintainers: false
 remote: origin
 target-branch: main
 
-# ct install runs against a bare kind cluster, which has none of the CRDs our
-# charts optionally create (Prometheus Operator's ServiceMonitor, Gateway API's
-# HTTPRoute, ...). Turn those off for the test install; the chart defaults stay
-# untouched for real users.
-helm-extra-set-args: "--set serviceMonitor.create=false"
+# Note: no helm-extra-set-args here on purpose. Charts whose defaults create
+# CRD-backed resources (ServiceMonitor, HTTPRoute) are installed as-is; the
+# lint-test workflow installs the Prometheus Operator and Gateway API CRDs
+# into kind first, so the values our users get are the values we test.

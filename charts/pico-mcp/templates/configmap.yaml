@@ -77,6 +77,7 @@ data:
     picoclaw:
       url: {{ .Values.picoclaw.url | quote }}
     {{- end }}
+    {{- $apiOAuth2 := (.Values.api | default dict).oauth2 | default dict }}
     {{- if .Values.serviceIdentity.enabled }}
     service_identity:
       enabled: true
@@ -85,7 +86,7 @@ data:
       oauth2_client_id: {{ .Values.serviceIdentity.oauth2ClientId | quote }}
       oidc_issuer: {{ .Values.serviceIdentity.oidcIssuer | quote }}
       connector_id: {{ .Values.serviceIdentity.connectorId | default "iam-preview" | quote }}
-      audience: {{ .Values.serviceIdentity.audience | default .Values.api.oauth2.audience | quote }}
+      audience: {{ .Values.serviceIdentity.audience | default $apiOAuth2.audience | quote }}
     {{- end }}
     {{- if .Values.features }}
     features:

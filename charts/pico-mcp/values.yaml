@@ -26,6 +26,29 @@ spire:
   csi:
     enabled: true
 
+# Optional OAuth2 client configuration.
+# Leave this block out entirely (the default) to run without OAuth2. The
+# templates treat every key as optional, so you only need what you use:
+#
+# api:
+#   # Defaults to server.port
+#   port: 8080
+#   clientId: ""
+#   corsOrigins: []
+#   # Provide one of the two; prefer the ref so the secret stays out of values
+#   clientSecretValue: ""
+#   clientSecretRef:
+#     name: ""
+#     key: "client-secret"
+#   oauth2:
+#     enabled: false
+#     issuer: ""
+#     audience: ""
+#     jwksURL: ""
+#     additionalAudiences: []
+#     allowedGroups: []
+#     scopes: []
+
 # Server configuration
 server:
   # Transport mode: "stdio" or "sse"
@@ -151,6 +174,12 @@ serviceIdentity:
   oidcIssuer: ""
   # Audience for the exchanged token (same as api.oauth2.audience typically)
   audience: ""
+  # Secret holding the basic-auth credentials. Required when enabled=true.
+  credentialsSecret:
+    name: ""
+    usernameKey: "username"
+    passwordKey: "password"
+    oauth2SecretKey: "oauth2-secret"
 
 # Leader election for horizontal scaling
 leaderElection:

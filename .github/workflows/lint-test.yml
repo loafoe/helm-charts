@@ -9,6 +9,26 @@ on:
     paths:
       - charts/**
       - .github/workflows/lint-test.yml
+  workflow_dispatch:
+    inputs:
+      chart:
+        description: "Chart to lint and install, e.g. centcom. Leave empty to use the charts changed by the branch."
+        required: false
+        type: string
+
+env:
+  TARGET_BRANCH: ${{ github.event.repository.default_branch }}
+  # Charts that cannot be installed by CI, so they are linted but not
+  # installed. Each one is blocked by something only the real target
+  # cluster has:
+  #   lessor        - the image ghcr.io/loafoe/lessor does not exist
+  #   patch-operator- pinned to quay.io/.../v0.11.3, upstream only ships v0.1.x
+  #   centcom       - needs the csi.spiffe.io driver (SPIRE)
+  #   pico-mcp      - needs the csi.spiffe.io driver (SPIRE)
+  #   otlp-gateway  - default values point at a Philips-internal Dex issuer
+  # Remove one from this list once its blocker is gone; the manual
+  # "workflow_dispatch" input above can install-test any chart regardless.
+  NOT_INSTALLABLE: lessor,patch-operator,centcom,pico-mcp,otlp-gateway
 
 jobs:
   lint-test:
@@ -24,8 +44,7 @@ jobs:
       - name: Set up Helm
         uses: azure/setup-helm@v5
         with:
-          # chart-testing still links Helm 3 internally.
-          version: v3.22.0
+          version: v4.3.0
 
       - uses: actions/setup-python@v7
         with:
@@ -35,26 +54,77 @@ jobs:
       - name: Set up chart-testing
         uses: helm/chart-testing-action@v2.8.0
 
-      - name: Run chart-testing (list-changed)
-        id: list-changed
+      - name: Work out which charts to test
+        id: charts
+        env:
+          REQUESTED_CHART: ${{ inputs.chart }}
         run: |
-          changed=$(ct list-changed --target-branch ${{ github.event.repository.default_branch }})
-          if [[ -n "$changed" ]]; then
-            echo "changed=true" >> $GITHUB_OUTPUT
+          set -euo pipefail
+          if [ -n "$REQUESTED_CHART" ]; then
+            echo "explicitly requested: $REQUESTED_CHART"
+            echo "charts=$REQUESTED_CHART" >> "$GITHUB_OUTPUT"
+            echo "installable=$REQUESTED_CHART" >> "$GITHUB_OUTPUT"
+            exit 0
           fi
+          changed="$(ct list-changed --target-branch "$TARGET_BRANCH")"
+          if [ -z "$changed" ]; then
+            echo "no chart changes on this branch"
+            exit 0
+          fi
+          echo "changed charts: $(echo "$changed" | tr '\n' ' ')"
+          echo "charts=$changed" >> "$GITHUB_OUTPUT"
+
+          # ct only honours --excluded-charts while auto-detecting, so filter
+          # the list ourselves before handing it over.
+          installable=""
+          while read -r chart; do
+            [ -n "$chart" ] || continue
+            name="$(basename "$chart")"
+            if echo ",$NOT_INSTALLABLE," | grep -q ",$name,"; then
+              echo "skipping install for $name (see NOT_INSTALLABLE)"
+            else
+              installable="${installable}${chart}"$'\n'
+            fi
+          done <<< "$changed"
+          echo "charts to install: $(echo "$installable" | tr -d '\n' | sed 's|/ ||g')"
+          echo "installable=$(printf '%s' "$installable" | tr -d '\n')" >> "$GITHUB_OUTPUT"
 
       - name: Run chart-testing (lint)
-        run: |
-          ct lint \
-            --config ct.yaml \
-            --target-branch ${{ github.event.repository.default_branch }}
+        if: steps.charts.outputs.charts != ''
+        run: ct lint --debug --config ct.yaml --charts "${{ steps.charts.outputs.charts }}"
 
       - name: Create kind cluster
         uses: helm/kind-action@v1.15.0
-        if: steps.list-changed.outputs.changed == 'true'
+        if: steps.charts.outputs.installable != ''
+
+      # ct install deploys charts with their *default* values, which for some
+      # charts means Prometheus Operator ServiceMonitors and Gateway API
+      # HTTPRoutes. A bare kind cluster has neither CRD, so install them and
+      # wait until they are servable. Doing it properly — rather than
+      # overriding values with --set — means CI exercises the same rendering
+      # our users get.
+      - name: Install CRDs
+        if: steps.charts.outputs.installable != ''
+        env:
+          # renovate: datasource=github-releases depName=prometheus-operator/prometheus-operator
+          PROMETHEUS_OPERATOR_VERSION: v0.94.1
+          # renovate: datasource=github-releases depName=kubernetes-sigs/gateway-api
+          GATEWAY_API_VERSION: v1.6.2
+        run: |
+          kubectl apply --server-side --force-conflicts \
+            -f "https://github.com/prometheus-operator/prometheus-operator/releases/download/${PROMETHEUS_OPERATOR_VERSION}/stripped-down-crds.yaml"
+          kubectl wait --for=condition=Established --timeout=60s \
+            crd/servicemonitors.monitoring.coreos.com \
+            crd/prometheuses.monitoring.coreos.com
+
+          kubectl apply --server-side --force-conflicts \
+            -f "https://github.com/kubernetes-sigs/gateway-api/releases/download/${GATEWAY_API_VERSION}/standard-install.yaml"
+          kubectl wait --for=condition=Established --timeout=60s \
+            crd/httproutes.gateway.networking.k8s.io \
+            crd/gateways.gateway.networking.k8s.io
 
       - name: Run chart-testing (install)
+        if: steps.charts.outputs.installable != ''
         run: |
-          ct install --debug \
-            --config ct.yaml \
-            --target-branch ${{ github.event.repository.default_branch }}
+          ct install --debug --config ct.yaml \
+            --charts "${{ steps.charts.outputs.installable }}"
