@@ -2,8 +2,10 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
+# Names the instance in the UI, e.g. "azure" or "emerald".
 color: "colorless"
 
+# Appended to the generated hostnames to build the in-cluster URL.
 environmentConfig:
   clusterFqdn: "local"
 
@@ -18,6 +20,12 @@ image:
 imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
+
+# Extra environment variables, e.g.
+#   env:
+#     - name: OTLP_ADDRESS
+#       value: otel-collector.observability:4317
+env: []
 
 serviceMonitor:
   create: true
@@ -35,16 +43,47 @@ podLabels: {}
 
 podAnnotations: {}
 
-podSecurityContext: {}
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 64205
+  runAsGroup: 64205
+  fsGroup: 64205
+  seccompProfile:
+    type: RuntimeDefault
 
 securityContext:
+  runAsNonRoot: true
   runAsUser: 64205
   allowPrivilegeEscalation: false
-  runAsNonRoot: true
+  readOnlyRootFilesystem: true
+  capabilities:
+    drop:
+      - ALL
+
+# Probes hit the dedicated health endpoint rather than the dashboard.
+livenessProbe:
+  enabled: true
+  path: /healthz
+  initialDelaySeconds: 3
+  periodSeconds: 10
+  timeoutSeconds: 2
+  failureThreshold: 3
+
+readinessProbe:
+  enabled: true
+  path: /healthz
+  initialDelaySeconds: 3
+  periodSeconds: 10
+  timeoutSeconds: 2
+  failureThreshold: 3
+
+# Give in-flight requests a moment to drain on SIGTERM.
+terminationGracePeriodSeconds: 30
 
 service:
   type: ClusterIP
   port: 80
+  metricsPort: 9100
 
 ingress:
   enabled: false

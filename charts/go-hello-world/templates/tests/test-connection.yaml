@@ -7,9 +7,26 @@ metadata:
   annotations:
     "helm.sh/hook": test
 spec:
+  restartPolicy: Never
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 64205
+    seccompProfile:
+      type: RuntimeDefault
   containers:
     - name: wget
-      image: busybox
+      image: busybox:1.36.1
       command: ['wget']
-      args: ['{{ include "go-hello-world.fullname" . }}:{{ .Values.service.port }}']
-  restartPolicy: Never
+      args: ['-q', '-O', '/dev/null', '{{ include "go-hello-world.fullname" . }}:{{ .Values.service.port }}{{ .Values.livenessProbe.path }}']
+      securityContext:
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop:
+            - ALL
+      resources:
+        requests:
+          cpu: 10m
+          memory: 16Mi
+        limits:
+          cpu: 100m
+          memory: 32Mi

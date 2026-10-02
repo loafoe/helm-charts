@@ -9,6 +9,7 @@ spec:
   jobLabel: service-monitor
   selector:
     matchLabels:
+      # Set on the Service by this chart so the selector stays unambiguous.
       service-monitor: {{ include "go-hello-world.fullname" . }}
   namespaceSelector:
     matchNames:

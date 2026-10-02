@@ -1,8 +1,8 @@
 # go-hello-world
 
-![Version: 0.16.0](https://img.shields.io/badge/Version-0.16.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v2.15.0](https://img.shields.io/badge/AppVersion-v2.15.0-informational?style=flat-square)
+![Version: 0.17.0](https://img.shields.io/badge/Version-0.17.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v2.16.0](https://img.shields.io/badge/AppVersion-v2.16.0-informational?style=flat-square)
 
-Simple example application
+Small, deliberately boring microservice used to smoke-test clusters, with a self-contained dashboard
 
 ## Values
 
@@ -17,6 +17,7 @@ Simple example application
 | autoscaling.minReplicas | int | `1` |  |
 | autoscaling.targetCPUUtilizationPercentage | int | `80` |  |
 | color | string | `"colorless"` |  |
+| env | list | `[]` |  |
 | environmentConfig.clusterFqdn | string | `"local"` |  |
 | fullnameOverride | string | `""` |  |
 | httpRoute.annotations | object | `{}` |  |
@@ -37,25 +38,45 @@ Simple example application
 | ingress.hosts[0].paths[0].path | string | `"/"` |  |
 | ingress.hosts[0].paths[0].pathType | string | `"ImplementationSpecific"` |  |
 | ingress.tls | list | `[]` |  |
+| livenessProbe.enabled | bool | `true` |  |
+| livenessProbe.failureThreshold | int | `3` |  |
+| livenessProbe.initialDelaySeconds | int | `3` |  |
+| livenessProbe.path | string | `"/healthz"` |  |
+| livenessProbe.periodSeconds | int | `10` |  |
+| livenessProbe.timeoutSeconds | int | `2` |  |
 | nameOverride | string | `""` |  |
 | nodeSelector | object | `{}` |  |
 | podAnnotations | object | `{}` |  |
 | podLabels | object | `{}` |  |
-| podSecurityContext | object | `{}` |  |
+| podSecurityContext.fsGroup | int | `64205` |  |
+| podSecurityContext.runAsGroup | int | `64205` |  |
+| podSecurityContext.runAsNonRoot | bool | `true` |  |
+| podSecurityContext.runAsUser | int | `64205` |  |
+| podSecurityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
+| readinessProbe.enabled | bool | `true` |  |
+| readinessProbe.failureThreshold | int | `3` |  |
+| readinessProbe.initialDelaySeconds | int | `3` |  |
+| readinessProbe.path | string | `"/healthz"` |  |
+| readinessProbe.periodSeconds | int | `10` |  |
+| readinessProbe.timeoutSeconds | int | `2` |  |
 | replicaCount | int | `1` |  |
 | resources.limits.cpu | string | `"100m"` |  |
 | resources.limits.memory | string | `"64Mi"` |  |
 | resources.requests.cpu | string | `"100m"` |  |
 | resources.requests.memory | string | `"64Mi"` |  |
 | securityContext.allowPrivilegeEscalation | bool | `false` |  |
+| securityContext.capabilities.drop[0] | string | `"ALL"` |  |
+| securityContext.readOnlyRootFilesystem | bool | `true` |  |
 | securityContext.runAsNonRoot | bool | `true` |  |
 | securityContext.runAsUser | int | `64205` |  |
+| service.metricsPort | int | `9100` |  |
 | service.port | int | `80` |  |
 | service.type | string | `"ClusterIP"` |  |
 | serviceAccount.annotations | object | `{}` |  |
 | serviceAccount.create | bool | `true` |  |
 | serviceAccount.name | string | `""` |  |
 | serviceMonitor.create | bool | `true` |  |
+| terminationGracePeriodSeconds | int | `30` |  |
 | tolerations | list | `[]` |  |
 
 ----------------------------------------------

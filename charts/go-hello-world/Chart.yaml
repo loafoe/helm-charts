@@ -1,9 +1,9 @@
 apiVersion: v2
 name: go-hello-world
-description: Simple example application
+description: Small, deliberately boring microservice used to smoke-test clusters, with a self-contained dashboard
 
 type: application
 
-version: 0.16.0
+version: 0.17.0
 
-appVersion: "v2.15.0"
+appVersion: "v2.16.0"
