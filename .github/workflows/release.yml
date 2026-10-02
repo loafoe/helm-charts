@@ -8,18 +8,26 @@ on:
       - 'charts/**'
       - '.github/workflows/release.yml'
 
+# Two pushes in quick succession would race each other on the same charts.
+concurrency:
+  group: release-charts-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   release:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
 
     permissions:
       contents: write
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
+          # chart-releaser authenticates with CR_TOKEN, so the checkout
+          # does not need to leave credentials behind.
+          persist-credentials: false
 
       - name: Configure Git
         run: |
@@ -27,9 +35,10 @@ jobs:
           git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
 
       - name: Install Helm
-        uses: azure/setup-helm@v4
+        uses: azure/setup-helm@v5
         with:
-          version: v3.14.0
+          # Chart-releaser and chart-testing are still Helm 3 era tools.
+          version: v3.22.0
 
       - name: Run chart-releaser
         uses: helm/chart-releaser-action@v1.7.0

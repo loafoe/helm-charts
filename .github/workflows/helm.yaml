@@ -10,20 +10,26 @@ on:
       - '.github/actions/action-helm-chart-repo/**'
   workflow_dispatch:
 
+concurrency:
+  group: helm-publish-oci-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   helm:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
 
       - name: Install Helm
-        uses: azure/setup-helm@v4
+        uses: azure/setup-helm@v5
         with:
-          version: v3.14.0
+          version: v3.22.0
 
       - name: Build and Push the Helm Charts to GitHub Container Registry
         uses: ./.github/actions/action-helm-chart-repo

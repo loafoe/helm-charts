@@ -22,14 +22,21 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: helm-docs-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   helm-docs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
+          # This job pushes the regenerated docs back, so it does need
+          # credentials — unlike the other workflows.
+          persist-credentials: true
 
       - name: Install helm-docs
         env:
