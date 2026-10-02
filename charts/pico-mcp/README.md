@@ -1,6 +1,6 @@
 # pico-mcp
 
-![Version: 0.52.0](https://img.shields.io/badge/Version-0.52.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.67.0](https://img.shields.io/badge/AppVersion-v0.67.0-informational?style=flat-square)
+![Version: 0.52.1](https://img.shields.io/badge/Version-0.52.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.67.0](https://img.shields.io/badge/AppVersion-v0.67.0-informational?style=flat-square)
 
 MCP server for managing multiple pico-agent instances
 
@@ -103,6 +103,10 @@ MCP server for managing multiple pico-agent instances
 | serviceAccount.create | bool | `true` |  |
 | serviceAccount.name | string | `""` |  |
 | serviceIdentity.audience | string | `""` |  |
+| serviceIdentity.credentialsSecret.name | string | `""` |  |
+| serviceIdentity.credentialsSecret.oauth2SecretKey | string | `"oauth2-secret"` |  |
+| serviceIdentity.credentialsSecret.passwordKey | string | `"password"` |  |
+| serviceIdentity.credentialsSecret.usernameKey | string | `"username"` |  |
 | serviceIdentity.enabled | bool | `false` |  |
 | serviceIdentity.iamURL | string | `""` |  |
 | serviceIdentity.oidcIssuer | string | `""` |  |

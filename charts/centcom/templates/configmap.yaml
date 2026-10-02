@@ -86,6 +86,7 @@ data:
         url: {{ .Values.channel.hermes.url | quote }}
       {{- end }}
     {{- end }}
+    {{- $apiOAuth2 := (.Values.api | default dict).oauth2 | default dict }}
     {{- if .Values.serviceIdentity.enabled }}
     service_identity:
       enabled: true
@@ -97,7 +98,7 @@ data:
       {{- end }}
       oidc_issuer: {{ .Values.serviceIdentity.oidcIssuer | quote }}
       connector_id: {{ .Values.serviceIdentity.connectorId | default "iam-preview" | quote }}
-      audience: {{ .Values.serviceIdentity.audience | default .Values.api.oauth2.audience | quote }}
+      audience: {{ .Values.serviceIdentity.audience | default $apiOAuth2.audience | quote }}
       {{- if .Values.serviceIdentity.clientCredentials }}
       client_credentials: true
       {{- end }}

@@ -1,3 +1,4 @@
+{{- $api := .Values.api | default dict -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -54,6 +55,7 @@ spec:
                   key: {{ .Values.picoclaw.tokenSecret.key | default "token" }}
           {{- end }}
           {{- if .Values.serviceIdentity.enabled }}
+          {{- if .Values.serviceIdentity.credentialsSecret.name }}
             - name: SERVICE_IDENTITY_USERNAME
               valueFrom:
                 secretKeyRef:
@@ -70,13 +72,14 @@ spec:
                   name: {{ .Values.serviceIdentity.credentialsSecret.name }}
                   key: {{ .Values.serviceIdentity.credentialsSecret.oauth2SecretKey | default "oauth2-secret" }}
           {{- end }}
-          {{- if or .Values.api.clientSecretRef .Values.api.clientSecretValue }}
+          {{- end }}
+          {{- if or $api.clientSecretRef $api.clientSecretValue }}
             - name: OAUTH2_CLIENT_SECRET
               valueFrom:
                 secretKeyRef:
-                  {{- if .Values.api.clientSecretRef }}
-                  name: {{ .Values.api.clientSecretRef.name }}
-                  key: {{ .Values.api.clientSecretRef.key | default "client-secret" }}
+                  {{- if $api.clientSecretRef }}
+                  name: {{ $api.clientSecretRef.name }}
+                  key: {{ $api.clientSecretRef.key | default "client-secret" }}
                   {{- else }}
                   name: {{ include "centcom.fullname" . }}-oauth2
                   key: client-secret
