@@ -105,6 +105,15 @@ data:
       {{- if .Values.serviceIdentity.exchangeClientId }}
       exchange_client_id: {{ .Values.serviceIdentity.exchangeClientId | quote }}
       {{- end }}
+      {{- if .Values.serviceIdentity.provider }}
+      provider: {{ .Values.serviceIdentity.provider | quote }}
+      {{- end }}
+      {{- if .Values.serviceIdentity.zitadelIssuer }}
+      zitadel_issuer: {{ .Values.serviceIdentity.zitadelIssuer | quote }}
+      {{- end }}
+      {{- if .Values.serviceIdentity.zitadelProjectId }}
+      zitadel_project_id: {{ .Values.serviceIdentity.zitadelProjectId | quote }}
+      {{- end }}
     {{- end }}
     {{- if .Values.features }}
     features:

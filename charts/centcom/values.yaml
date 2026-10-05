@@ -209,8 +209,11 @@ channel:
       name: ""
       key: "API_SERVER_KEY"
 
-# Service identity for system-to-system authentication (e.g., remediation)
-# Uses HSP IAM service credentials + OIDC token exchange
+# Service identity for system-to-system authentication (e.g., cron,
+# remediation). Three mutually exclusive modes: legacy HSP IAM + OIDC
+# token-exchange (iamURL/serviceId/privateKeySecret/credentialsSecret),
+# client_credentials (clientCredentials: true), or a pluggable
+# token-exchange provider selected via `provider` (currently "zitadel").
 serviceIdentity:
   # Enable service identity authentication
   enabled: false
@@ -245,6 +248,24 @@ serviceIdentity:
   exchangeClientSecretRef:
     name: ""
     key: "exchange-client-secret"
+  # provider selects the Step 1 identity provider for token-exchange mode
+  # (ignored when clientCredentials is true, which has no Step 1/Step 2
+  # split). "" and "hsp-iam" both mean the legacy iamURL/serviceId/
+  # privateKeySecret/credentialsSecret fields above; "zitadel" means the
+  # zitadel* fields below.
+  provider: ""
+  # Zitadel instance's own issuer URL (Step 1 - separate from oidcIssuer/
+  # Dex above, which is only ever used for Step 2).
+  zitadelIssuer: ""
+  # Zitadel project granting this service account's role(s) - required to
+  # request the scopes that make Zitadel's groups claim actually populate.
+  zitadelProjectId: ""
+  # Secret containing the full Zitadel machine user JSON key document
+  # (type/userId/keyId/key, as downloaded from the console or returned by
+  # the Management API's "add machine key" call).
+  zitadelKeySecretRef:
+    name: ""
+    key: "key.json"
 
 # Leader election for horizontal scaling
 leaderElection:
