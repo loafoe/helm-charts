@@ -1,6 +1,6 @@
 # centcom
 
-![Version: 0.94.1](https://img.shields.io/badge/Version-0.94.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.250.0](https://img.shields.io/badge/AppVersion-v0.250.0-informational?style=flat-square)
+![Version: 0.95.0](https://img.shields.io/badge/Version-0.95.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.263.0](https://img.shields.io/badge/AppVersion-v0.263.0-informational?style=flat-square)
 
 MCP server for managing multiple centcom-satellite instances
 
@@ -125,7 +125,12 @@ MCP server for managing multiple centcom-satellite instances
 | serviceIdentity.oidcIssuer | string | `""` |  |
 | serviceIdentity.privateKeySecret.key | string | `"private-key"` |  |
 | serviceIdentity.privateKeySecret.name | string | `""` |  |
+| serviceIdentity.provider | string | `""` |  |
 | serviceIdentity.serviceId | string | `""` |  |
+| serviceIdentity.zitadelIssuer | string | `""` |  |
+| serviceIdentity.zitadelKeySecretRef.key | string | `"key.json"` |  |
+| serviceIdentity.zitadelKeySecretRef.name | string | `""` |  |
+| serviceIdentity.zitadelProjectId | string | `""` |  |
 | serviceMonitor | object | `{"enabled":false,"interval":"30s","labels":{},"metricRelabelings":[],"namespace":"","relabelings":[],"scrapeTimeout":"10s","targetLabels":[]}` | ServiceMonitor for Prometheus Operator scraping |
 | serviceMonitor.enabled | bool | `false` | Enable ServiceMonitor creation |
 | serviceMonitor.interval | string | `"30s"` | Scrape interval |
