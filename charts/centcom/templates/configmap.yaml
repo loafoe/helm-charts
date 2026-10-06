@@ -122,7 +122,7 @@ data:
       mcp_legacy_enabled: {{ .Values.features.mcpLegacyEnabled | default false }}
     {{- end }}
     {{- if .Values.ui }}
-    {{- if or (and .Values.ui.logo .Values.ui.logo.enabled) .Values.ui.idleTimeout .Values.ui.chatFontSizePx .Values.ui.langfuseSessionDeeplinkUrl }}
+    {{- if or (and .Values.ui.logo .Values.ui.logo.enabled) .Values.ui.idleTimeout .Values.ui.chatFontSizePx .Values.ui.langfuseSessionDeeplinkUrl .Values.ui.chatModels }}
     ui:
       {{- if and .Values.ui.logo .Values.ui.logo.enabled }}
       logo_path: "/etc/centcom/logo/logo.svg"
@@ -135,6 +135,13 @@ data:
       {{- end }}
       {{- if .Values.ui.langfuseSessionDeeplinkUrl }}
       langfuse_session_deeplink_url: {{ .Values.ui.langfuseSessionDeeplinkUrl | quote }}
+      {{- end }}
+      {{- if .Values.ui.chatModels }}
+      chat_models:
+        {{- range .Values.ui.chatModels }}
+        - id: {{ .id | quote }}
+          label: {{ .label | quote }}
+        {{- end }}
       {{- end }}
     {{- end }}
     {{- end }}

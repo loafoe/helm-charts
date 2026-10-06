@@ -345,6 +345,17 @@ ui:
   # full chat session id when clicked (opens in a new window). Unset by
   # default, in which case the badge stays plain (non-navigable) text.
   # langfuseSessionDeeplinkUrl: "https://langfuse.example.com/project/<project-id>/sessions/${sessionId}"
+  # Models selectable in the ClusterClaw chat window. Each entry's id is
+  # sent to the channel backend verbatim as the chat request's model -
+  # centcom never interprets it, so it must be whatever the backend (e.g.
+  # hermes-agent) accepts. Fewer than two entries (including the empty
+  # default) hides the picker entirely; every turn then uses the backend's
+  # own default model.
+  # chatModels:
+  #   - id: "us.openai.gpt-6-luna"
+  #     label: "GPT-6 Luna"
+  #   - id: "us.anthropic.claude-sonnet-5"
+  #     label: "Claude Sonnet 5"
 
 # Database configuration (dip.io Postgres CRD)
 database:
