@@ -1,6 +1,6 @@
 # kimistore
 
-![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.1.0](https://img.shields.io/badge/AppVersion-0.1.0-informational?style=flat-square)
+![Version: 0.2.0](https://img.shields.io/badge/Version-0.2.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.0.0](https://img.shields.io/badge/AppVersion-1.0.0-informational?style=flat-square)
 
 Kafka-compatible streaming agent that keeps its durable log in object storage
 
@@ -35,7 +35,7 @@ Kafka-compatible streaming agent that keeps its durable log in object storage
 | fullnameOverride | string | `""` |  |
 | image.pullPolicy | string | `"IfNotPresent"` |  |
 | image.repository | string | `"ghcr.io/kimistore/agent"` |  |
-| image.tag | string | `"main"` |  |
+| image.tag | string | `"1.0.0"` |  |
 | imagePullSecrets | list | `[]` |  |
 | livenessProbe.failureThreshold | int | `5` |  |
 | livenessProbe.periodSeconds | int | `10` |  |
@@ -126,18 +126,19 @@ Kafka-compatible streaming agent that keeps its durable log in object storage
 ## Before you install
 
 The image is `ghcr.io/kimistore/agent`, built with [ko](https://ko.build) and
-signed keylessly with cosign. Two tags are published:
+signed keyless with cosign. Three tags are published:
 
 | Tag | What it is |
 |-----|------------|
-| `main` | The moving branch tip. Convenient, weak as a provenance claim. |
-| `vX.Y.Z` | A tagged release. This is the one to pin. |
+| `1.0.0` | The current release. Signed, immutable in practice, and what this chart defaults to. |
+| `v1.0.0` | The same image, spelled the way the git tag is. Same digest. |
+| `main` | The moving branch tip. Convenient in development, worth little as a provenance claim. |
 
 For a deployment you care about, **pin the digest**:
 
 ```bash
 helm install kimistore oci://ghcr.io/loafoe/helm-charts/kimistore \
-  --set image.tag="sha256:<digest>" \
+  --set image.tag="sha256:4f9a14bb1015d82420230e2fe8129a13005bc2a9f438ff88abaa9b64fb5df695" \
   --set objectStorage.bucket=kimistore \
   --set objectStorage.region=eu-central-1
 ```
@@ -146,24 +147,25 @@ A tag can be repointed after you install, so pinning one proves nothing about
 what you are running. The digest does. And verify it:
 
 ```bash
-cosign verify ghcr.io/kimistore/agent@sha256:<digest> \
+cosign verify ghcr.io/kimistore/agent@sha256:4f9a14bb1015d82420230e2fe8129a13005bc2a9f438ff88abaa9b64fb5df695 \
   --certificate-identity-regexp \
     'https://github.com/kimistore/agent/.github/workflows/images.yml@.*' \
   --certificate-oidc-issuer https://token.actions.githubusercontent.com
 ```
 
 Keyless means no key to distribute: Sigstore issues a short-lived certificate
-from the workflow's GitHub identity and records it in a public transparency log.
+from the workflow's identity and records it in a public transparency log.
 Anyone can verify, and a stolen registry credential cannot mint a certificate
-that claims to be this workflow.
+that claims to be this workflow. A release image is bound to `refs/tags/v1.0.0`
+rather than to a branch, so the signature says which tag produced it.
 
 The image is multi-platform (`linux/arm64` for the Pi nodes, `linux/amd64` for
 x86 peers) and runs as uid 65532 to match this chart's `podSecurityContext`. It
 is distroless, so there is no shell in it.
 
 `ghcr.io/kimistore/agent-credential` holds `kimistore-credential`, the SCRAM and
-ACL administration tool. It is a separate image so that a running broker does
-not carry a binary that can rewrite its own ACLs.
+ACL administration tool, published under the same tags. It is a separate image
+so that a running broker does not carry a binary that can rewrite its own ACLs.
 
 ## Install
 

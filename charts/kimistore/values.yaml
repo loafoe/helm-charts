@@ -7,22 +7,23 @@ image:
   # claims to be this workflow.
   repository: ghcr.io/kimistore/agent
   pullPolicy: IfNotPresent
-  # "main" is the moving branch tag. Convenient in development and worth little
-  # as a provenance claim: it can be repointed at any later commit without the
-  # tag changing. For a deployment you care about, pin the digest instead:
+  # Defaults to the released version, not to a moving tag. A tag can be
+  # repointed after you install, so it is worth little as a provenance claim;
+  # for a deployment you care about, pin the digest instead:
   #
   #   image:
-  #     tag: "sha256:7792164d87db2036feb1b8c216b50af815d810641e651631ab96520702fb1334"
+  #     tag: "sha256:4f9a14bb1015d82420230e2fe8129a13005bc2a9f438ff88abaa9b64fb5df695"
   #
-  # Verify before you pin:
+  # The release image is published under both spellings, 1.0.0 and v1.0.0, and
+  # both resolve to the same signed digest. Verify before you pin:
   #
   #   cosign verify ghcr.io/kimistore/agent@<digest> \
   #     --certificate-identity-regexp \
   #       'https://github.com/kimistore/agent/.github/workflows/images.yml@.*' \
   #     --certificate-oidc-issuer https://token.actions.githubusercontent.com
-  # Defaults to main rather than the chart appVersion, because main is the only
-  # tag that exists until a v* tag is pushed. main moves; see above for pinning.
-  tag: "main"
+  #
+  # Set tag: "main" to track the branch tip instead.
+  tag: "1.0.0"
 
 imagePullSecrets: []
 nameOverride: ""
