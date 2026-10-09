@@ -5,7 +5,7 @@ type: application
 version: 0.1.0
 # The agent has no tagged release yet. Kept in step with the chart version so
 # the two do not drift; update both together.
-appVersion: "v0.1.0"
+appVersion: "0.1.0"
 keywords:
   - kafka
   - streaming

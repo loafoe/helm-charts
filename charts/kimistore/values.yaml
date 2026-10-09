@@ -1,21 +1,28 @@
 replicaCount: 1
 
 image:
-  # No image is published yet: the agent repository has no container build.
-  # Build and push your own, then point these two values at it:
-  #
-  #   docker buildx build --platform linux/arm64,linux/amd64 \
-  #     -t ghcr.io/<you>/kimistore:<tag> --push .
-  #
-  # The repository below is a placeholder and the pods will stay in
-  # ImagePullBackOff until you change it. That is deliberate: a default that
-  # looks real and silently pulls the wrong thing is worse than one that fails
-  # loudly on first install.
+  # Published by the agent repository's images workflow. Keyless-signed: the
+  # signature is a Sigstore certificate bound to the workflow identity, so
+  # verification needs no key and a stolen credential cannot mint one that
+  # claims to be this workflow.
   repository: ghcr.io/kimistore/agent
   pullPolicy: IfNotPresent
-  # Leave empty to use the chart appVersion. Set it explicitly to pin a digest
-  # or a version you have verified.
-  tag: ""
+  # "main" is the moving branch tag. Convenient in development and worth little
+  # as a provenance claim: it can be repointed at any later commit without the
+  # tag changing. For a deployment you care about, pin the digest instead:
+  #
+  #   image:
+  #     tag: "sha256:7792164d87db2036feb1b8c216b50af815d810641e651631ab96520702fb1334"
+  #
+  # Verify before you pin:
+  #
+  #   cosign verify ghcr.io/kimistore/agent@<digest> \
+  #     --certificate-identity-regexp \
+  #       'https://github.com/kimistore/agent/.github/workflows/images.yml@.*' \
+  #     --certificate-oidc-issuer https://token.actions.githubusercontent.com
+  # Defaults to main rather than the chart appVersion, because main is the only
+  # tag that exists until a v* tag is pushed. main moves; see above for pinning.
+  tag: "main"
 
 imagePullSecrets: []
 nameOverride: ""
