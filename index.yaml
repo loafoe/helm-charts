@@ -1130,6 +1130,27 @@ entries:
     version: 0.2.1
   kimistore:
   - apiVersion: v2
+    appVersion: v1.0.0
+    created: "2026-10-09T18:01:36.999458242Z"
+    description: Kafka-compatible streaming agent that keeps its durable log in object
+      storage
+    digest: 22feac92e6e37f12a9430b6d29241a2603c417861487eee98cc238290ce69697
+    home: https://github.com/kimistore/agent
+    keywords:
+    - kafka
+    - streaming
+    - object-storage
+    - s3
+    - minio
+    maintainers:
+    - email: andy.loafoe@philips.com
+      name: Andy Lo-A-Foe
+    name: kimistore
+    type: application
+    urls:
+    - https://github.com/loafoe/helm-charts/releases/download/kimistore-0.3.0/kimistore-0.3.0.tgz
+    version: 0.3.0
+  - apiVersion: v2
     appVersion: 1.0.0
     created: "2026-10-09T17:04:12.927215991Z"
     description: Kafka-compatible streaming agent that keeps its durable log in object
@@ -1368,4 +1389,4 @@ entries:
     urls:
     - https://loafoe.github.io/helm-charts/solgate-0.0.12.tgz
     version: 0.0.12
-generated: "2026-10-09T17:04:12.927318935Z"
+generated: "2026-10-09T18:01:36.999662573Z"
