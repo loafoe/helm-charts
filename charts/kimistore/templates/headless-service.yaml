@@ -1,0 +1,35 @@
+{{- /*
+The headless service.
+
+Its only job is to give each pod a stable DNS name, which the StatefulSet's
+serviceName requires and which per-zone deployments use to address a pod
+directly. clusterIP: None is what makes it a per-pod name resolver rather
+than a load balancer.
+
+publishNotReadyAddresses is on because readiness here means "owns what the
+assignment gave it", not "process is up". A pod that is up but has not claimed
+its partitions yet is exactly the pod a peer needs to discover in order to
+resolve the assignment. Without this, DNS hides starting pods and a cluster
+that scales from one can never agree on the live set.
+*/}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "kimistore.headlessServiceName" . }}
+  labels:
+    {{- include "kimistore.labels" . | nindent 4 }}
+spec:
+  type: ClusterIP
+  clusterIP: None
+  publishNotReadyAddresses: true
+  selector:
+    {{- include "kimistore.selectorLabels" . | nindent 4 }}
+  ports:
+    - name: broker
+      port: {{ .Values.broker.port }}
+      targetPort: broker
+      protocol: TCP
+    - name: metrics
+      port: {{ .Values.metrics.port }}
+      targetPort: metrics
+      protocol: TCP

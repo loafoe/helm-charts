@@ -21,10 +21,18 @@ env:
   # Charts that cannot be installed by CI, so they are linted but not
   # installed. Each one is blocked by something only the real target
   # cluster has:
-  #   centcom  - needs the csi.spiffe.io driver (SPIRE)
+  #   centcom    - needs the csi.spiffe.io driver (SPIRE)
+  #   kimistore  - needs a reachable S3-compatible object store. The agent's
+  #                readiness probe is deliberately honest: it returns 503 when
+  #                it cannot renew partition claims or read a fresh cluster
+  #                view, and with no object store those never succeed. So the
+  #                pods come up, serve, and stay unready, and `ct install`
+  #                waits out its timeout. Making the probe lie to satisfy CI
+  #                would defeat the reason it exists, so the chart is linted and
+  #                install-tested manually instead.
   # Remove one from this list once its blocker is gone; the manual
   # "workflow_dispatch" input above can install-test any chart regardless.
-  NOT_INSTALLABLE: centcom
+  NOT_INSTALLABLE: centcom, kimistore
 
 jobs:
   lint-test:

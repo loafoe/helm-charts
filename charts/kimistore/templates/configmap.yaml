@@ -1,0 +1,32 @@
+{{- if .Values.configMap.create }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "kimistore.fullname" . }}-config
+  labels:
+    {{- include "kimistore.labels" . | nindent 4 }}
+data:
+  {{- /*
+  Rendered as a file as well as environment variables, because the agent reads
+  configuration from the environment only. This ConfigMap exists so the pod has
+  a checksum-able description of its non-secret configuration -- it is what
+  triggers a rolling restart when values change. Without it, changing
+  replicaCount-adjacent settings would not restart the pods that read them.
+  */}}
+  wal-dir: {{ .Values.persistence.mountPath | quote }}
+  listen-addr: {{ printf ":%v" .Values.broker.port | quote }}
+  metrics-addr: {{ printf ":%v" .Values.metrics.port | quote }}
+  advertised-port: {{ .Values.broker.port | quote }}
+  ownership-ttl-ms: {{ .Values.ownership.ttlMs | quote }}
+  flush-interval-ms: {{ .Values.agent.flushIntervalMs | quote }}
+  s3-timeout-ms: {{ .Values.agent.s3TimeoutMs | quote }}
+  auto-create-topics: {{ .Values.agent.autoCreateTopics | quote }}
+  auto-create-partitions: {{ .Values.agent.autoCreatePartitions | quote }}
+  retention-ms: {{ .Values.retention.retentionMs | quote }}
+  retention-bytes: {{ .Values.retention.retentionBytes | quote }}
+  retention-check-ms: {{ .Values.retention.checkIntervalMs | quote }}
+  {{- if .Values.assignment.enabled }}
+  assignment: {{ .Values.assignment.mode | quote }}
+  assignment-settle-ms: {{ .Values.assignment.settleMs | quote }}
+  {{- end }}
+{{- end }}

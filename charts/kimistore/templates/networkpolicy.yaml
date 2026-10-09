@@ -1,0 +1,62 @@
+{{- if .Values.networkPolicy.enabled }}
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: {{ include "kimistore.fullname" . }}
+  labels:
+    {{- include "kimistore.labels" . | nindent 4 }}
+spec:
+  endpointSelector:
+    matchLabels:
+      {{- include "kimistore.selectorLabels" . | nindent 6 }}
+  ingress:
+    # Kafka clients: producers and consumers. This is the path that must work,
+    # and the one a namespace-scoped policy is most likely to break by accident.
+    - fromEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+      toPorts:
+        - ports:
+            - port: "{{ .Values.broker.port }}"
+              protocol: TCP
+    # Probes come from the kubelet, which is not a pod in this namespace.
+    - fromEntities:
+        - host
+      toPorts:
+        - ports:
+            - port: "{{ .Values.metrics.port }}"
+              protocol: TCP
+    {{- with .Values.networkPolicy.extraIngress }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  egress:
+    # DNS, or the agent cannot resolve the S3 endpoint.
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: kube-system
+            k8s:k8s-app: kube-dns
+      toPorts:
+        - ports:
+            - port: "53"
+              protocol: UDP
+            - port: "53"
+              protocol: TCP
+    {{- /*
+    Object storage. Cilium egress rules match the DNS-resolved addresses, so a
+    hostname-based rule needs toWorld plus the port rather than a toFQDNs rule
+    alone. Add a narrower toFQDNs rule via extraEgress when the endpoint is
+    known -- this is deliberately permissive on port and address so the chart
+    works against AWS, MinIO, and RustFS without per-provider branches.
+    */}}
+    - toEntities:
+        - world
+      toPorts:
+        - ports:
+            - port: "443"
+              protocol: TCP
+            - port: "80"
+              protocol: TCP
+    {{- with .Values.networkPolicy.extraEgress }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+{{- end }}

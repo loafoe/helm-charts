@@ -1,0 +1,18 @@
+apiVersion: v2
+name: kimistore
+description: Kafka-compatible streaming agent that keeps its durable log in object storage
+type: application
+version: 0.1.0
+# The agent has no tagged release yet. Kept in step with the chart version so
+# the two do not drift; update both together.
+appVersion: "v0.1.0"
+keywords:
+  - kafka
+  - streaming
+  - object-storage
+  - s3
+  - minio
+home: https://github.com/kimistore/agent
+maintainers:
+  - name: Andy Lo-A-Foe
+    email: andy.loafoe@philips.com

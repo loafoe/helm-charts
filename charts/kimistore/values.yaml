@@ -1,0 +1,241 @@
+replicaCount: 1
+
+image:
+  # No image is published yet: the agent repository has no container build.
+  # Build and push your own, then point these two values at it:
+  #
+  #   docker buildx build --platform linux/arm64,linux/amd64 \
+  #     -t ghcr.io/<you>/kimistore:<tag> --push .
+  #
+  # The repository below is a placeholder and the pods will stay in
+  # ImagePullBackOff until you change it. That is deliberate: a default that
+  # looks real and silently pulls the wrong thing is worse than one that fails
+  # loudly on first install.
+  repository: ghcr.io/kimistore/agent
+  pullPolicy: IfNotPresent
+  # Leave empty to use the chart appVersion. Set it explicitly to pin a digest
+  # or a version you have verified.
+  tag: ""
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+command: []
+args: []
+
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
+
+podAnnotations: {}
+
+# Parallel, not OrderedReady.
+#
+# With the default, a pod that does not become ready blocks the next one from
+# starting. Readiness here depends on holding the partitions the assignment
+# gives this agent, which depends on seeing the live set, which is built by
+# discovery. Serial startup deadlocks: the first pod waits for a cluster of one.
+podManagementPolicy: Parallel
+
+updateStrategy:
+  type: RollingUpdate
+  rollingUpdate:
+    maxUnavailable: 1
+
+# Must exceed the agent's drain budget (25s). Below that, SIGKILL lands
+# mid-drain and a partition is left with a half-uploaded segment.
+terminationGracePeriodSeconds: 60
+
+broker:
+  # The port clients connect to for produce and fetch.
+  port: 9092
+
+metrics:
+  # Serves /metrics, /ready and /live. The bind address must be reachable by
+  # the kubelet for probes to work, so it must not be 127.0.0.1.
+  port: 9091
+
+objectStorage:
+  bucket: ""
+  region: ""
+  # For MinIO, RustFS, or any S3-compatible store. Leave empty for AWS.
+  endpoint: ""
+  # Prefer the AWS SDK credential chain (IRSA, workload identity, node role)
+  # and fall back to these. For a cluster with workload identity, leave these
+  # empty: no Secret is created and no long-lived key lives in the cluster.
+  accessKeyId: ""
+  secretAccessKey: ""
+  sessionToken: ""
+  existingSecret: ""
+  # Maps Secret keys to environment variable names. Each key is optional, so
+  # one Secret can carry only the subset a given provider needs.
+  keys:
+    AWS_ACCESS_KEY_ID: AWS_ACCESS_KEY_ID
+    AWS_SECRET_ACCESS_KEY: AWS_SECRET_ACCESS_KEY
+    AWS_SESSION_TOKEN: AWS_SESSION_TOKEN
+
+agent:
+  flushIntervalMs: 1000
+  s3TimeoutMs: 30000
+  autoCreateTopics: true
+  autoCreatePartitions: 4
+  # Free-form extra KIMISTORE_* variables. Anything not covered by a dedicated
+  # key above can be set here; a dedicated key always wins.
+  env: {}
+
+ownership:
+  # How long a partition claim survives without renewal, and therefore the crash
+  # failover window. Lower it as far as the object store tolerates: 60s is a
+  # long time for a partition to be unavailable after a node disappears.
+  ttlMs: 60000
+
+retention:
+  # -1 disables retention by time.
+  retentionMs: -1
+  # -1 disables retention by size.
+  retentionBytes: -1
+  checkIntervalMs: 300000
+
+# Off by default. With assignment off, the first agent to start wins every
+# partition claim and scaling the StatefulSet up adds cost without adding
+# throughput. Turn it on to have partitions shared by rendezvous hash.
+#
+# Turning it on is not a no-op for a running single-agent cluster: the
+# incumbent drains the partitions it no longer wins and hands them over.
+assignment:
+  enabled: false
+  # The only mode. Kept as a value so a future scheme is an explicit choice.
+  mode: rendezvous
+  # How long the live agent set must hold still before an agent rebalances.
+  # Empty means the agent's own default, which is the claim TTL.
+  settleMs: ""
+
+configMap:
+  create: true
+
+sasl:
+  # PLAIN only. One shared credential, sent in the clear without TLS, so it is
+  # appropriate on a trusted network or behind a TLS-terminating proxy.
+  # SCRAM credentials are not configured here: they are created in the bucket
+  # with the kimistore-credential tool and discovered by the agent at startup.
+  enabled: false
+  existingSecret: ""
+  username: ""
+  password: ""
+  usernameKey: username
+  passwordKey: password
+
+service:
+  # Bootstrap and reads only. See the template header for why writes cannot go
+  # through a load-balanced address.
+  type: ClusterIP
+  port: 9092
+  annotations: {}
+  loadBalancerIP: ""
+  externalTrafficPolicy: ""
+  loadBalancerSourceRanges: []
+  sessionAffinity: ""
+  metrics:
+    # Metrics live on their own Service so that scraping never becomes a
+    # dependency of the data path.
+    enabled: true
+    type: ClusterIP
+    # Set true to annotate for a Prometheus that scrapes pods directly instead
+    # of through this Service.
+    clusterIP: false
+
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 65532
+  runAsGroup: 65532
+  fsGroup: 65532
+  seccompProfile:
+    type: RuntimeDefault
+
+securityContext:
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: true
+  capabilities:
+    drop:
+      - ALL
+
+persistence:
+  # The WAL is the only local state, and it is what a pod's data is lost from.
+  # A StatefulSet with a volumeClaimTemplate keeps it across restarts; setting
+  # this false falls back to an emptyDir, which discards every un-uploaded
+  # record on pod replacement. Only do that for a throwaway cluster.
+  enabled: true
+  size: 20Gi
+  storageClassName: ""
+  accessMode: ReadWriteOnce
+  volumeMode: ""
+  mountPath: /var/lib/kimistore/wal
+  annotations: {}
+
+# Probes. Timings are conservative because the failure mode is expensive: a
+# readiness flap pulls a working broker out of rotation, and a liveness restart
+# of a broker that merely lost its claims removes a working reader.
+livenessProbe:
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 5
+
+readinessProbe:
+  periodSeconds: 5
+  timeoutSeconds: 5
+  failureThreshold: 3
+
+# Startup is slow: the agent lists manifests, reconciles against object
+# storage, and claims partitions before it opens the listener. The probe path
+# is /live, which stays 200 throughout, so the failure threshold here is really
+# a bound on how long startup may take before the kubelet gives up.
+startupProbe:
+  periodSeconds: 5
+  timeoutSeconds: 5
+  failureThreshold: 60
+
+resources:
+  limits:
+    cpu: "2"
+    memory: 4Gi
+  requests:
+    cpu: 500m
+    memory: 1Gi
+
+podDisruptionBudget:
+  enabled: true
+  minAvailable: 1
+  maxUnavailable: ""
+
+nodeSelector:
+  kubernetes.io/os: linux
+
+tolerations: []
+
+affinity: {}
+
+# Spreading across nodes and zones matters more than usual here: producers must
+# reach the partition leader, so two pods in one zone give you neither the
+# availability nor the cost profile you want.
+topologySpreadConstraints: []
+
+networkPolicy:
+  enabled: false
+  extraIngress: []
+  extraEgress: []
+
+serviceMonitor:
+  enabled: false
+  interval: 30s
+  scrapeTimeout: 10s
+  labels: {}
+  relabelings: []
+  metricRelabelings: []
+
+priorityClassName: ""
+
+extraVolumes: []
+extraVolumeMounts: []
+extraContainers: []

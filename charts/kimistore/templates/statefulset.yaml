@@ -1,0 +1,305 @@
+{{- /*
+A StatefulSet, not a Deployment.
+
+The agent's Write-Ahead Log lives on local disk, and that WAL is the only
+place a record exists between "producer was acked" and "segment uploaded to
+object storage". A Deployment that recreates a pod attaches a fresh emptyDir
+and discards it, so with acks=1 every record written since the last segment
+roll is lost -- silently, because the producer was told it was safe.
+
+An object-storage-only design would not have this constraint. This one does, so
+the workload is stateful and the chart has to treat it that way.
+
+serviceName points at the *headless* service, not the client-facing one. The
+headless service is what gives each pod a stable DNS name; the client Service
+exists only for bootstrap and may be a LoadBalancer whose address changes.
+
+podManagementPolicy is Parallel, deliberately. With OrderedReady -- the
+default -- a pod that does not become ready blocks the next one from starting.
+Readiness depends on holding the partitions the assignment gives this agent,
+which depends on seeing the live set, which is built by discovery. Serial
+startup turns that into a deadlock: the first pod waits for a cluster of one,
+never sees itself satisfied, and never becomes ready.
+
+terminationGracePeriodSeconds must exceed the agent's DrainShutdownBudget (25s).
+Below that, SIGKILL lands mid-drain and the partition is left with a
+half-uploaded segment. The chart's default is 60s for that headroom, and it is
+a lintable value rather than a comment.
+*/}}
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "kimistore.fullname" . }}
+  labels:
+    {{- include "kimistore.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  serviceName: {{ include "kimistore.headlessServiceName" . }}
+  podManagementPolicy: {{ .Values.podManagementPolicy }}
+  {{- if not (eq .Values.updateStrategy.type "OnDelete") }}
+  updateStrategy:
+    type: RollingUpdate
+    {{- with .Values.updateStrategy.rollingUpdate }}
+    rollingUpdate:
+      {{- if .partition }}
+      partition: {{ .partition }}
+      {{- end }}
+      {{- if .maxUnavailable }}
+      maxUnavailable: {{ .maxUnavailable }}
+      {{- end }}
+    {{- end }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "kimistore.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+        {{- with .Values.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      labels:
+        {{- include "kimistore.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "kimistore.serviceAccountName" . }}
+      {{- with .Values.priorityClassName }}
+      priorityClassName: {{ . }}
+      {{- end }}
+      {{- /*
+      Long enough for the drain to finish. See the header comment: below the
+      agent's 25s budget, eviction truncates a handover.
+      */}}
+      terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.topologySpreadConstraints }}
+      topologySpreadConstraints:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          {{- if .Values.command }}
+          command:
+            {{- toYaml .Values.command | nindent 12 }}
+          {{- end }}
+          {{- with .Values.args }}
+          args:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          env:
+            {{- /*
+            Identity. KIMISTORE_AGENT_ID must be unique per pod and stable
+            across restarts, or two agents collide on the same ownership claim
+            and refuse each other's partitions. The StatefulSet pod name is
+            stable by construction; a Deployment's generated name is not.
+
+            KIMISTORE_ADVERTISED_HOST is the pod's own IP, never a Service
+            address. The broker reports this as the leader for every partition
+            it owns, and a client that is handed a shared address cannot reach
+            the partition leader -- every connection lands on an arbitrary
+            pod. Clients bootstrap through the Service, then connect directly
+            to per-pod addresses from Metadata.
+            */}}
+            - name: KIMISTORE_AGENT_ID
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: KIMISTORE_NODE_ID
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.labels['apps.kubernetes.io/pod-index']
+            - name: KIMISTORE_ADVERTISED_HOST
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            - name: KIMISTORE_ADVERTISED_PORT
+              value: {{ .Values.broker.port | quote }}
+            - name: KIMISTORE_LISTEN_ADDR
+              value: ":{{ .Values.broker.port }}"
+            {{- range $k, $v := .Values.agent.env }}
+            - name: {{ $k }}
+              value: {{ $v | quote }}
+            {{- end }}
+            {{- /*
+            Ownership. The claim TTL is the crash failover window, so it is a
+            deployment decision rather than a detail: at 60s a partition is
+            unavailable for a minute after its agent disappears.
+
+            Assignment is off by default, and that default is load-bearing.
+            Without it every agent races for every partition and the first to
+            start wins all of them, so a three-replica StatefulSet runs three
+            agents with one doing the work. Turning it on makes the incumbent
+            drain the partitions it no longer wins, so it is a change in
+            behaviour rather than a free default.
+            */}}
+            - name: KIMISTORE_PARTITION_OWNERSHIP
+              value: "true"
+            - name: KIMISTORE_OWNERSHIP_TTL_MS
+              value: {{ .Values.ownership.ttlMs | quote }}
+            {{- if .Values.assignment.enabled }}
+            - name: KIMISTORE_ASSIGNMENT
+              value: {{ .Values.assignment.mode | quote }}
+            {{- with .Values.assignment.settleMs }}
+            - name: KIMISTORE_ASSIGNMENT_SETTLE_MS
+              value: {{ . | quote }}
+            {{- end }}
+            {{- end }}
+            - name: KIMISTORE_FLUSH_INTERVAL_MS
+              value: {{ .Values.agent.flushIntervalMs | quote }}
+            - name: KIMISTORE_S3_TIMEOUT_MS
+              value: {{ .Values.agent.s3TimeoutMs | quote }}
+            - name: KIMISTORE_AUTO_CREATE_TOPICS
+              value: {{ .Values.agent.autoCreateTopics | quote }}
+            - name: KIMISTORE_AUTO_CREATE_PARTITIONS
+              value: {{ .Values.agent.autoCreatePartitions | quote }}
+            {{- if ne (int .Values.retention.retentionMs) -1 }}
+            - name: KIMISTORE_RETENTION_MS
+              value: {{ .Values.retention.retentionMs | quote }}
+            {{- end }}
+            {{- if ne (int .Values.retention.retentionBytes) -1 }}
+            - name: KIMISTORE_RETENTION_BYTES
+              value: {{ .Values.retention.retentionBytes | quote }}
+            {{- end }}
+            {{- if gt (int .Values.retention.checkIntervalMs) 0 }}
+            - name: KIMISTORE_RETENTION_CHECK_MS
+              value: {{ .Values.retention.checkIntervalMs | quote }}
+            {{- end }}
+            {{- if .Values.objectStorage.bucket }}
+            - name: S3_BUCKET
+              value: {{ .Values.objectStorage.bucket | quote }}
+            {{- end }}
+            {{- if .Values.objectStorage.region }}
+            - name: AWS_REGION
+              value: {{ .Values.objectStorage.region | quote }}
+            {{- end }}
+            {{- if .Values.objectStorage.endpoint }}
+            - name: S3_ENDPOINT
+              value: {{ .Values.objectStorage.endpoint | quote }}
+            {{- end }}
+            {{- with .Values.objectStorage.existingSecret }}
+            {{- range $key, $envName := .keys }}
+            - name: {{ $envName }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $.Values.objectStorage.existingSecret }}
+                  key: {{ $key }}
+                  optional: true
+            {{- end }}
+            {{- end }}
+            {{- with .Values.sasl }}
+            {{- if .enabled }}
+            - name: SASL_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .existingSecret | default (printf "%s-sasl" (include "kimistore.fullname" $)) }}
+                  key: {{ .usernameKey | default "username" }}
+            - name: SASL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .existingSecret | default (printf "%s-sasl" (include "kimistore.fullname" $)) }}
+                  key: {{ .passwordKey | default "password" }}
+            {{- end }}
+            {{- end }}
+          {{- /*
+          Both probes hit the metrics listener, which serves /ready and /live
+          as well as /metrics. They are separate endpoints on purpose: readiness
+          answers "send clients here" and liveness answers "kill this process",
+          and a broker that has lost its partition claims must be taken out of
+          rotation *without* being restarted -- a restart is slower than the
+          thing it would fix, and the process can still serve reads from object
+          storage.
+          */}}
+          ports:
+            - name: broker
+              containerPort: {{ .Values.broker.port }}
+              protocol: TCP
+            - name: metrics
+              containerPort: {{ .Values.metrics.port }}
+              protocol: TCP
+          {{- with .Values.metrics.serviceMonitor }}
+          {{- end }}
+          livenessProbe:
+            httpGet:
+              path: /live
+              port: metrics
+            {{- toYaml .Values.livenessProbe | nindent 12 }}
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: metrics
+            {{- toYaml .Values.readinessProbe | nindent 12 }}
+          {{- if .Values.startupProbe }}
+          startupProbe:
+            httpGet:
+              path: /live
+              port: metrics
+            {{- toYaml .Values.startupProbe | nindent 12 }}
+          {{- end }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - name: {{ include "kimistore.walVolumeName" . }}
+              mountPath: {{ .Values.persistence.mountPath }}
+            {{- with .Values.extraVolumeMounts }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+        {{- with .Values.extraContainers }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      volumes:
+        {{- /*
+        No WAL volume here when persistence is on: a StatefulSet's
+        volumeClaimTemplate already provides it, and declaring both would make
+        the pod's mount ambiguous.
+        */}}
+        {{- if not .Values.persistence.enabled }}
+        - name: {{ include "kimistore.walVolumeName" . }}
+          emptyDir: {}
+        {{- end }}
+        {{- with .Values.extraVolumes }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+  {{- if .Values.persistence.enabled }}
+  volumeClaimTemplates:
+    - metadata:
+        name: {{ include "kimistore.walVolumeName" . }}
+        {{- with .Values.persistence.annotations }}
+        annotations:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+        labels:
+          {{- include "kimistore.selectorLabels" . | nindent 10 }}
+      spec:
+        accessModes:
+          - {{ .Values.persistence.accessMode }}
+        {{- if .Values.persistence.storageClassName }}
+        storageClassName: {{ .Values.persistence.storageClassName | quote }}
+        {{- end }}
+        {{- if .Values.persistence.volumeMode }}
+        volumeMode: {{ .Values.persistence.volumeMode }}
+        {{- end }}
+        resources:
+          requests:
+            storage: {{ .Values.persistence.size }}
+  {{- end }}

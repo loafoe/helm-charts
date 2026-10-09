@@ -1,0 +1,76 @@
+{{- /*
+The client-facing Service. Bootstrap only.
+
+Kafka clients resolve the bootstrap address, ask for Metadata, and then connect
+*directly* to the broker named as each partition's leader. That second step is
+what makes a load-balanced Service insufficient for writes: a single ClusterIP
+means every broker entry is the same address, so a producer that is redirected
+to "the leader" lands on an arbitrary pod again and is refused with
+NOT_LEADER_OR_FOLLOWER.
+
+So this Service exists to answer bootstrap. The per-pod addresses it leads to
+come from KIMISTORE_ADVERTISED_HOST, which is each pod's own IP.
+
+For reads it is more than that: any agent can serve a Fetch from object
+storage, so consumers can and should come through here. That makes this Service
+a genuine N-way read redundancy, not just an entry point.
+*/}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "kimistore.fullname" . }}
+  labels:
+    {{- include "kimistore.labels" . | nindent 4 }}
+    {{- with .Values.service.annotations }}
+    annotations:
+      {{- toYaml . | nindent 6 }}
+    {{- end }}
+spec:
+  type: {{ .Values.service.type }}
+  {{- if and (eq .Values.service.type "LoadBalancer") .Values.service.loadBalancerIP }}
+  loadBalancerIP: {{ .Values.service.loadBalancerIP }}
+  {{- end }}
+  {{- with .Values.service.externalTrafficPolicy }}
+  externalTrafficPolicy: {{ . }}
+  {{- end }}
+  {{- with .Values.service.loadBalancerSourceRanges }}
+  loadBalancerSourceRanges:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  selector:
+    {{- include "kimistore.selectorLabels" . | nindent 4 }}
+  ports:
+    - name: broker
+      port: {{ .Values.service.port }}
+      targetPort: broker
+      protocol: TCP
+  {{- with .Values.service.sessionAffinity }}
+  sessionAffinity: {{ . }}
+  {{- end }}
+{{- if .Values.service.metrics.enabled }}
+---
+{{/*
+Metrics are per-pod and never aggregated. Scraping this Service gives one
+series per pod, which is what you want: a version or ownership difference
+between pods shows up as a scrape difference rather than being averaged away.
+*/}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "kimistore.fullname" . }}-metrics
+  labels:
+    {{- include "kimistore.labels" . | nindent 4 }}
+  {{- if .Values.service.metrics.clusterIP }}
+  annotations:
+    prometheus.io/scrape: "true"
+  {{- end }}
+spec:
+  type: {{ ternary "ClusterIP" .Values.service.metrics.type (eq .Values.service.metrics.type "LoadBalancer") }}
+  selector:
+    {{- include "kimistore.selectorLabels" . | nindent 4 }}
+  ports:
+    - name: metrics
+      port: {{ .Values.metrics.port }}
+      targetPort: metrics
+      protocol: TCP
+{{- end }}

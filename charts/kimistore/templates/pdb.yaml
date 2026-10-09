@@ -1,0 +1,24 @@
+{{- /*
+A PodDisruptionBudget only protects availability when there is a spare replica
+to fall back on. At replicaCount 1, minAvailable >= 1 makes allowedDisruptions
+always 0, which blocks Karpenter's voluntary node eviction until it
+force-terminates -- holding a node hostage for no availability gain. So it is
+skipped entirely at one replica, matching the other charts in this repository.
+*/}}
+{{- if and .Values.podDisruptionBudget.enabled (gt (int .Values.replicaCount) 1) }}
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ include "kimistore.fullname" . }}
+  labels:
+    {{- include "kimistore.labels" . | nindent 4 }}
+spec:
+  {{- if .Values.podDisruptionBudget.minAvailable }}
+  minAvailable: {{ .Values.podDisruptionBudget.minAvailable }}
+  {{- else }}
+  maxUnavailable: {{ .Values.podDisruptionBudget.maxUnavailable }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "kimistore.selectorLabels" . | nindent 6 }}
+{{- end }}

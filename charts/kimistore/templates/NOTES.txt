@@ -1,0 +1,41 @@
+Kimistore {{ .Chart.AppVersion }} is installed as {{ include "kimistore.fullname" . }}.
+
+Replicas: {{ .Values.replicaCount }}
+Assignment: {{ if .Values.assignment.enabled }}{{ .Values.assignment.mode }}{{ else }}off (first agent to start owns every partition){{ end }}
+WAL persistence: {{ if .Values.persistence.enabled }}{{ .Values.persistence.size }} ({{ .Values.persistence.accessMode }}){{ else }}emptyDir (un-uploaded records are lost on pod replacement){{ end }}
+
+{{ if not .Values.objectStorage.bucket }}
+WARNING: objectStorage.bucket is empty. The agent will not start without it.
+{{ end }}
+
+1. Wait for the brokers to become ready:
+
+     kubectl --namespace {{ .Release.Namespace }} rollout status statefulset/{{ include "kimistore.fullname" . }}
+
+2. Check what each agent actually owns:
+
+     kubectl --namespace {{ .Release.Namespace }} exec {{ include "kimistore.fullname" . }}-0 -- \
+       wget -qO- http://127.0.0.1:{{ .Values.metrics.port }}/ready
+
+3. Connect a client. Use the bootstrap address for the first connection, then
+   let the client follow Metadata to the per-pod leaders:
+
+     {{ include "kimistore.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.service.port }}
+
+{{ if gt (int .Values.replicaCount) 1 }}
+Scaling note: with assignment disabled the extra replicas will not take any
+partitions -- every claim goes to whichever agent started first. Set
+assignment.enabled=true to have partitions shared by rendezvous hash. Turning it
+on against a running cluster makes the incumbent drain the partitions it no
+longer wins, so expect handovers rather than a silent no-op.
+{{- else }}
+Scaling note: this is a single replica. Raising replicaCount without
+assignment.enabled leaves the extra replicas idle.
+{{- end }}
+
+{{- if not .Values.persistence.enabled }}
+
+WARNING: persistence is disabled. The WAL is on an emptyDir, so replacing a pod
+loses every record written since the last segment was uploaded to object
+storage, and acks=1 producers were told those records were safe.
+{{- end }}
