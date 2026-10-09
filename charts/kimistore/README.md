@@ -1,6 +1,6 @@
 # kimistore
 
-![Version: 0.2.0](https://img.shields.io/badge/Version-0.2.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.0.0](https://img.shields.io/badge/AppVersion-1.0.0-informational?style=flat-square)
+![Version: 0.3.0](https://img.shields.io/badge/Version-0.3.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.0.0](https://img.shields.io/badge/AppVersion-v1.0.0-informational?style=flat-square)
 
 Kafka-compatible streaming agent that keeps its durable log in object storage
 
@@ -35,7 +35,7 @@ Kafka-compatible streaming agent that keeps its durable log in object storage
 | fullnameOverride | string | `""` |  |
 | image.pullPolicy | string | `"IfNotPresent"` |  |
 | image.repository | string | `"ghcr.io/kimistore/agent"` |  |
-| image.tag | string | `"1.0.0"` |  |
+| image.tag | string | `"v1.0.0"` |  |
 | imagePullSecrets | list | `[]` |  |
 | livenessProbe.failureThreshold | int | `5` |  |
 | livenessProbe.periodSeconds | int | `10` |  |
@@ -130,8 +130,8 @@ signed keyless with cosign. Three tags are published:
 
 | Tag | What it is |
 |-----|------------|
-| `1.0.0` | The current release. Signed, immutable in practice, and what this chart defaults to. |
-| `v1.0.0` | The same image, spelled the way the git tag is. Same digest. |
+| `v1.0.0` | The current release. Signed, immutable in practice, matches the git tag, and what this chart defaults to. |
+| `1.0.0` | The same image under a bare semver, for tooling that wants one. Same digest. |
 | `main` | The moving branch tip. Convenient in development, worth little as a provenance claim. |
 
 For a deployment you care about, **pin the digest**:

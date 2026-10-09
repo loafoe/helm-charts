@@ -14,8 +14,9 @@ image:
   #   image:
   #     tag: "sha256:4f9a14bb1015d82420230e2fe8129a13005bc2a9f438ff88abaa9b64fb5df695"
   #
-  # The release image is published under both spellings, 1.0.0 and v1.0.0, and
-  # both resolve to the same signed digest. Verify before you pin:
+  # The release image is published as v1.0.0, matching the git tag, and also
+  # as 1.0.0 for tools that want a bare semver. Both resolve to the same signed
+  # digest, so this chart uses the v-prefixed spelling. Verify before you pin:
   #
   #   cosign verify ghcr.io/kimistore/agent@<digest> \
   #     --certificate-identity-regexp \
@@ -23,7 +24,7 @@ image:
   #     --certificate-oidc-issuer https://token.actions.githubusercontent.com
   #
   # Set tag: "main" to track the branch tip instead.
-  tag: "1.0.0"
+  tag: "v1.0.0"
 
 imagePullSecrets: []
 nameOverride: ""
