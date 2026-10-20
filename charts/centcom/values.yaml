@@ -345,6 +345,11 @@ ui:
   # full chat session id when clicked (opens in a new window). Unset by
   # default, in which case the badge stays plain (non-navigable) text.
   # langfuseSessionDeeplinkUrl: "https://langfuse.example.com/project/<project-id>/sessions/${sessionId}"
+  # Which OIDC identity claim is forwarded as a chat turn's end-user id
+  # (hermes-agent's X-Hermes-User-Id, recorded as the Langfuse trace
+  # user_id): "email" (readable, the default when unset) or "sub" (opaque,
+  # but stable across an email change). Any other value fails startup.
+  # chatUserIdClaim: "email"
   # Models selectable in the ClusterClaw chat window. Each entry's id is
   # sent to the channel backend verbatim as the chat request's model -
   # centcom never interprets it, so it must be whatever the backend (e.g.
