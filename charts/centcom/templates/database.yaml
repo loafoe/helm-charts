@@ -19,7 +19,9 @@ spec:
   parameters:
     identifier: {{ .Values.database.identifier | default (include "centcom.fullname" .) }}
     size: {{ .Values.database.size | default "small" }}
-    engineVersion: {{ .Values.database.engineVersion | default "16" | quote }}
+    {{- with .Values.database.engineVersion }}
+    engineVersion: {{ . | quote }}
+    {{- end }}
     databaseName: {{ .Values.database.databaseName | default "picomcp" }}
     masterUsername: {{ .Values.database.username | default "picomcp" }}
   {{- if .Values.database.allocatedStorage }}
