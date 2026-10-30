@@ -3,6 +3,25 @@ entries:
   centcom:
   - apiVersion: v2
     appVersion: v0.323.0
+    created: "2026-10-30T10:55:42.599224209Z"
+    description: MCP server for managing multiple centcom-satellite instances
+    digest: 6b14355351900792d63597fbdb32cc874964cd47eaa0a695f440efbca9dbc203
+    home: https://github.com/loafoe/centcom
+    keywords:
+    - kubernetes
+    - mcp
+    - spiffe
+    - ai
+    maintainers:
+    - email: andy.lo-a-foe@philips.com
+      name: Andy Lo-A-Foe
+    name: centcom
+    type: application
+    urls:
+    - https://github.com/loafoe/helm-charts/releases/download/centcom-0.98.0/centcom-0.98.0.tgz
+    version: 0.98.0
+  - apiVersion: v2
+    appVersion: v0.323.0
     created: "2026-10-24T08:27:31.606409247Z"
     description: MCP server for managing multiple centcom-satellite instances
     digest: 72e2ddce5852d337a64643a2a5a9c3a2935fe890a4a09bb993c2fe79951f7df0
@@ -1321,6 +1340,18 @@ entries:
   mt-mcp-proxy:
   - apiVersion: v2
     appVersion: 0.3.3
+    created: "2026-10-30T10:55:42.759728006Z"
+    description: A generic multi-tenant JWT/OIDC auth gateway that fronts any streamable-HTTP
+      MCP server (e.g. github-mcp-server, mcp-grafana) with group-based tenant routing
+      and per-tenant credential injection.
+    digest: 4c3beab84a7f83d9ea3bfde5e05d786ca1bae004f31972e05232d4087ffa8d64
+    name: mt-mcp-proxy
+    type: application
+    urls:
+    - https://github.com/loafoe/helm-charts/releases/download/mt-mcp-proxy-0.4.3/mt-mcp-proxy-0.4.3.tgz
+    version: 0.4.3
+  - apiVersion: v2
+    appVersion: 0.3.3
     created: "2026-09-23T08:27:10.654357632Z"
     description: A generic multi-tenant JWT/OIDC auth gateway that fronts any streamable-HTTP
       MCP server (e.g. github-mcp-server, mcp-grafana) with group-based tenant routing
@@ -1427,4 +1458,4 @@ entries:
     urls:
     - https://loafoe.github.io/helm-charts/solgate-0.0.12.tgz
     version: 0.0.12
-generated: "2026-10-24T08:27:31.606857387Z"
+generated: "2026-10-30T10:55:42.91568946Z"
