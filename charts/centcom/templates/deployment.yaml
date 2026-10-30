@@ -191,10 +191,6 @@ spec:
                   key: {{ .Values.otel.authSecretRef.passwordKey | default "password" }}
             {{- end }}
           {{- end }}
-          {{- range $k, $v := .Values.extraEnv }}
-            - name: "{{ $k }}"
-              value: "{{ $v }}"
-          {{- end }}
           ports:
             - name: http
               containerPort: {{ .Values.service.port }}

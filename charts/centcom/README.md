@@ -1,6 +1,6 @@
 # centcom
 
-![Version: 0.98.0](https://img.shields.io/badge/Version-0.98.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.323.0](https://img.shields.io/badge/AppVersion-v0.323.0-informational?style=flat-square)
+![Version: 0.97.1](https://img.shields.io/badge/Version-0.97.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.323.0](https://img.shields.io/badge/AppVersion-v0.323.0-informational?style=flat-square)
 
 MCP server for managing multiple centcom-satellite instances
 
@@ -58,7 +58,6 @@ MCP server for managing multiple centcom-satellite instances
 | database.username | string | `"picomcp"` |  |
 | environmentConfig.managedBy | string | `""` |  |
 | environmentConfig.owner | string | `""` |  |
-| extraEnv.GODEBUG | string | `"multipathtcp=0"` |  |
 | features.getResource | bool | `false` |  |
 | features.mcpLegacyEnabled | bool | `false` |  |
 | features.readOnly | bool | `false` |  |

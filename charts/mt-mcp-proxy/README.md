@@ -1,6 +1,6 @@
 # mt-mcp-proxy
 
-![Version: 0.4.3](https://img.shields.io/badge/Version-0.4.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.3.3](https://img.shields.io/badge/AppVersion-0.3.3-informational?style=flat-square)
+![Version: 0.4.2](https://img.shields.io/badge/Version-0.4.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.3.3](https://img.shields.io/badge/AppVersion-0.3.3-informational?style=flat-square)
 
 A generic multi-tenant JWT/OIDC auth gateway that fronts any streamable-HTTP MCP server (e.g. github-mcp-server, mcp-grafana) with group-based tenant routing and per-tenant credential injection.
 
@@ -56,7 +56,6 @@ A generic multi-tenant JWT/OIDC auth gateway that fronts any streamable-HTTP MCP
 | backends[0].tenants[0].id | string | `"team-platform"` | Globally unique tenant id (routing key) across ALL backends |
 | environmentConfig.managedBy | string | `""` |  |
 | environmentConfig.owner | string | `""` |  |
-| extraEnv | object | `{"GODEBUG":"multipathtcp=0"}` | Arbitrary additional env vars set on the proxy container itself (not the managed backends - see backends[].managed.env for those). Defaults to the GODEBUG=multipathtcp=0 CVE mitigation applied fleet-wide to our Go binaries - override the whole map if you need a different set, but keep that key unless the mitigation is formally lifted. |
 | fullnameOverride | string | `""` | Override the fully qualified name of the chart |
 | image.pullPolicy | string | `"IfNotPresent"` | Image pull policy |
 | image.repository | string | `"ghcr.io/loafoe/mt-mcp-proxy"` | Registry repository for the mt-mcp-proxy image |

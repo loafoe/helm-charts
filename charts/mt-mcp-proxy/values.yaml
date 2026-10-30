@@ -17,14 +17,6 @@ environmentConfig:
   owner: ""
   managedBy: ""
 
-# -- Arbitrary additional env vars set on the proxy container itself (not
-# the managed backends - see backends[].managed.env for those). Defaults to
-# the GODEBUG=multipathtcp=0 CVE mitigation applied fleet-wide to our Go
-# binaries - override the whole map if you need a different set, but keep
-# that key unless the mitigation is formally lifted.
-extraEnv:
-  GODEBUG: "multipathtcp=0"
-
 # -- Number of proxy replicas (sessions are in-memory; use sticky routing with >1)
 replicaCount: 1
 
