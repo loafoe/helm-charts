@@ -25,6 +25,9 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       serviceAccountName: {{ include "centcom.serviceAccountName" . }}
+      # Must exceed preStop + the app's own bounded shutdown (10s), or the
+      # kubelet SIGKILLs mid-drain.
+      terminationGracePeriodSeconds: {{ .Values.gracefulDrain.terminationGracePeriodSeconds | default 40 }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
@@ -217,6 +220,29 @@ spec:
             initialDelaySeconds: 3
             periodSeconds: 5
             timeoutSeconds: {{ .Values.readinessProbe.timeoutSeconds | default 5 }}
+          {{- end }}
+          {{- /* hasKey, not `default`: Helm's default() treats 0 as empty, so
+                 `preStopSeconds: 0` would silently become 8 and the drain
+                 could not be turned off. */ -}}
+          {{- $preStop := 8 -}}
+          {{- if and .Values.gracefulDrain (hasKey .Values.gracefulDrain "preStopSeconds") -}}
+            {{- $preStop = .Values.gracefulDrain.preStopSeconds -}}
+          {{- end }}
+          {{- if gt (int $preStop) 0 }}
+          lifecycle:
+            preStop:
+              # Keep serving for a few seconds after the pod is marked
+              # Terminating. Endpoint removal propagates to the gateway
+              # asynchronously, while SIGTERM arrives immediately - so
+              # without this the listener stops accepting before the gateway
+              # has stopped routing here, and in-flight clicks surface as a
+              # gateway "no healthy upstream" error during every rollout.
+              #
+              # The native sleep action, not an exec: the image is distroless
+              # (ko) and has no shell or sleep binary. Requires Kubernetes
+              # >= 1.30.
+              sleep:
+                seconds: {{ $preStop }}
           {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}

@@ -445,3 +445,17 @@ serviceMonitor:
   relabelings: []
   # -- Metric relabeling rules
   metricRelabelings: []
+
+# Graceful drain during a rolling update.
+#
+# preStopSeconds keeps a terminating pod serving while its endpoint removal
+# propagates to the gateway. Endpoint removal and SIGTERM happen
+# concurrently, so without this delay the listener stops accepting before
+# the gateway stops routing here and users see a gateway error on every
+# deploy. Uses the native preStop sleep action (Kubernetes >= 1.30); the
+# image is distroless so there is no shell for an exec sleep. Set to 0 to
+# disable.
+gracefulDrain:
+  preStopSeconds: 8
+  # Must exceed preStopSeconds plus the app's own 10s bounded shutdown.
+  terminationGracePeriodSeconds: 40
