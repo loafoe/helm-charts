@@ -49,6 +49,10 @@ spec:
             initialDelaySeconds: 5
             periodSeconds: 10
           env:
+            {{- range $k, $v := .Values.extraEnv }}
+            - name: "{{ $k }}"
+              value: "{{ $v }}"
+            {{- end }}
             {{- if .Values.tracing.enabled }}
             - name: OTEL_EXPORTER_OTLP_ENDPOINT
               value: "{{ .Values.tracing.endpoint }}"
