@@ -54,6 +54,8 @@ A generic multi-tenant JWT/OIDC auth gateway that fronts any streamable-HTTP MCP
 | backends[0].tenants[0].groups | list | `["platform-eng"]` | JWT groups authorized to select this tenant |
 | backends[0].tenants[0].headers | object | `{"X-MCP-Toolsets":"repos,issues,pull_requests"}` | Optional per-tenant headers (merge over backend headers) |
 | backends[0].tenants[0].id | string | `"team-platform"` | Globally unique tenant id (routing key) across ALL backends |
+| environmentConfig.managedBy | string | `""` |  |
+| environmentConfig.owner | string | `""` |  |
 | fullnameOverride | string | `""` | Override the fully qualified name of the chart |
 | image.pullPolicy | string | `"IfNotPresent"` | Image pull policy |
 | image.repository | string | `"ghcr.io/loafoe/mt-mcp-proxy"` | Registry repository for the mt-mcp-proxy image |
