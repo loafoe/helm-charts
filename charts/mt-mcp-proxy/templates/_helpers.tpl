@@ -37,7 +37,26 @@ helm.sh/chart: {{ include "mt-mcp-proxy.chart" . }}
 {{- if .Chart.AppVersion }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
-app.kubernetes.io/managed-by: {{ .Release.Service }}
+app.kubernetes.io/managed-by: {{ include "mt-mcp-proxy.managedBy" . }}
+{{- include "mt-mcp-proxy.ownerLabels" . }}
+{{- end }}
+
+{{/*
+Owner label rendered from environmentConfig.owner so workloads satisfy the
+require-owner-label Kyverno policy. Omitted when unset.
+*/}}
+{{- define "mt-mcp-proxy.ownerLabels" -}}
+{{- if .Values.environmentConfig.owner }}
+owner: {{ .Values.environmentConfig.owner | quote }}
+{{- end }}
+{{- end }}
+
+{{/*
+Value for the app.kubernetes.io/managed-by label, overridden by
+environmentConfig.managedBy when set.
+*/}}
+{{- define "mt-mcp-proxy.managedBy" -}}
+{{- .Values.environmentConfig.managedBy | default .Release.Service -}}
 {{- end }}
 
 {{/*

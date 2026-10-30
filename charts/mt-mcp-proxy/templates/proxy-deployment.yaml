@@ -13,7 +13,7 @@ spec:
   template:
     metadata:
       labels:
-        {{- include "mt-mcp-proxy.selectorLabels" . | nindent 8 }}
+        {{- include "mt-mcp-proxy.labels" . | nindent 8 }}
         app.kubernetes.io/component: proxy
       annotations:
         # Force a rolling update when the rendered config changes.

@@ -10,6 +10,13 @@ nameOverride: ""
 # -- Override the fully qualified name of the chart
 fullnameOverride: ""
 
+# Ownership metadata propagated onto managed workloads so they satisfy the
+# require-owner-label Kyverno policy. Empty owner omits the label;
+# empty managedBy keeps the chart's default app.kubernetes.io/managed-by value.
+environmentConfig:
+  owner: ""
+  managedBy: ""
+
 # -- Number of proxy replicas (sessions are in-memory; use sticky routing with >1)
 replicaCount: 1
 
