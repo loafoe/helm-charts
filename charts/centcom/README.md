@@ -56,6 +56,8 @@ MCP server for managing multiple centcom-satellite instances
 | database.snapshots.snapshotClassName | string | `""` |  |
 | database.snapshots.storageClassName | string | `""` |  |
 | database.username | string | `"picomcp"` |  |
+| environmentConfig.managedBy | string | `""` |  |
+| environmentConfig.owner | string | `""` |  |
 | features.getResource | bool | `false` |  |
 | features.mcpLegacyEnabled | bool | `false` |  |
 | features.readOnly | bool | `false` |  |

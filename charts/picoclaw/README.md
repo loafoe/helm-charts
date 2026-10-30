@@ -65,6 +65,8 @@ AI-powered Kubernetes operations assistant with multi-channel support (Telegram,
 | config.tools.mcp.servers | object | `{}` |  |
 | config.tools.web.enabled | bool | `true` |  |
 | config.version | int | `3` |  |
+| environmentConfig.managedBy | string | `""` |  |
+| environmentConfig.owner | string | `""` |  |
 | fullnameOverride | string | `""` |  |
 | httpRoute.enabled | bool | `false` |  |
 | httpRoute.gatewayRef.name | string | `""` |  |
