@@ -1,0 +1,17 @@
+# chart-testing install in kind (the lint-test workflow installs the CNPG operator).
+# GitHub's public OIDC issuer only serves discovery here; no token is ever issued for it.
+oidc:
+  issuerUrl: https://token.actions.githubusercontent.com
+  audience: k3s-fleet-ci
+api:
+  replicas: 1
+database:
+  cnpg:
+    instances: 1
+    storage:
+      size: 1Gi
+worker:
+  resources:
+    requests:
+      cpu: 50m
+      memory: 128Mi

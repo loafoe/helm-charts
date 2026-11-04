@@ -1,0 +1,103 @@
+{{- $w := .Values.worker }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "k3s-fleet.fullname" . }}-worker
+  labels:
+    {{- include "k3s-fleet.labels" . | nindent 4 }}
+    app.kubernetes.io/component: worker
+spec:
+  replicas: {{ $w.replicas }}
+  selector:
+    matchLabels:
+      {{- include "k3s-fleet.selectorLabels" (dict "ctx" . "component" "worker") | nindent 6 }}
+  # Never run old and new side by side longer than needed, and never kill a busy worker
+  # early: the old pod finishes its jobs within shutdownGrace
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+        {{- with $w.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      labels:
+        {{- include "k3s-fleet.labels" . | nindent 8 }}
+        app.kubernetes.io/component: worker
+        {{- with $w.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "k3s-fleet.serviceAccountName" (dict "ctx" . "component" "worker") }}
+      terminationGracePeriodSeconds: {{ $w.terminationGracePeriodSeconds }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: worker
+          image: {{ include "k3s-fleet.image" (dict "ctx" . "component" "worker") }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          envFrom:
+            - configMapRef:
+                name: {{ include "k3s-fleet.fullname" . }}
+          env:
+            - name: FLEET_API_MODE
+              value: worker
+            # Unique per replica: job records and the stale-job sweep key on it
+            - name: FLEET_API_WORKER_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            {{- include "k3s-fleet.env" . | nindent 12 }}
+            {{- if .Values.pulumi.accessTokenSecret.name }}
+            - name: PULUMI_ACCESS_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.pulumi.accessTokenSecret.name }}
+                  key: {{ .Values.pulumi.accessTokenSecret.key }}
+            {{- end }}
+          ports:
+            - name: health
+              containerPort: 8080
+          # Covers FLEET_API_DB_CONNECT_TIMEOUT (see the API deployment)
+          startupProbe:
+            httpGet: {path: /healthz, port: health}
+            periodSeconds: 5
+            failureThreshold: 60
+          livenessProbe:
+            httpGet: {path: /healthz, port: health}
+            periodSeconds: 10
+          readinessProbe:
+            httpGet: {path: /readyz, port: health}
+            periodSeconds: 10
+          resources:
+            {{- toYaml $w.resources | nindent 12 }}
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        # PULUMI_HOME and the per-job work dirs; the root filesystem stays read-only
+        - name: tmp
+          emptyDir:
+            sizeLimit: {{ $w.tmpSizeLimit }}
+      {{- with $w.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with $w.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with $w.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

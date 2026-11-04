@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "k3s-fleet.fullname" . }}
+  labels:
+    {{- include "k3s-fleet.labels" . | nindent 4 }}
+data:
+  FLEET_API_OIDC_ISSUER: {{ .Values.oidc.issuerUrl | quote }}
+  FLEET_API_OIDC_AUDIENCE: {{ .Values.oidc.audience | quote }}
+  FLEET_API_OIDC_GROUPS_CLAIM: {{ .Values.oidc.groupsClaim | quote }}
+  FLEET_API_OIDC_REQUIRED_GROUPS: {{ join "," .Values.oidc.requiredGroups | quote }}
+  FLEET_API_TRUSTED_PRINCIPAL_ARN: {{ .Values.trustedPrincipal.arn | quote }}
+  FLEET_API_TRUSTED_PRINCIPAL_PATTERN: {{ .Values.trustedPrincipal.arnPattern | quote }}
+  FLEET_API_WORKERS: {{ .Values.worker.concurrency | quote }}
+  FLEET_API_READY_TIMEOUT: {{ .Values.worker.readyTimeout | quote }}
+  FLEET_API_SHUTDOWN_GRACE: {{ .Values.worker.shutdownGrace | quote }}
+  PULUMI_BACKEND_URL: {{ .Values.pulumi.backendUrl | quote }}
+  PULUMI_SECRETS_PROVIDER: {{ .Values.pulumi.secretsProvider | quote }}
+  {{- with .Values.aws.region }}
+  AWS_REGION: {{ . | quote }}
+  {{- end }}

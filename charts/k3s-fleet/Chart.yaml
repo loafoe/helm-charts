@@ -1,0 +1,17 @@
+apiVersion: v2
+name: k3s-fleet
+description: Fleet API for k3s-on-ec2 clusters - HTTP API (OIDC) and Pulumi job workers, backed by PostgreSQL (CloudNativePG)
+type: application
+version: 0.1.0
+appVersion: "0.43.0"
+keywords:
+  - kubernetes
+  - k3s
+  - pulumi
+  - fleet
+home: https://github.com/loafoe/k3s-on-ec2
+sources:
+  - https://github.com/loafoe/k3s-on-ec2
+maintainers:
+  - name: Andy Lo-A-Foe
+    email: andy.lo-a-foe@philips.com

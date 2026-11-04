@@ -1,0 +1,86 @@
+{{- $api := .Values.api }}
+{{- $_ := required "oidc.issuerUrl is required" .Values.oidc.issuerUrl }}
+{{- $_ := required "oidc.audience is required" .Values.oidc.audience }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "k3s-fleet.fullname" . }}-api
+  labels:
+    {{- include "k3s-fleet.labels" . | nindent 4 }}
+    app.kubernetes.io/component: api
+spec:
+  replicas: {{ $api.replicas }}
+  selector:
+    matchLabels:
+      {{- include "k3s-fleet.selectorLabels" (dict "ctx" . "component" "api") | nindent 6 }}
+  template:
+    metadata:
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+        {{- with $api.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      labels:
+        {{- include "k3s-fleet.labels" . | nindent 8 }}
+        app.kubernetes.io/component: api
+        {{- with $api.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "k3s-fleet.serviceAccountName" (dict "ctx" . "component" "api") }}
+      automountServiceAccountToken: false
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: api
+          image: {{ include "k3s-fleet.image" (dict "ctx" . "component" "api") }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          envFrom:
+            - configMapRef:
+                name: {{ include "k3s-fleet.fullname" . }}
+          env:
+            - name: FLEET_API_MODE
+              value: api
+            {{- include "k3s-fleet.env" . | nindent 12 }}
+          ports:
+            - name: http
+              containerPort: 8080
+          # Covers FLEET_API_DB_CONNECT_TIMEOUT: the process waits for the database before it
+          # serves, and liveness must not kill it meanwhile
+          startupProbe:
+            httpGet: {path: /healthz, port: http}
+            periodSeconds: 5
+            failureThreshold: 60
+          livenessProbe:
+            httpGet: {path: /healthz, port: http}
+            periodSeconds: 10
+          readinessProbe:
+            httpGet: {path: /readyz, port: http}
+            periodSeconds: 5
+          resources:
+            {{- toYaml $api.resources | nindent 12 }}
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: tmp
+          emptyDir:
+            sizeLimit: 64Mi
+      {{- with $api.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with $api.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with $api.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

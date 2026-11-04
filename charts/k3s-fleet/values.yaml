@@ -1,0 +1,161 @@
+# k3s-fleet: the k3s-on-ec2 fleet API (docs/FLEET_API.md in loafoe/k3s-on-ec2).
+# Two Deployments share one PostgreSQL: the API (OIDC-authenticated HTTP, never runs
+# Pulumi) and the workers (run Pulumi jobs, need AWS credentials via IRSA).
+
+image:
+  # -- Registry for both images
+  registry: ghcr.io
+  # -- Image pull policy
+  pullPolicy: IfNotPresent
+  api:
+    # -- API image
+    repository: loafoe/k3s-fleet-api
+    # -- Defaults to the chart appVersion
+    tag: ""
+  worker:
+    # -- Worker image (pulumi CLI + provider plugins)
+    repository: loafoe/k3s-fleet-worker
+    # -- Defaults to the chart appVersion
+    tag: ""
+
+# -- Image pull secrets (the ghcr.io images are public)
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+oidc:
+  # -- (required) OIDC issuer URL; discovery runs at API start
+  issuerUrl: ""
+  # -- (required) Expected token audience ("aud"), typically the client ID
+  audience: ""
+  # -- Claim holding the caller's groups
+  groupsClaim: groups
+  # -- Callers need one of these groups; empty allows any valid token
+  requiredGroups: []
+
+pulumi:
+  # -- State backend, e.g. s3://bucket?region=eu-west-2. Empty means Pulumi Cloud
+  # (set accessTokenSecret).
+  backendUrl: ""
+  # -- Secrets provider for new stacks, e.g. awskms://alias/pulumi-fleet?region=eu-west-2
+  secretsProvider: ""
+  accessTokenSecret:
+    # -- Secret with a Pulumi Cloud access token (only for the Pulumi Cloud backend)
+    name: ""
+    key: token
+
+aws:
+  # -- AWS region for the workers' SDK calls
+  region: ""
+
+# -- What the per-account k3s-fleet-deployer roles trust: the workers' own AWS identity
+# (their IRSA role). Set exactly one of arn / arnPattern to allow onboarding.
+trustedPrincipal:
+  arn: ""
+  arnPattern: ""
+
+api:
+  # -- API replicas
+  replicas: 2
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      memory: 256Mi
+  service:
+    type: ClusterIP
+    port: 80
+  serviceAccount:
+    create: true
+    # -- Defaults to <fullname>-api
+    name: ""
+    annotations: {}
+  podAnnotations: {}
+  podLabels: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+  podDisruptionBudget:
+    enabled: true
+    minAvailable: 1
+
+worker:
+  # -- Worker replicas; jobs are spread over them through the database
+  replicas: 1
+  # -- Jobs per worker pod (each runs a pulumi CLI plus providers: ~1Gi memory per job)
+  concurrency: 2
+  # -- How long an up waits for the new master to report ready
+  readyTimeout: 45m
+  # -- On SIGTERM, how long running jobs may finish before they are interrupted
+  shutdownGrace: 30m
+  # -- Must exceed shutdownGrace, or Kubernetes kills jobs mid-update (stack stays locked)
+  terminationGracePeriodSeconds: 1860
+  resources:
+    requests:
+      cpu: 250m
+      memory: 1Gi
+    limits:
+      memory: 3Gi
+  # -- Scratch space for PULUMI_HOME and job work dirs
+  tmpSizeLimit: 4Gi
+  serviceAccount:
+    create: true
+    # -- Defaults to <fullname>-worker
+    name: ""
+    # -- Put the IRSA role here: eks.amazonaws.com/role-arn: arn:aws:iam::<acct>:role/<role>
+    annotations: {}
+  podAnnotations: {}
+  podLabels: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+  podDisruptionBudget:
+    enabled: true
+    # -- Drains evict one worker at a time; each gets shutdownGrace to finish its jobs
+    maxUnavailable: 1
+
+database:
+  cnpg:
+    # -- Create a CloudNativePG Cluster (the CNPG operator must be installed)
+    enabled: true
+    instances: 2
+    # -- PostgreSQL image (13+)
+    imageName: ghcr.io/cloudnative-pg/postgresql:17
+    storage:
+      size: 5Gi
+      # -- Empty uses the default StorageClass
+      storageClass: ""
+    resources:
+      requests:
+        cpu: 100m
+        memory: 256Mi
+      limits:
+        memory: 1Gi
+  # -- Use an existing database instead (when cnpg.enabled is false): a Secret holding a
+  # PostgreSQL URL
+  existingSecret:
+    name: ""
+    key: uri
+
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 65532
+  runAsGroup: 65532
+  fsGroup: 65532
+  seccompProfile:
+    type: RuntimeDefault
+
+securityContext:
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: true
+  capabilities:
+    drop: ["ALL"]
+
+httpRoute:
+  # -- Expose the API through a Gateway API HTTPRoute
+  enabled: false
+  # -- e.g. [{name: platform, namespace: kube-system}]
+  parentRefs: []
+  hostnames: []
+  annotations: {}

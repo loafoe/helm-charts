@@ -1,0 +1,60 @@
+{{ template "chart.header" . }}
+{{ template "chart.deprecationWarning" . }}
+
+{{ template "chart.badgesSection" . }}
+
+{{ template "chart.description" . }}
+
+The fleet API from [loafoe/k3s-on-ec2](https://github.com/loafoe/k3s-on-ec2)
+(`docs/FLEET_API.md` there): create, update, preview and destroy k3s-on-ec2 clusters and
+onboard AWS accounts, as asynchronous jobs over HTTP.
+
+- **api** (`ghcr.io/loafoe/k3s-fleet-api`): OIDC-authenticated HTTP API. Never runs Pulumi,
+  needs no AWS access.
+- **worker** (`ghcr.io/loafoe/k3s-fleet-worker`): claims jobs from the database and runs them
+  with the pulumi CLI and baked-in provider plugins. Needs AWS credentials (IRSA).
+- **database**: a CloudNativePG `Cluster`, or an existing PostgreSQL 13+ via
+  `database.existingSecret`. Jobs, cluster specs and every stack's Pulumi config live here;
+  pods are stateless.
+
+## Prerequisites
+
+- The [CloudNativePG operator](https://cloudnative-pg.io) (unless `database.cnpg.enabled=false`).
+- An OIDC issuer for callers (`oidc.issuerUrl`, `oidc.audience`).
+- An IAM role for the workers, bound to `<release>-k3s-fleet-worker` via IRSA
+  (`worker.serviceAccount.annotations`), allowed to `sts:AssumeRole` the per-account
+  `k3s-fleet-deployer` roles and to use the Pulumi state backend. Set the same role as
+  `trustedPrincipal.arn`: it is what the deployer roles trust.
+
+## Example
+
+```yaml
+oidc:
+  issuerUrl: https://login.example.com
+  audience: k3s-fleet-api
+  requiredGroups: [k3s-fleet-admins]
+pulumi:
+  backendUrl: s3://ops-tools-pulumi-state?region=eu-west-2
+  secretsProvider: awskms://alias/pulumi-k3s-fleet?region=eu-west-2
+aws:
+  region: eu-west-2
+trustedPrincipal:
+  arn: arn:aws:iam::633162132188:role/k3s-fleet-worker
+worker:
+  serviceAccount:
+    annotations:
+      eks.amazonaws.com/role-arn: arn:aws:iam::633162132188:role/k3s-fleet-worker
+httpRoute:
+  enabled: true
+  parentRefs: [{name: platform, namespace: kube-system}]
+  hostnames: [fleet.dip-ops-tools-k3s-eu.hsp.philips.com]
+```
+
+Workers get `worker.terminationGracePeriodSeconds` (31 minutes by default) to finish running
+jobs on shutdown: interrupting Pulumi mid-update can leave a stack locked.
+
+{{ template "chart.requirementsSection" . }}
+
+{{ template "chart.valuesSection" . }}
+
+{{ template "helm-docs.versionFooter" . }}

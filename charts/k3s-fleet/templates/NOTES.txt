@@ -1,0 +1,13 @@
+k3s-fleet {{ .Chart.AppVersion }} is installed.
+
+API:     {{ include "k3s-fleet.fullname" . }}-api:{{ .Values.api.service.port }}{{ with .Values.httpRoute.hostnames }} (https://{{ first . }}){{ end }}
+Workers: {{ .Values.worker.replicas }} x {{ .Values.worker.concurrency }} concurrent jobs
+Database: {{ if .Values.database.cnpg.enabled }}CloudNativePG cluster {{ include "k3s-fleet.dbCluster" . }}{{ else }}secret {{ .Values.database.existingSecret.name }}{{ end }}
+
+Callers authenticate with an OIDC token from {{ .Values.oidc.issuerUrl }} (aud {{ .Values.oidc.audience }}):
+  curl -H "Authorization: Bearer $TOKEN" http://<api>/v1/clusters
+{{- if not (or .Values.trustedPrincipal.arn .Values.trustedPrincipal.arnPattern) }}
+
+NOTE: trustedPrincipal is not set, so accounts cannot be onboarded yet. Set it to the
+workers' IRSA role ({{ include "k3s-fleet.serviceAccountName" (dict "ctx" . "component" "worker") }}).
+{{- end }}
