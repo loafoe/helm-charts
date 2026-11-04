@@ -154,6 +154,18 @@ jobs:
             crd/httproutes.gateway.networking.k8s.io \
             crd/gateways.gateway.networking.k8s.io
 
+      # Charts that create a CloudNativePG Cluster (k3s-fleet) need the operator itself,
+      # not just its CRDs: their pods only turn ready once the database is up.
+      - name: Install CloudNativePG operator
+        if: steps.charts.outputs.installable != ''
+        env:
+          # renovate: datasource=helm registryUrl=https://cloudnative-pg.github.io/charts depName=cloudnative-pg
+          CNPG_CHART_VERSION: 0.29.1
+        run: |
+          helm upgrade --install cnpg cloudnative-pg \
+            --repo https://cloudnative-pg.github.io/charts --version "${CNPG_CHART_VERSION}" \
+            --namespace cnpg-system --create-namespace --wait --timeout 5m
+
       - name: Run chart-testing (install)
         if: steps.charts.outputs.installable != ''
         run: |
