@@ -1,6 +1,6 @@
 # k3s-fleet
 
-![Version: 0.1.7](https://img.shields.io/badge/Version-0.1.7-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.49.0](https://img.shields.io/badge/AppVersion-0.49.0-informational?style=flat-square)
+![Version: 0.1.8](https://img.shields.io/badge/Version-0.1.8-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.50.0](https://img.shields.io/badge/AppVersion-0.50.0-informational?style=flat-square)
 
 Fleet API for k3s-on-ec2 clusters - HTTP API (OIDC) and Pulumi job workers, backed by PostgreSQL (CloudNativePG)
 
@@ -98,6 +98,7 @@ jobs on shutdown: interrupting Pulumi mid-update can leave a stack locked.
 | image.worker.tag | string | `""` | Defaults to the chart appVersion |
 | imagePullSecrets | list | `[]` | Image pull secrets (the ghcr.io images are public) |
 | nameOverride | string | `""` |  |
+| oidc.allowedConnectors | list | `[]` | Dex only: connector IDs the identity must come through (federated_claims.connector_id, federated:id scope). Groups are plain strings, so with several connectors any of them that can produce a required group's name would pass; e.g. [github]. Empty skips the check. |
 | oidc.audience | required | `""` | Expected token audience ("aud"), typically the client ID |
 | oidc.groupsClaim | string | `"groups"` | Claim holding the caller's groups |
 | oidc.issuerUrl | required | `""` | OIDC issuer URL; discovery runs at API start |

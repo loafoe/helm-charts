@@ -9,6 +9,7 @@ data:
   FLEET_API_OIDC_AUDIENCE: {{ .Values.oidc.audience | quote }}
   FLEET_API_OIDC_GROUPS_CLAIM: {{ .Values.oidc.groupsClaim | quote }}
   FLEET_API_OIDC_REQUIRED_GROUPS: {{ join "," .Values.oidc.requiredGroups | quote }}
+  FLEET_API_OIDC_ALLOWED_CONNECTORS: {{ join "," .Values.oidc.allowedConnectors | quote }}
   FLEET_API_TRUSTED_PRINCIPAL_ARN: {{ .Values.trustedPrincipal.arn | quote }}
   FLEET_API_TRUSTED_PRINCIPAL_PATTERN: {{ .Values.trustedPrincipal.arnPattern | quote }}
   FLEET_API_WORKERS: {{ .Values.worker.concurrency | quote }}

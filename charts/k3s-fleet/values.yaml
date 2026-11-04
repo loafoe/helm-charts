@@ -32,6 +32,10 @@ oidc:
   groupsClaim: groups
   # -- Callers need one of these groups; empty allows any valid token
   requiredGroups: []
+  # -- Dex only: connector IDs the identity must come through (federated_claims.connector_id,
+  # federated:id scope). Groups are plain strings, so with several connectors any of them that can
+  # produce a required group's name would pass; e.g. [github]. Empty skips the check.
+  allowedConnectors: []
 
 pulumi:
   # -- State backend, e.g. s3://bucket?region=eu-west-2. Empty means Pulumi Cloud
