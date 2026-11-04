@@ -1,6 +1,6 @@
 # k3s-fleet
 
-![Version: 0.1.1](https://img.shields.io/badge/Version-0.1.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.44.0](https://img.shields.io/badge/AppVersion-0.44.0-informational?style=flat-square)
+![Version: 0.1.2](https://img.shields.io/badge/Version-0.1.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.44.0](https://img.shields.io/badge/AppVersion-0.44.0-informational?style=flat-square)
 
 Fleet API for k3s-on-ec2 clusters - HTTP API (OIDC) and Pulumi job workers, backed by PostgreSQL (CloudNativePG)
 
@@ -74,6 +74,7 @@ jobs on shutdown: interrupting Pulumi mid-update can leave a stack locked.
 | api.tolerations | list | `[]` |  |
 | aws.region | string | `""` | AWS region for the workers' SDK calls |
 | database.cnpg.enabled | bool | `true` | Create a CloudNativePG Cluster (the CNPG operator must be installed) |
+| database.cnpg.imageCatalogRef | object | `{}` | Use an image catalog instead of imageName, e.g. where a policy enforces one: {apiGroup: postgresql.cnpg.io, kind: ClusterImageCatalog, name: default, major: 18} |
 | database.cnpg.imageName | string | `"ghcr.io/cloudnative-pg/postgresql:17"` | PostgreSQL image (13+) |
 | database.cnpg.instances | int | `2` |  |
 | database.cnpg.resources.limits.memory | string | `"1Gi"` |  |

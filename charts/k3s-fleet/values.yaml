@@ -123,6 +123,9 @@ database:
     instances: 2
     # -- PostgreSQL image (13+)
     imageName: ghcr.io/cloudnative-pg/postgresql:17
+    # -- Use an image catalog instead of imageName, e.g. where a policy enforces one:
+    # {apiGroup: postgresql.cnpg.io, kind: ClusterImageCatalog, name: default, major: 18}
+    imageCatalogRef: {}
     storage:
       size: 5Gi
       # -- Empty uses the default StorageClass

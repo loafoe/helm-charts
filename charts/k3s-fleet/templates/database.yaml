@@ -12,7 +12,13 @@ metadata:
     argocd.argoproj.io/sync-wave: "-1"
 spec:
   instances: {{ $db.instances }}
+  {{- with $db.imageCatalogRef }}
+  # An image catalog (e.g. one a cluster policy enforces) instead of a fixed image
+  imageCatalogRef:
+    {{- toYaml . | nindent 4 }}
+  {{- else }}
   imageName: {{ $db.imageName }}
+  {{- end }}
   # CNPG creates the database, its owner, and the <name>-app secret with a "uri" key
   bootstrap:
     initdb:
