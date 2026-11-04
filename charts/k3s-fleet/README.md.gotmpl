@@ -20,7 +20,9 @@ onboard AWS accounts, as asynchronous jobs over HTTP.
 ## Prerequisites
 
 - The [CloudNativePG operator](https://cloudnative-pg.io) (unless `database.cnpg.enabled=false`).
-- An OIDC issuer for callers (`oidc.issuerUrl`, `oidc.audience`).
+- An OIDC issuer for callers (`oidc.issuerUrl`, `oidc.audience`). For `fleetctl`, the CLI
+  (k3s-on-ec2 `cmd/fleetctl`), the audience is a public client allowed the device code grant:
+  `fleetctl login --server <url>` reads the issuer and client ID from the API's `/auth/config`.
 - An IAM role for the workers, bound to `<release>-k3s-fleet-worker` via IRSA
   (`worker.serviceAccount.annotations`), allowed to `sts:AssumeRole` the per-account
   `k3s-fleet-deployer` roles and to use the Pulumi state backend. Set the same role as

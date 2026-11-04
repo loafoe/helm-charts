@@ -1,6 +1,6 @@
 # k3s-fleet
 
-![Version: 0.1.2](https://img.shields.io/badge/Version-0.1.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.44.0](https://img.shields.io/badge/AppVersion-0.44.0-informational?style=flat-square)
+![Version: 0.1.3](https://img.shields.io/badge/Version-0.1.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.45.0](https://img.shields.io/badge/AppVersion-0.45.0-informational?style=flat-square)
 
 Fleet API for k3s-on-ec2 clusters - HTTP API (OIDC) and Pulumi job workers, backed by PostgreSQL (CloudNativePG)
 
@@ -19,7 +19,9 @@ onboard AWS accounts, as asynchronous jobs over HTTP.
 ## Prerequisites
 
 - The [CloudNativePG operator](https://cloudnative-pg.io) (unless `database.cnpg.enabled=false`).
-- An OIDC issuer for callers (`oidc.issuerUrl`, `oidc.audience`).
+- An OIDC issuer for callers (`oidc.issuerUrl`, `oidc.audience`). For `fleetctl`, the CLI
+  (k3s-on-ec2 `cmd/fleetctl`), the audience is a public client allowed the device code grant:
+  `fleetctl login --server <url>` reads the issuer and client ID from the API's `/auth/config`.
 - An IAM role for the workers, bound to `<release>-k3s-fleet-worker` via IRSA
   (`worker.serviceAccount.annotations`), allowed to `sts:AssumeRole` the per-account
   `k3s-fleet-deployer` roles and to use the Pulumi state backend. Set the same role as
