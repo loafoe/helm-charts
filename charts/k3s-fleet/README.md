@@ -1,6 +1,6 @@
 # k3s-fleet
 
-![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.43.0](https://img.shields.io/badge/AppVersion-0.43.0-informational?style=flat-square)
+![Version: 0.1.1](https://img.shields.io/badge/Version-0.1.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.44.0](https://img.shields.io/badge/AppVersion-0.44.0-informational?style=flat-square)
 
 Fleet API for k3s-on-ec2 clusters - HTTP API (OIDC) and Pulumi job workers, backed by PostgreSQL (CloudNativePG)
 
@@ -111,7 +111,7 @@ jobs on shutdown: interrupting Pulumi mid-update can leave a stack locked.
 | securityContext.allowPrivilegeEscalation | bool | `false` |  |
 | securityContext.capabilities.drop[0] | string | `"ALL"` |  |
 | securityContext.readOnlyRootFilesystem | bool | `true` |  |
-| trustedPrincipal | object | `{"arn":"","arnPattern":""}` | What the per-account k3s-fleet-deployer roles trust: the workers' own AWS identity (their IRSA role). Set exactly one of arn / arnPattern to allow onboarding. |
+| trustedPrincipal | object | `{"arn":"","arnPattern":""}` | What the per-account k3s-fleet-deployer roles trust: the workers' own AWS identity (their IRSA role) and/or, as an ARN pattern, admins who also run `make up` (e.g. SSO roles, which IAM Identity Center recreates). Set one or both to allow onboarding. |
 | worker.affinity | object | `{}` |  |
 | worker.concurrency | int | `2` | Jobs per worker pod (each runs a pulumi CLI plus providers: ~1Gi memory per job) |
 | worker.nodeSelector | object | `{}` |  |

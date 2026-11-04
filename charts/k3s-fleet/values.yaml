@@ -49,7 +49,8 @@ aws:
   region: ""
 
 # -- What the per-account k3s-fleet-deployer roles trust: the workers' own AWS identity
-# (their IRSA role). Set exactly one of arn / arnPattern to allow onboarding.
+# (their IRSA role) and/or, as an ARN pattern, admins who also run `make up` (e.g. SSO roles,
+# which IAM Identity Center recreates). Set one or both to allow onboarding.
 trustedPrincipal:
   arn: ""
   arnPattern: ""
