@@ -57,6 +57,9 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.name
+            # What the worker reports itself as in GET /v1/workers (fleetctl workers list)
+            - name: FLEET_API_VERSION
+              value: {{ default .Chart.AppVersion .Values.image.worker.tag | quote }}
             {{- include "k3s-fleet.env" . | nindent 12 }}
             {{- if .Values.pulumi.accessTokenSecret.name }}
             - name: PULUMI_ACCESS_TOKEN
