@@ -2,8 +2,8 @@ apiVersion: v2
 name: k3s-fleet
 description: Fleet API for k3s-on-ec2 clusters - HTTP API (OIDC) and Pulumi job workers, backed by PostgreSQL (CloudNativePG)
 type: application
-version: 0.1.9
-appVersion: "0.51.0"
+version: 0.1.10
+appVersion: "0.52.0"
 keywords:
   - kubernetes
   - k3s
