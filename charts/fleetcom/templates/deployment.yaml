@@ -1,0 +1,136 @@
+{{- $_ := required "fleetApi.url is required" .Values.fleetApi.url }}
+{{- $_ := required "baseUrl is required (fleetcom's public URL; the redirect URI is <baseUrl>/callback)" .Values.baseUrl }}
+{{- $keyRef := include "fleetcom.sessionKeyRef" . }}
+{{- if and (gt (int .Values.replicas) 1) (not $keyRef) }}
+{{- fail "replicas > 1 need a shared session key: set session.key.generate, session.key.existingSecret or session.key.value" }}
+{{- end }}
+{{- $k := .Values.session.key }}
+{{- if gt (len (compact (list $k.generate $k.existingSecret $k.value))) 1 }}
+{{- fail "set only one of session.key.generate, session.key.existingSecret and session.key.value" }}
+{{- end }}
+{{- if and $k.value (lt (len $k.value) 32) }}
+{{- fail "session.key.value needs at least 32 characters" }}
+{{- end }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "fleetcom.fullname" . }}
+  labels:
+    {{- include "fleetcom.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicas }}
+  selector:
+    matchLabels:
+      {{- include "fleetcom.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "fleetcom.labels" . | nindent 8 }}
+        {{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "fleetcom.serviceAccountName" . }}
+      automountServiceAccountToken: false
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: fleetcom
+          image: {{ include "fleetcom.image" . }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          env:
+            - name: FLEETCOM_LISTEN
+              value: ":8080"
+            - name: FLEETCOM_FLEET_API_URL
+              value: {{ .Values.fleetApi.url | quote }}
+            - name: FLEETCOM_BASE_URL
+              value: {{ .Values.baseUrl | quote }}
+            - name: FLEETCOM_SESSION_TTL
+              value: {{ .Values.session.ttl | quote }}
+            - name: FLEETCOM_VERSION
+              value: {{ default (default .Chart.AppVersion .Values.image.tag) .Values.version | quote }}
+            {{- with $keyRef }}
+            - name: FLEETCOM_SESSION_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ (split "/" .)._0 }}
+                  key: {{ (split "/" .)._1 }}
+            {{- end }}
+            {{- with .Values.oidc.issuer }}
+            - name: FLEETCOM_OIDC_ISSUER
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.oidc.clientId }}
+            - name: FLEETCOM_OIDC_CLIENT_ID
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.oidc.clientSecret.existingSecret }}
+            - name: FLEETCOM_OIDC_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ . }}
+                  key: {{ $.Values.oidc.clientSecret.key }}
+            {{- end }}
+            {{- with .Values.oidc.scopes }}
+            - name: FLEETCOM_OIDC_SCOPES
+              value: {{ join "," . | quote }}
+            {{- end }}
+            {{- with .Values.oidc.groupsClaim }}
+            - name: FLEETCOM_OIDC_GROUPS_CLAIM
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.extraEnv }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          ports:
+            - name: http
+              containerPort: 8080
+          # fleetcom reads the API's login config and runs OIDC discovery before it listens,
+          # waiting up to FLEETCOM_STARTUP_TIMEOUT (5m) for both: liveness must not kill it meanwhile
+          startupProbe:
+            httpGet: {path: /healthz, port: http}
+            periodSeconds: 5
+            failureThreshold: 66
+          livenessProbe:
+            httpGet: {path: /healthz, port: http}
+            periodSeconds: 10
+          readinessProbe:
+            httpGet: {path: /healthz, port: http}
+            periodSeconds: 5
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.topologySpreadConstraints }}
+      topologySpreadConstraints:
+        {{- range . }}
+        - {{- toYaml (omit . "labelSelector") | nindent 10 }}
+          labelSelector:
+            {{- if .labelSelector }}
+            {{- toYaml .labelSelector | nindent 12 }}
+            {{- else }}
+            matchLabels:
+              {{- include "fleetcom.selectorLabels" $ | nindent 14 }}
+            {{- end }}
+        {{- end }}
+      {{- end }}

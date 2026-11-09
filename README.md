@@ -36,8 +36,10 @@ helm install my-release loafoe/go-hello-world
 | Chart | Description |
 |-------|-------------|
 | [centcom](./charts/centcom) | MCP server for managing multiple centcom-satellite instances |
+| [fleetcom](./charts/fleetcom) | Web UI over the k3s-on-ec2 fleet API (OIDC, read-only) |
 | [go-hello-world](./charts/go-hello-world) | Small, deliberately boring microservice used to smoke-test clusters, with a self-contained dashboard |
 | [go-ocpp-server](./charts/go-ocpp-server) | OCPP 1.6-J Central System for EV chargers |
+| [k3s-fleet](./charts/k3s-fleet) | Fleet API for k3s-on-ec2 clusters: OIDC HTTP API and Pulumi job workers |
 | [mcp-notifier](./charts/mcp-notifier) | MCP server for sending notifications to Slack, Microsoft Teams, and Telegram |
 | [mt-mcp-grafana](./charts/mt-mcp-grafana) | Multi-tenant proxy that aggregates and secures mcp-grafana backends |
 | [mt-mcp-proxy](./charts/mt-mcp-proxy) | Multi-tenant JWT/OIDC auth gateway fronting MCP backends |

@@ -1,0 +1,120 @@
+# fleetcom: the k3s-on-ec2 fleet API's web UI (docs/FLEETCOM.md in loafoe/k3s-on-ec2).
+# A stateless backend-for-frontend: users log in with OIDC, fleetcom forwards their reads to
+# the fleet API with their own ID token, so the API's access checks apply unchanged.
+
+image:
+  # -- Image repository
+  repository: ghcr.io/loafoe/fleetcom
+  # -- Defaults to the chart appVersion
+  tag: ""
+  # -- Image pull policy
+  pullPolicy: IfNotPresent
+
+# -- Image pull secrets (the image is public)
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+# -- Replicas. More than one needs a shared session key (session.key)
+replicas: 2
+
+fleetApi:
+  # -- (required) How fleetcom reaches the fleet API, e.g. the k3s-fleet chart's Service:
+  # http://k3s-fleet-api.k3s-fleet.svc
+  url: ""
+
+# -- (required) fleetcom's public URL, e.g. https://fleetcom.example.com. The OIDC redirect URI
+# is <baseUrl>/callback: register it on the OIDC client.
+baseUrl: ""
+
+oidc:
+  # -- Issuer URL. Empty: the fleet API's (its /auth/config)
+  issuer: ""
+  # -- Client ID. Empty: the fleet API's audience, the client fleetctl logs in with. Tokens
+  # must carry the API's audience, so keep the default unless the API accepts another client.
+  clientId: ""
+  clientSecret:
+    # -- Secret with the client secret, for a confidential client. Empty: a public client (PKCE)
+    existingSecret: ""
+    # -- Key in that Secret
+    key: client-secret
+  # -- Scopes. Empty: openid, email, profile, groups, offline_access plus what /auth/config asks for
+  scopes: []
+  # -- Groups claim shown on the profile and access-denied pages. Empty: the fleet API's
+  groupsClaim: ""
+
+session:
+  # -- How long a login lasts, token renewals included
+  ttl: 12h
+  key:
+    # -- Generate the key once with External Secrets' Password generator into
+    # <fullname>-session (the external-secrets operator must be installed). Never rotated by
+    # itself: delete the Secret to rotate (everyone logs in again).
+    generate: false
+    # -- Existing Secret with the key (at least 32 random characters, e.g. openssl rand -base64 32)
+    existingSecret: ""
+    # -- Key in that Secret
+    existingSecretKey: session-key
+    # -- The key inline; the chart keeps it in a Secret. Prefer generate or existingSecret
+    value: ""
+
+# -- Shown in the sidebar. Empty: the image tag
+version: ""
+
+# -- Extra environment variables for the container
+extraEnv: []
+
+service:
+  # -- Service type
+  type: ClusterIP
+  # -- Service port
+  port: 80
+
+serviceAccount:
+  # -- Create a ServiceAccount (fleetcom needs no Kubernetes API access; its token is not mounted)
+  create: true
+  # -- Defaults to the fullname
+  name: ""
+  annotations: {}
+
+httpRoute:
+  # -- Expose fleetcom with a Gateway API HTTPRoute
+  enabled: false
+  annotations: {}
+  # -- (required when enabled) Gateways to attach to, e.g. [{name: platform, namespace: kube-system}]
+  parentRefs: []
+  # -- Hostnames, e.g. [fleetcom.example.com]; baseUrl must be one of them
+  hostnames: []
+
+resources:
+  requests:
+    cpu: 10m
+    memory: 32Mi
+  limits:
+    memory: 128Mi
+
+podDisruptionBudget:
+  # -- Keep one replica through voluntary disruptions (only rendered with replicas > 1)
+  enabled: true
+  minAvailable: 1
+
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 65532
+  runAsGroup: 65532
+  seccompProfile:
+    type: RuntimeDefault
+
+securityContext:
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: true
+  capabilities:
+    drop: [ALL]
+
+podAnnotations: {}
+podLabels: {}
+nodeSelector: {}
+tolerations: []
+affinity: {}
+# -- Spread constraints; the selector labels are filled in when labelSelector is omitted
+topologySpreadConstraints: []

@@ -1,0 +1,13 @@
+# chart-testing install in kind. With the issuer and client ID set, fleetcom does not ask the
+# fleet API for its login config at start, so no API is needed; GitHub's public OIDC issuer
+# only serves discovery here, nobody logs in.
+fleetApi:
+  url: http://fleet-api.invalid
+baseUrl: http://fleetcom.example.com
+oidc:
+  issuer: https://token.actions.githubusercontent.com
+  clientId: fleetcom-ci
+replicas: 1
+session:
+  key:
+    value: ci-only-session-key-0123456789abcdef0123

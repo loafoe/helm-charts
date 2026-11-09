@@ -1,0 +1,17 @@
+apiVersion: v2
+name: fleetcom
+description: fleetcom - OIDC-protected web UI over the k3s-on-ec2 fleet API (clusters, accounts, jobs with live logs, workers)
+type: application
+version: 0.1.0
+appVersion: "0.64.0"
+keywords:
+  - kubernetes
+  - k3s
+  - fleet
+  - ui
+home: https://github.com/loafoe/k3s-on-ec2
+sources:
+  - https://github.com/loafoe/k3s-on-ec2
+maintainers:
+  - name: Andy Lo-A-Foe
+    email: andy.lo-a-foe@philips.com

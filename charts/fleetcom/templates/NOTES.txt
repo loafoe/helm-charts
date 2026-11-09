@@ -1,0 +1,11 @@
+fleetcom {{ default .Chart.AppVersion .Values.image.tag }} is installed: {{ .Values.baseUrl }}
+
+It reads from the fleet API at {{ .Values.fleetApi.url }} with each user's own ID token.
+Register this redirect URI on the OIDC client ({{ default "the fleet API's audience" .Values.oidc.clientId }}):
+
+  {{ trimSuffix "/" .Values.baseUrl }}/callback
+{{- if not (include "fleetcom.sessionKeyRef" .) }}
+
+NOTE: no session key is set, so every restart logs everyone out. Set session.key.generate
+(external-secrets), session.key.existingSecret or session.key.value.
+{{- end }}

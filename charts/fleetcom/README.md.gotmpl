@@ -1,0 +1,54 @@
+{{ template "chart.header" . }}
+{{ template "chart.deprecationWarning" . }}
+
+{{ template "chart.badgesSection" . }}
+
+{{ template "chart.description" . }}
+
+fleetcom from [loafoe/k3s-on-ec2](https://github.com/loafoe/k3s-on-ec2) (`docs/FLEETCOM.md`
+there) is the web UI of the fleet API (chart [k3s-fleet](../k3s-fleet)), with Centcom's look:
+clusters with their spec, outputs and control plane, accounts, jobs with the log followed live,
+workers. Read-only for now.
+
+- **Login**: OIDC authorization code flow with PKCE. By default fleetcom logs in **as the fleet
+  API's own client** (issuer and client ID from the API's `/auth/config`), so the ID token carries
+  the API's audience, and forwards it to the API: the API's group and connector checks decide
+  what each user sees.
+- **Stateless**: tokens live in sealed, `HttpOnly` cookies. Replicas only need to share the
+  session key.
+
+## Prerequisites
+
+- The fleet API, reachable from fleetcom (`fleetApi.url`, e.g. the k3s-fleet chart's Service).
+- The redirect URI `<baseUrl>/callback` registered on the OIDC client fleetcom logs in with. For
+  dex and the fleet API's public client:
+
+  ```yaml
+  redirectURIs:
+    - /device/callback                         # fleetctl
+    - https://fleetcom.example.com/callback    # fleetcom
+  ```
+- A session key shared by the replicas: `session.key.generate` (needs the
+  [external-secrets](https://external-secrets.io) operator: a `Password` generator fills the
+  Secret once), `session.key.existingSecret`, or `session.key.value`.
+
+## Example
+
+```yaml
+fleetApi:
+  url: http://k3s-fleet-api.k3s-fleet.svc
+baseUrl: https://fleetcom.example.com
+session:
+  key:
+    generate: true
+httpRoute:
+  enabled: true
+  parentRefs: [{name: platform, namespace: kube-system}]
+  hostnames: [fleetcom.example.com]
+```
+
+{{ template "chart.requirementsSection" . }}
+
+{{ template "chart.valuesSection" . }}
+
+{{ template "helm-docs.versionFooter" . }}
