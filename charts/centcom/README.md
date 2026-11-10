@@ -1,6 +1,6 @@
 # centcom
 
-![Version: 0.98.0](https://img.shields.io/badge/Version-0.98.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.323.0](https://img.shields.io/badge/AppVersion-v0.323.0-informational?style=flat-square)
+![Version: 0.99.1](https://img.shields.io/badge/Version-0.99.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.388.0](https://img.shields.io/badge/AppVersion-v0.388.0-informational?style=flat-square)
 
 MCP server for managing multiple centcom-satellite instances
 
@@ -37,8 +37,14 @@ MCP server for managing multiple centcom-satellite instances
 | database.barmanBackup.bucketName | string | `""` |  |
 | database.barmanBackup.bucketPrefix | string | `""` |  |
 | database.barmanBackup.compression | string | `"gzip"` |  |
+| database.barmanBackup.credentialsSecretRef.accessKeyIdKey | string | `"ACCESS_KEY_ID"` |  |
+| database.barmanBackup.credentialsSecretRef.name | string | `""` |  |
+| database.barmanBackup.credentialsSecretRef.secretAccessKeyKey | string | `"ACCESS_SECRET_KEY"` |  |
 | database.barmanBackup.enabled | bool | `false` |  |
+| database.barmanBackup.endpointURL | string | `""` |  |
+| database.barmanBackup.maxParallel | int | `0` |  |
 | database.barmanBackup.retentionDays | int | `7` |  |
+| database.barmanBackup.scheduleBaseBackup | string | `""` |  |
 | database.cnpg | bool | `true` |  |
 | database.databaseName | string | `"picomcp"` |  |
 | database.enabled | bool | `false` |  |
@@ -55,6 +61,7 @@ MCP server for managing multiple centcom-satellite instances
 | database.snapshots.enabled | bool | `false` |  |
 | database.snapshots.snapshotClassName | string | `""` |  |
 | database.snapshots.storageClassName | string | `""` |  |
+| database.storageClassName | string | `""` |  |
 | database.username | string | `"picomcp"` |  |
 | environmentConfig.managedBy | string | `""` |  |
 | environmentConfig.owner | string | `""` |  |
