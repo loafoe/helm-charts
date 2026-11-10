@@ -17,6 +17,10 @@ check, which only reads Route53 and DNS.
   what each user sees.
 - **Stateless**: tokens live in sealed, `HttpOnly` cookies. Replicas only need to share the
   session key.
+- **Sign-out at dex** (`oidc.logoutAtIssuer`): with a dex client of fleetcom's own
+  (`oidc.clientId`, `refreshTokenLifetime: session`, listed in the API client's `trustedPeers`),
+  signing out ends the dex session and revokes fleetcom's refresh token. fleetcom asks for the
+  API's audience with dex's cross-client scope, so its tokens still reach the API.
 
 ## Prerequisites
 

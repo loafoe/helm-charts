@@ -1,6 +1,6 @@
 # fleetcom
 
-![Version: 0.1.5](https://img.shields.io/badge/Version-0.1.5-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.64.5](https://img.shields.io/badge/AppVersion-0.64.5-informational?style=flat-square)
+![Version: 0.1.6](https://img.shields.io/badge/Version-0.1.6-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.65.0](https://img.shields.io/badge/AppVersion-0.65.0-informational?style=flat-square)
 
 fleetcom - OIDC-protected web UI over the k3s-on-ec2 fleet API (clusters, accounts, hosted zones, jobs with live logs, workers)
 
@@ -16,6 +16,10 @@ check, which only reads Route53 and DNS.
   what each user sees.
 - **Stateless**: tokens live in sealed, `HttpOnly` cookies. Replicas only need to share the
   session key.
+- **Sign-out at dex** (`oidc.logoutAtIssuer`): with a dex client of fleetcom's own
+  (`oidc.clientId`, `refreshTokenLifetime: session`, listed in the API client's `trustedPeers`),
+  signing out ends the dex session and revokes fleetcom's refresh token. fleetcom asks for the
+  API's audience with dex's cross-client scope, so its tokens still reach the API.
 
 ## Prerequisites
 
@@ -71,6 +75,7 @@ httpRoute:
 | oidc.clientSecret.key | string | `"client-secret"` | Key in that Secret |
 | oidc.groupsClaim | string | `""` | Groups claim shown on the profile and access-denied pages. Empty: the fleet API's |
 | oidc.issuer | string | `""` | Issuer URL. Empty: the fleet API's (its /auth/config) |
+| oidc.logoutAtIssuer | bool | `false` | Sign-out also ends the issuer's session (RP-initiated logout at its end_session_endpoint). With dex this revokes the refresh tokens of a session-bound client, so give fleetcom a client of its own (clientId) with refreshTokenLifetime: session, trusted by the API's client (trustedPeers). Requires an issuer that advertises end_session_endpoint. |
 | oidc.scopes | list | `[]` | Scopes. Empty: openid, email, profile, groups, offline_access plus what /auth/config asks for |
 | podAnnotations | object | `{}` |  |
 | podDisruptionBudget.enabled | bool | `true` | Keep one replica through voluntary disruptions (only rendered with replicas > 1) |

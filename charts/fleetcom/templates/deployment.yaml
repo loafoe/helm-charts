@@ -85,6 +85,10 @@ spec:
             - name: FLEETCOM_OIDC_SCOPES
               value: {{ join "," . | quote }}
             {{- end }}
+            {{- if .Values.oidc.logoutAtIssuer }}
+            - name: FLEETCOM_LOGOUT_AT_ISSUER
+              value: "true"
+            {{- end }}
             {{- with .Values.oidc.groupsClaim }}
             - name: FLEETCOM_OIDC_GROUPS_CLAIM
               value: {{ . | quote }}

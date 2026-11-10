@@ -42,6 +42,11 @@ oidc:
   scopes: []
   # -- Groups claim shown on the profile and access-denied pages. Empty: the fleet API's
   groupsClaim: ""
+  # -- Sign-out also ends the issuer's session (RP-initiated logout at its end_session_endpoint).
+  # With dex this revokes the refresh tokens of a session-bound client, so give fleetcom a client
+  # of its own (clientId) with refreshTokenLifetime: session, trusted by the API's client
+  # (trustedPeers). Requires an issuer that advertises end_session_endpoint.
+  logoutAtIssuer: false
 
 session:
   # -- How long a login lasts, token renewals included
