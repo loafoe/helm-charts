@@ -934,6 +934,28 @@ entries:
     version: 0.52.0
   fleetcom:
   - apiVersion: v2
+    appVersion: 0.64.4
+    created: "2026-11-10T06:43:59.599208357Z"
+    description: fleetcom - OIDC-protected web UI over the k3s-on-ec2 fleet API (clusters,
+      accounts, hosted zones, jobs with live logs, workers)
+    digest: 75d43cb743e425e1535ce7b29ef816255d4b30660dc64bfc29739c83eba1d033
+    home: https://github.com/loafoe/k3s-on-ec2
+    keywords:
+    - kubernetes
+    - k3s
+    - fleet
+    - ui
+    maintainers:
+    - email: andy.lo-a-foe@philips.com
+      name: Andy Lo-A-Foe
+    name: fleetcom
+    sources:
+    - https://github.com/loafoe/k3s-on-ec2
+    type: application
+    urls:
+    - https://github.com/loafoe/helm-charts/releases/download/fleetcom-0.1.4/fleetcom-0.1.4.tgz
+    version: 0.1.4
+  - apiVersion: v2
     appVersion: 0.64.3
     created: "2026-11-09T21:35:53.879485341Z"
     description: fleetcom - OIDC-protected web UI over the k3s-on-ec2 fleet API (clusters,
@@ -2076,4 +2098,4 @@ entries:
     urls:
     - https://loafoe.github.io/helm-charts/solgate-0.0.12.tgz
     version: 0.0.12
-generated: "2026-11-09T21:35:53.879789158Z"
+generated: "2026-11-10T06:43:59.599506994Z"
