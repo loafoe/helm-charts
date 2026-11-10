@@ -2,6 +2,25 @@ apiVersion: v1
 entries:
   centcom:
   - apiVersion: v2
+    appVersion: v0.388.0
+    created: "2026-11-10T09:34:28.461759104Z"
+    description: MCP server for managing multiple centcom-satellite instances
+    digest: f4f4860f6f8a0a4496e79fe2ef70d82e2627eac4f90f7a053459ef84408cac28
+    home: https://github.com/loafoe/centcom
+    keywords:
+    - kubernetes
+    - mcp
+    - spiffe
+    - ai
+    maintainers:
+    - email: andy.lo-a-foe@philips.com
+      name: Andy Lo-A-Foe
+    name: centcom
+    type: application
+    urls:
+    - https://github.com/loafoe/helm-charts/releases/download/centcom-0.99.1/centcom-0.99.1.tgz
+    version: 0.99.1
+  - apiVersion: v2
     appVersion: v0.323.0
     created: "2026-10-30T10:55:42.599224209Z"
     description: MCP server for managing multiple centcom-satellite instances
@@ -933,6 +952,28 @@ entries:
     - https://github.com/loafoe/helm-charts/releases/download/centcom-0.52.0/centcom-0.52.0.tgz
     version: 0.52.0
   fleetcom:
+  - apiVersion: v2
+    appVersion: 0.64.5
+    created: "2026-11-10T09:34:28.621350107Z"
+    description: fleetcom - OIDC-protected web UI over the k3s-on-ec2 fleet API (clusters,
+      accounts, hosted zones, jobs with live logs, workers)
+    digest: ab7b1be4e2165b98cdb3cbe6f8b778ac87f52d9382134f8af99960510a07ede1
+    home: https://github.com/loafoe/k3s-on-ec2
+    keywords:
+    - kubernetes
+    - k3s
+    - fleet
+    - ui
+    maintainers:
+    - email: andy.lo-a-foe@philips.com
+      name: Andy Lo-A-Foe
+    name: fleetcom
+    sources:
+    - https://github.com/loafoe/k3s-on-ec2
+    type: application
+    urls:
+    - https://github.com/loafoe/helm-charts/releases/download/fleetcom-0.1.5/fleetcom-0.1.5.tgz
+    version: 0.1.5
   - apiVersion: v2
     appVersion: 0.64.4
     created: "2026-11-10T06:43:59.599208357Z"
@@ -2098,4 +2139,4 @@ entries:
     urls:
     - https://loafoe.github.io/helm-charts/solgate-0.0.12.tgz
     version: 0.0.12
-generated: "2026-11-10T06:43:59.599506994Z"
+generated: "2026-11-10T09:34:28.62156649Z"
