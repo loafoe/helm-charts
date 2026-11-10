@@ -415,6 +415,23 @@ database:
     retentionDays: 7
     # Compression algorithm: gzip, bzip2, snappy, none
     compression: "gzip"
+    # Base-backup schedule (cron, 6 fields with leading seconds). WAL is
+    # archived continuously, so this is the RPO floor for a full restore.
+    scheduleBaseBackup: "0 0 0 * * *"
+    # S3-compatible endpoint (RustFS/MinIO/Garage). Omit for AWS S3.
+    endpointURL: ""
+    # Upload parallelism.
+    maxParallel: 2
+    # Static credentials. REQUIRED for any non-AWS store: without this the
+    # composition assumes AWS IRSA and renders iam.aws.m.upbound.io resources,
+    # which the rpi cluster cannot compose (no AWS provider) - the claim fails.
+    credentialsSecretRef:
+      name: ""
+      accessKeyIdKey: "ACCESS_KEY_ID"
+      secretAccessKeyKey: "ACCESS_SECRET_KEY"
+  # StorageClass for the CNPG PVCs, rendered independently of snapshots.
+  # Leave empty to fall back to snapshots.storageClassName (legacy behaviour).
+  storageClassName: ""
   # CNPG restore from Barman S3 backup (point-in-time recovery)
   restoreFromBarman:
     enabled: false
