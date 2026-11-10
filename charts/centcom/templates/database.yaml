@@ -67,7 +67,7 @@ spec:
       {{- with .Values.database.barmanBackup.maxParallel }}
       maxParallel: {{ . }}
       {{- end }}
-      {{- with .Values.database.barmanBackup.credentialsSecretRef }}
+      {{- with .Values.database.barmanBackup.credentialsSecretRef }}{{- if .name }}
       {{- /*
         Static credentials. WITHOUT this the composition assumes AWS IRSA and
         renders iam.aws.m.upbound.io Role/Policy/RolePolicyAttachment resources,
@@ -82,7 +82,7 @@ spec:
         {{- with .secretAccessKeyKey }}
         secretAccessKeyKey: {{ . }}
         {{- end }}
-      {{- end }}
+      {{- end }}{{- end }}
   {{- end }}
   {{- if and .Values.database.cnpg .Values.database.restoreFromBarman .Values.database.restoreFromBarman.enabled }}
     restore:

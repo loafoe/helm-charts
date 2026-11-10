@@ -417,11 +417,14 @@ database:
     compression: "gzip"
     # Base-backup schedule (cron, 6 fields with leading seconds). WAL is
     # archived continuously, so this is the RPO floor for a full restore.
-    scheduleBaseBackup: "0 0 0 * * *"
+    # Empty = the composition's own default. Every option below renders only
+    # when set, so AWS/IRSA releases are unaffected by these defaults.
+    scheduleBaseBackup: ""
     # S3-compatible endpoint (RustFS/MinIO/Garage). Omit for AWS S3.
     endpointURL: ""
     # Upload parallelism.
-    maxParallel: 2
+    # 0 = the composition's own default.
+    maxParallel: 0
     # Static credentials. REQUIRED for any non-AWS store: without this the
     # composition assumes AWS IRSA and renders iam.aws.m.upbound.io resources,
     # which the rpi cluster cannot compose (no AWS provider) - the claim fails.
