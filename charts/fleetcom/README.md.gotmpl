@@ -7,8 +7,9 @@
 
 fleetcom from [loafoe/k3s-on-ec2](https://github.com/loafoe/k3s-on-ec2) (`docs/FLEETCOM.md`
 there) is the web UI of the fleet API (chart [k3s-fleet](../k3s-fleet)), with Centcom's look:
-clusters with their spec, outputs and control plane, accounts, jobs with the log followed live,
-workers. Read-only for now.
+clusters with their spec, outputs and control plane, accounts, hosted zones, jobs with the log
+followed live, workers. It changes nothing: it reads, and the one thing it queues is a zones
+check, which only reads Route53 and DNS.
 
 - **Login**: OIDC authorization code flow with PKCE. By default fleetcom logs in **as the fleet
   API's own client** (issuer and client ID from the API's `/auth/config`), so the ID token carries

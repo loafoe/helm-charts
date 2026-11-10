@@ -1,13 +1,14 @@
 # fleetcom
 
-![Version: 0.1.3](https://img.shields.io/badge/Version-0.1.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.64.3](https://img.shields.io/badge/AppVersion-0.64.3-informational?style=flat-square)
+![Version: 0.1.4](https://img.shields.io/badge/Version-0.1.4-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.64.4](https://img.shields.io/badge/AppVersion-0.64.4-informational?style=flat-square)
 
-fleetcom - OIDC-protected web UI over the k3s-on-ec2 fleet API (clusters, accounts, jobs with live logs, workers)
+fleetcom - OIDC-protected web UI over the k3s-on-ec2 fleet API (clusters, accounts, hosted zones, jobs with live logs, workers)
 
 fleetcom from [loafoe/k3s-on-ec2](https://github.com/loafoe/k3s-on-ec2) (`docs/FLEETCOM.md`
 there) is the web UI of the fleet API (chart [k3s-fleet](../k3s-fleet)), with Centcom's look:
-clusters with their spec, outputs and control plane, accounts, jobs with the log followed live,
-workers. Read-only for now.
+clusters with their spec, outputs and control plane, accounts, hosted zones, jobs with the log
+followed live, workers. It changes nothing: it reads, and the one thing it queues is a zones
+check, which only reads Route53 and DNS.
 
 - **Login**: OIDC authorization code flow with PKCE. By default fleetcom logs in **as the fleet
   API's own client** (issuer and client ID from the API's `/auth/config`), so the ID token carries
