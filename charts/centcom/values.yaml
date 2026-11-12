@@ -308,6 +308,12 @@ cron:
   # tool to add/list/remove/enable/disable jobs. Admins always retain access
   # regardless of this list. Empty (the default) keeps cron admin-only.
   groups: []
+  # Runaway protection: a job that runs more often than this within 24h is
+  # deleted automatically. 0 (the default) keeps centcom's built-in limit
+  # (10). Raise it for jobs scheduled more often than every 2.4h, e.g. 60
+  # allows every 30 minutes (48 runs) plus a few manual runs. The limit is
+  # global: a runaway job is then caught later, after 60 runs.
+  maxRunsPerWindow: 0
 
 # OpenTelemetry configuration
 otel:

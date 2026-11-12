@@ -152,6 +152,9 @@ data:
     cron:
       enabled: true
       default_channel: {{ .Values.cron.defaultChannel | default "cron:system" | quote }}
+      {{- if .Values.cron.maxRunsPerWindow }}
+      max_runs_per_window: {{ int .Values.cron.maxRunsPerWindow }}
+      {{- end }}
       {{- if .Values.cron.groups }}
       groups:
         {{- range .Values.cron.groups }}
