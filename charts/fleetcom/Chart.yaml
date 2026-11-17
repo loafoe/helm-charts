@@ -2,8 +2,8 @@ apiVersion: v2
 name: fleetcom
 description: fleetcom - OIDC-protected web UI over the k3s-on-ec2 fleet API (clusters, accounts, hosted zones, jobs with live logs, workers)
 type: application
-version: 0.1.8
-appVersion: "0.66.3"
+version: 0.1.9
+appVersion: "0.67.0"
 keywords:
   - kubernetes
   - k3s
