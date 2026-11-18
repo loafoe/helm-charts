@@ -40,6 +40,26 @@ server:
   # -- Exposed MCP endpoint path
   path: /mcp
 
+# -- Opt-in external exposure (Gateway API HTTPRoute) for a caller that
+# isn't in-cluster with this proxy (e.g. hermes-agent on a different
+# cluster than the proxy/backend). Every mt-mcp-proxy deployment before
+# this field existed was in-cluster-only; auth is unchanged either way
+# (auth.mode: jwks already validates a bearer JWT against a public JWKS
+# endpoint regardless of network path, so exposing the proxy itself
+# publicly doesn't weaken the trust model - see
+# innovation-day/langfuse/MIGRATION.md for the first real use of this).
+httpRoute:
+  enabled: false
+  hostname: ""
+  gatewayRef:
+    name: platform
+    namespace: kube-system
+    # Leave empty on a Gateway with more than one HTTPS listener (SNI
+    # match) - pinning "https" on the wrong cluster's Gateway silently
+    # 404s every request despite Accepted/ResolvedRefs: True.
+    sectionName: https
+  annotations: {}
+
 # -- Prometheus metrics on a SEPARATE listener (isolated from the /mcp data plane).
 metrics:
   # -- Enable the metrics listener (adds container/service port + config block)
