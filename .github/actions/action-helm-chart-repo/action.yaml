@@ -52,10 +52,34 @@ runs:
       working-directory: dist
       run: |
         # shellcheck disable=SC2086
+        : > ../signed-refs.txt
         for f in *.tgz ; do
             echo "helm push $f oci://${REGISTRY}"
-            helm push $f oci://${REGISTRY}
+            push_output=$(helm push $f "oci://${REGISTRY}" 2>&1) || { printf '%s\n' "$push_output" >&2; exit 1; }
+            printf '%s\n' "$push_output"
+            # Sign by digest, not by tag: a tag is mutable, so cosign (rightly)
+            # warns when asked to sign one. helm push prints the digest of
+            # what it just pushed; use that instead of ":${version}".
+            name=$(helm show chart "$f" | awk '/^name:/{print $2}')
+            digest=$(printf '%s\n' "$push_output" | awk '/^Digest:/{print $2}')
+            if [ -z "$digest" ]; then
+                echo "::error::could not parse digest from helm push output for ${f}"
+                exit 1
+            fi
+            echo "${REGISTRY}/${name}@${digest}" >> ../signed-refs.txt
         done
       env:
         # The full reference, host *and* repository path, unlike the logins above.
         REGISTRY: "ghcr.io/${{ github.repository }}"
+
+    - name: Install cosign
+      uses: sigstore/cosign-installer@v3
+
+    - name: Sign Helm Charts
+      shell: bash
+      working-directory: dist
+      run: |
+        while read -r ref; do
+          echo "cosign sign --yes $ref"
+          cosign sign --yes "$ref"
+        done < ../signed-refs.txt
