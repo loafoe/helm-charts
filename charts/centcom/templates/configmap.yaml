@@ -166,6 +166,10 @@ data:
     leaderElection:
       enabled: true
     {{- end }}
+    {{- if and .Values.viewCache .Values.viewCache.pollIntervalSeconds }}
+    view_cache:
+      poll_interval_seconds: {{ int .Values.viewCache.pollIntervalSeconds }}
+    {{- end }}
 ---
 {{- if and .Values.ui .Values.ui.logo .Values.ui.logo.enabled .Values.ui.logo.content }}
 apiVersion: v1
