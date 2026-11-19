@@ -319,11 +319,13 @@ cron:
 # per-satellite task results warm for the UI/MCP read paths.
 viewCache:
   # How often the fast lane polls every registered satellite for
-  # cluster_info (live node CPU/mem numbers the Nodes view and Overview
-  # resource bars need fresh - see viewViews' own comment in cmd/centcom
-  # for why this lane exists separately from the 45s health/pressure
-  # lane). 0 (the default) keeps centcom's built-in default of 5s. Was
-  # hardcoded to 3s until 2026-11-19; a value below 1 is clamped up to 1s.
+  # cluster_info (node Ready/NotReady counts and request-based CPU/mem
+  # allocation % the Nodes view and Overview resource bars show - not a
+  # live usage metric, see cmd/centcom's ViewCacheConfig comment - so
+  # this lane just needs to be meaningfully faster than the 45s health/
+  # pressure lane, not sub-10s). 0 (the default) keeps centcom's built-in
+  # default of 15s. Was hardcoded to 3s until 2026-11-19 (briefly 5s the
+  # same day); a value below 1 is clamped up to 1s.
   pollIntervalSeconds: 0
 
 # OpenTelemetry configuration
