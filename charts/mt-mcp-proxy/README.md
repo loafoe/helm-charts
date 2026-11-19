@@ -1,6 +1,6 @@
 # mt-mcp-proxy
 
-![Version: 0.4.2](https://img.shields.io/badge/Version-0.4.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.3.3](https://img.shields.io/badge/AppVersion-0.3.3-informational?style=flat-square)
+![Version: 0.5.0](https://img.shields.io/badge/Version-0.5.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.3.3](https://img.shields.io/badge/AppVersion-0.3.3-informational?style=flat-square)
 
 A generic multi-tenant JWT/OIDC auth gateway that fronts any streamable-HTTP MCP server (e.g. github-mcp-server, mcp-grafana) with group-based tenant routing and per-tenant credential injection.
 
@@ -57,6 +57,7 @@ A generic multi-tenant JWT/OIDC auth gateway that fronts any streamable-HTTP MCP
 | environmentConfig.managedBy | string | `""` |  |
 | environmentConfig.owner | string | `""` |  |
 | fullnameOverride | string | `""` | Override the fully qualified name of the chart |
+| httpRoute | object | `{"annotations":{},"enabled":false,"gatewayRef":{"name":"platform","namespace":"kube-system","sectionName":"https"},"hostname":""}` | Opt-in external exposure (Gateway API HTTPRoute) for a caller that isn't in-cluster with this proxy (e.g. hermes-agent on a different cluster than the proxy/backend). Every mt-mcp-proxy deployment before this field existed was in-cluster-only; auth is unchanged either way (auth.mode: jwks already validates a bearer JWT against a public JWKS endpoint regardless of network path, so exposing the proxy itself publicly doesn't weaken the trust model - see innovation-day/langfuse/MIGRATION.md for the first real use of this). |
 | image.pullPolicy | string | `"IfNotPresent"` | Image pull policy |
 | image.repository | string | `"ghcr.io/loafoe/mt-mcp-proxy"` | Registry repository for the mt-mcp-proxy image |
 | image.tag | string | `"v0.3.0"` | Image tag (the release workflow publishes ghcr.io/loafoe/mt-mcp-proxy:<git-tag>) |
