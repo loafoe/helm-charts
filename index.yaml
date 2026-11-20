@@ -1528,6 +1528,28 @@ entries:
     version: 0.2.1
   k3s-fleet:
   - apiVersion: v2
+    appVersion: 0.69.0
+    created: "2026-11-20T00:14:58.023448269Z"
+    description: Fleet API for k3s-on-ec2 clusters - HTTP API (OIDC) and Pulumi job
+      workers, backed by PostgreSQL (CloudNativePG)
+    digest: a550841f981921ed2b3dd5ec57dc85eb7e5ea55a7c54545bfb501c7eb39fc7de
+    home: https://github.com/loafoe/k3s-on-ec2
+    keywords:
+    - kubernetes
+    - k3s
+    - pulumi
+    - fleet
+    maintainers:
+    - email: andy.lo-a-foe@philips.com
+      name: Andy Lo-A-Foe
+    name: k3s-fleet
+    sources:
+    - https://github.com/loafoe/k3s-on-ec2
+    type: application
+    urls:
+    - https://github.com/loafoe/helm-charts/releases/download/k3s-fleet-0.1.29/k3s-fleet-0.1.29.tgz
+    version: 0.1.29
+  - apiVersion: v2
     appVersion: 0.68.1
     created: "2026-11-17T14:04:58.559291494Z"
     description: Fleet API for k3s-on-ec2 clusters - HTTP API (OIDC) and Pulumi job
@@ -2450,4 +2472,4 @@ entries:
     urls:
     - https://loafoe.github.io/helm-charts/solgate-0.0.12.tgz
     version: 0.0.12
-generated: "2026-11-19T11:57:57.436116569Z"
+generated: "2026-11-20T00:14:58.023774936Z"
