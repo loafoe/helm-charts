@@ -34,7 +34,7 @@ onboard AWS accounts, as asynchronous jobs over HTTP.
 oidc:
   issuerUrl: https://login.example.com
   audience: k3s-fleet-api
-  requiredGroups: [k3s-fleet-admins]
+  adminGroups: [k3s-fleet-admins]
 pulumi:
   backendUrl: s3://ops-tools-pulumi-state?region=eu-west-2
   secretsProvider: awskms://alias/pulumi-k3s-fleet?region=eu-west-2

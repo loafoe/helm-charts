@@ -30,8 +30,15 @@ oidc:
   audience: ""
   # -- Claim holding the caller's groups
   groupsClaim: groups
-  # -- Callers need one of these groups; empty allows any valid token
-  requiredGroups: []
+  # -- Groups granted the admin role (fleet.clusters.create/destroy/secrets,
+  # accounts.manage, the sealed admin kubeconfig). Fail-closed with the other two: if all
+  # three are empty, every caller is refused.
+  adminGroups: []
+  # -- Groups granted the operator role (preview/up, bootstrap, deletion-protection, the
+  # public half of kubeconfig, zones checks), plus everything viewerGroups grants.
+  operatorGroups: []
+  # -- Groups granted the viewer role (read-only).
+  viewerGroups: []
   # -- Dex only: connector IDs the identity must come through (federated_claims.connector_id,
   # federated:id scope). Groups are plain strings, so with several connectors any of them that can
   # produce a required group's name would pass; e.g. [github]. Empty skips the check.

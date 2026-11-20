@@ -8,7 +8,9 @@ data:
   FLEET_API_OIDC_ISSUER: {{ .Values.oidc.issuerUrl | quote }}
   FLEET_API_OIDC_AUDIENCE: {{ .Values.oidc.audience | quote }}
   FLEET_API_OIDC_GROUPS_CLAIM: {{ .Values.oidc.groupsClaim | quote }}
-  FLEET_API_OIDC_REQUIRED_GROUPS: {{ join "," .Values.oidc.requiredGroups | quote }}
+  FLEET_API_ADMIN_GROUPS: {{ join "," .Values.oidc.adminGroups | quote }}
+  FLEET_API_OPERATOR_GROUPS: {{ join "," .Values.oidc.operatorGroups | quote }}
+  FLEET_API_VIEWER_GROUPS: {{ join "," .Values.oidc.viewerGroups | quote }}
   FLEET_API_OIDC_ALLOWED_CONNECTORS: {{ join "," .Values.oidc.allowedConnectors | quote }}
   FLEET_API_TRUSTED_PRINCIPAL_ARN: {{ .Values.trustedPrincipal.arn | quote }}
   FLEET_API_TRUSTED_PRINCIPAL_PATTERN: {{ .Values.trustedPrincipal.arnPattern | quote }}

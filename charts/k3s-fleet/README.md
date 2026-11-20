@@ -1,6 +1,6 @@
 # k3s-fleet
 
-![Version: 0.1.28](https://img.shields.io/badge/Version-0.1.28-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.68.1](https://img.shields.io/badge/AppVersion-0.68.1-informational?style=flat-square)
+![Version: 0.1.29](https://img.shields.io/badge/Version-0.1.29-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.69.0](https://img.shields.io/badge/AppVersion-0.69.0-informational?style=flat-square)
 
 Fleet API for k3s-on-ec2 clusters - HTTP API (OIDC) and Pulumi job workers, backed by PostgreSQL (CloudNativePG)
 
@@ -33,7 +33,7 @@ onboard AWS accounts, as asynchronous jobs over HTTP.
 oidc:
   issuerUrl: https://login.example.com
   audience: k3s-fleet-api
-  requiredGroups: [k3s-fleet-admins]
+  adminGroups: [k3s-fleet-admins]
 pulumi:
   backendUrl: s3://ops-tools-pulumi-state?region=eu-west-2
   secretsProvider: awskms://alias/pulumi-k3s-fleet?region=eu-west-2
@@ -98,11 +98,13 @@ jobs on shutdown: interrupting Pulumi mid-update can leave a stack locked.
 | image.worker.tag | string | `""` | Defaults to the chart appVersion |
 | imagePullSecrets | list | `[]` | Image pull secrets (the ghcr.io images are public) |
 | nameOverride | string | `""` |  |
+| oidc.adminGroups | list | `[]` | Groups granted the admin role (fleet.clusters.create/destroy/secrets, accounts.manage, the sealed admin kubeconfig). Fail-closed with the other two: if all three are empty, every caller is refused. |
 | oidc.allowedConnectors | list | `[]` | Dex only: connector IDs the identity must come through (federated_claims.connector_id, federated:id scope). Groups are plain strings, so with several connectors any of them that can produce a required group's name would pass; e.g. [github]. Empty skips the check. |
 | oidc.audience | required | `""` | Expected token audience ("aud"), typically the client ID |
 | oidc.groupsClaim | string | `"groups"` | Claim holding the caller's groups |
 | oidc.issuerUrl | required | `""` | OIDC issuer URL; discovery runs at API start |
-| oidc.requiredGroups | list | `[]` | Callers need one of these groups; empty allows any valid token |
+| oidc.operatorGroups | list | `[]` | Groups granted the operator role (preview/up, bootstrap, deletion-protection, the public half of kubeconfig, zones checks), plus everything viewerGroups grants. |
+| oidc.viewerGroups | list | `[]` | Groups granted the viewer role (read-only). |
 | podSecurityContext.fsGroup | int | `65532` |  |
 | podSecurityContext.runAsGroup | int | `65532` |  |
 | podSecurityContext.runAsNonRoot | bool | `true` |  |
