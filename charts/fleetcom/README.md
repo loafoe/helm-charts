@@ -1,6 +1,6 @@
 # fleetcom
 
-![Version: 0.1.17](https://img.shields.io/badge/Version-0.1.17-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.72.1](https://img.shields.io/badge/AppVersion-0.72.1-informational?style=flat-square)
+![Version: 0.1.18](https://img.shields.io/badge/Version-0.1.18-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.73.0](https://img.shields.io/badge/AppVersion-0.73.0-informational?style=flat-square)
 
 fleetcom - OIDC-protected web UI over the k3s-on-ec2 fleet API (clusters, accounts, hosted zones, jobs with live logs, workers)
 
