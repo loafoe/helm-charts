@@ -1010,6 +1010,28 @@ entries:
     version: 0.52.0
   fleetcom:
   - apiVersion: v2
+    appVersion: 0.75.2
+    created: "2026-11-23T16:15:15.185174415Z"
+    description: fleetcom - OIDC-protected web UI over the k3s-on-ec2 fleet API (clusters,
+      accounts, hosted zones, jobs with live logs, workers)
+    digest: d46b5b4971156dde231c363064825302348af5bbe947104b2b0f24ba2495e9b9
+    home: https://github.com/loafoe/k3s-on-ec2
+    keywords:
+    - kubernetes
+    - k3s
+    - fleet
+    - ui
+    maintainers:
+    - email: andy.lo-a-foe@philips.com
+      name: Andy Lo-A-Foe
+    name: fleetcom
+    sources:
+    - https://github.com/loafoe/k3s-on-ec2
+    type: application
+    urls:
+    - https://github.com/loafoe/helm-charts/releases/download/fleetcom-0.1.22/fleetcom-0.1.22.tgz
+    version: 0.1.22
+  - apiVersion: v2
     appVersion: 0.75.0
     created: "2026-11-23T13:21:09.686469808Z"
     description: fleetcom - OIDC-protected web UI over the k3s-on-ec2 fleet API (clusters,
@@ -1747,6 +1769,28 @@ entries:
     - https://github.com/loafoe/helm-charts/releases/download/go-ocpp-server-0.2.1/go-ocpp-server-0.2.1.tgz
     version: 0.2.1
   k3s-fleet:
+  - apiVersion: v2
+    appVersion: 0.75.2
+    created: "2026-11-23T16:15:15.382148578Z"
+    description: Fleet API for k3s-on-ec2 clusters - HTTP API (OIDC) and Pulumi job
+      workers, backed by PostgreSQL (CloudNativePG)
+    digest: 2ccd15aa339a2ae8f2fb45f06259c3282fc737c9033e8f1b7a8d850e41bfb0ea
+    home: https://github.com/loafoe/k3s-on-ec2
+    keywords:
+    - kubernetes
+    - k3s
+    - pulumi
+    - fleet
+    maintainers:
+    - email: andy.lo-a-foe@philips.com
+      name: Andy Lo-A-Foe
+    name: k3s-fleet
+    sources:
+    - https://github.com/loafoe/k3s-on-ec2
+    type: application
+    urls:
+    - https://github.com/loafoe/helm-charts/releases/download/k3s-fleet-0.1.39/k3s-fleet-0.1.39.tgz
+    version: 0.1.39
   - apiVersion: v2
     appVersion: 0.75.0
     created: "2026-11-23T13:21:09.878545602Z"
@@ -2890,4 +2934,4 @@ entries:
     urls:
     - https://loafoe.github.io/helm-charts/solgate-0.0.12.tgz
     version: 0.0.12
-generated: "2026-11-23T13:21:09.879172594Z"
+generated: "2026-11-23T16:15:15.382464561Z"
