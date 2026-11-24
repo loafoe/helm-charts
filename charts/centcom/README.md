@@ -1,6 +1,6 @@
 # centcom
 
-![Version: 0.102.0](https://img.shields.io/badge/Version-0.102.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.400.2](https://img.shields.io/badge/AppVersion-v0.400.2-informational?style=flat-square)
+![Version: 0.103.0](https://img.shields.io/badge/Version-0.103.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.400.2](https://img.shields.io/badge/AppVersion-v0.400.2-informational?style=flat-square)
 
 MCP server for managing multiple centcom-satellite instances
 
@@ -23,6 +23,7 @@ MCP server for managing multiple centcom-satellite instances
 | agents[1].id | string | `"cluster-beta"` |  |
 | agents[1].jwt_audience | string | `"pico-agent-beta"` |  |
 | agents[1].url | string | `"http://pico-agent.beta.svc.cluster.local:8080"` |  |
+| artefacts.userQuotaMB | int | `0` |  |
 | channel.hermes.apiKeySecret.key | string | `"API_SERVER_KEY"` |  |
 | channel.hermes.apiKeySecret.name | string | `""` |  |
 | channel.hermes.url | string | `""` |  |
