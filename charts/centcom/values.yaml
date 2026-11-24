@@ -328,6 +328,14 @@ viewCache:
   # same day); a value below 1 is clamped up to 1s.
   pollIntervalSeconds: 0
 
+# Artefact storage
+artefacts:
+  # Per-user quota (MiB) on the total size of the artefacts one user owns;
+  # an upload from the UI that would exceed it is refused. 0 (the default)
+  # keeps centcom's built-in default of 2048 (2 GiB). Artefacts are stored
+  # in Postgres, so size the database volume for users x quota you expect.
+  userQuotaMB: 0
+
 # OpenTelemetry configuration
 otel:
   # Enable OpenTelemetry instrumentation

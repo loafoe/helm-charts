@@ -170,6 +170,10 @@ data:
     view_cache:
       poll_interval_seconds: {{ int .Values.viewCache.pollIntervalSeconds }}
     {{- end }}
+    {{- if and .Values.artefacts .Values.artefacts.userQuotaMB }}
+    artefacts:
+      user_quota_mb: {{ int64 .Values.artefacts.userQuotaMB }}
+    {{- end }}
 ---
 {{- if and .Values.ui .Values.ui.logo .Values.ui.logo.enabled .Values.ui.logo.content }}
 apiVersion: v1
