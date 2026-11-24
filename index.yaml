@@ -3,6 +3,25 @@ entries:
   centcom:
   - apiVersion: v2
     appVersion: v0.400.2
+    created: "2026-11-24T11:46:40.571906039Z"
+    description: MCP server for managing multiple centcom-satellite instances
+    digest: d28c2bdea4c7a6ae69827bdaf3e2cc2d9ac85e7372a1475f7b5a36e3bdc57b80
+    home: https://github.com/loafoe/centcom
+    keywords:
+    - kubernetes
+    - mcp
+    - spiffe
+    - ai
+    maintainers:
+    - email: andy.lo-a-foe@philips.com
+      name: Andy Lo-A-Foe
+    name: centcom
+    type: application
+    urls:
+    - https://github.com/loafoe/helm-charts/releases/download/centcom-0.103.0/centcom-0.103.0.tgz
+    version: 0.103.0
+  - apiVersion: v2
+    appVersion: v0.400.2
     created: "2026-11-19T11:57:57.161013349Z"
     description: MCP server for managing multiple centcom-satellite instances
     digest: afa0b4d97c4472772124d1b93f95f0d1374222251712e583bd1db9c4673edd2c
@@ -2934,4 +2953,4 @@ entries:
     urls:
     - https://loafoe.github.io/helm-charts/solgate-0.0.12.tgz
     version: 0.0.12
-generated: "2026-11-23T16:15:15.382464561Z"
+generated: "2026-11-24T11:46:40.911626568Z"
