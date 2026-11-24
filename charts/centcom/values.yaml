@@ -395,6 +395,14 @@ ui:
   #     label: "GPT-6 Luna"
   #   - id: "us.anthropic.claude-sonnet-5"
   #     label: "Claude Sonnet 5"
+  # Groups (beyond adminGroups) whose members may allow a tool call the chat
+  # agent paused for approval (Allow once / Allow for this turn). Admins
+  # always may; everyone may deny; nobody may choose the agent's permanent
+  # "always". Exact group names, no patterns. Empty (the default) keeps
+  # allowing admin-only. The agent's terminal is shared and unsandboxed, so
+  # list only groups trusted to run what it pauses.
+  # chatApprovalGroups:
+  #   - "philips-internal:dip-centcom-approvers"
 
 # Database configuration (dip.io Postgres CRD)
 database:
