@@ -54,6 +54,17 @@ runs:
         # shellcheck disable=SC2086
         : > ../signed-refs.txt
         for f in *.tgz ; do
+            # Every tag is immutable in ghcr, and this loop re-packages every chart on every
+            # push, so a run that changes one chart would otherwise die on the first chart
+            # whose version is already published ("failed to perform Tag ... not found") and
+            # never reach the one it was supposed to ship. Skip what is there, push what is
+            # new; the loop is alphabetical, so the skip keeps the rest of the run alive.
+            chart_ref="oci://${REGISTRY}/$(helm show chart "$f" | awk '/^name:/{print $2}')"
+            chart_version=$(helm show chart "$f" | awk '/^version:/{print $2}')
+            if helm show chart "${chart_ref}" --version "${chart_version}" >/dev/null 2>&1; then
+                echo "skipping $f: ${chart_ref}:${chart_version} is already published"
+                continue
+            fi
             echo "helm push $f oci://${REGISTRY}"
             push_output=$(helm push $f "oci://${REGISTRY}" 2>&1) || { printf '%s\n' "$push_output" >&2; exit 1; }
             printf '%s\n' "$push_output"
