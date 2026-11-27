@@ -1,6 +1,6 @@
 # k3s-fleet
 
-![Version: 0.1.47](https://img.shields.io/badge/Version-0.1.47-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.78.2](https://img.shields.io/badge/AppVersion-0.78.2-informational?style=flat-square)
+![Version: 0.1.48](https://img.shields.io/badge/Version-0.1.48-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.78.3](https://img.shields.io/badge/AppVersion-0.78.3-informational?style=flat-square)
 
 Fleet API for k3s-on-ec2 clusters - HTTP API (OIDC) and Pulumi job workers, backed by PostgreSQL (CloudNativePG)
 
